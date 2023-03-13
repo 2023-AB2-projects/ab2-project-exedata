@@ -1,8 +1,8 @@
 package Backend;
 
-public class Database {
+public class Backend {
     public static void main(String[] args) {
-        System.out.println("szia");
+        System.out.println("hello");
         // Create a HTTP server and start listening to requests
     }
 }
