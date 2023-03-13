@@ -14,9 +14,9 @@ public class Server {
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         System.out.println("Server started successfully!");
         HttpContext context = server.createContext("/");
-        server.start();
-
         context.setHandler(new RequestHandler());
+
+        server.start();
     }
 
     private static class RequestHandler implements HttpHandler {
