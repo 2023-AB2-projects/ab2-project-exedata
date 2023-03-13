@@ -1,6 +1,8 @@
 package Frontend;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -35,6 +37,17 @@ public class ClientConnection{
             System.out.println("Disconnected from the server");
         }catch (IOException e) {
             System.out.println("Can't disconnected from the server");
+        }
+    }
+
+    public void send(String message){
+        try{
+            BufferedWriter bufferedWriter=new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
+            bufferedWriter.write(message);
+            bufferedWriter.flush();
+            System.out.println("Send it!");
+        }catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

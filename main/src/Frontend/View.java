@@ -12,6 +12,7 @@ public class View extends JFrame implements ActionListener {
     private int startHeight=750;
     private JTextField textField;
     private JButton Button;
+    private ClientConnection c;
 
     public View() {
         setBounds(startPosX,startPosY,startWidth,startHeight);
@@ -22,6 +23,7 @@ public class View extends JFrame implements ActionListener {
         add(textField,BorderLayout.CENTER);
         add(Button,BorderLayout.SOUTH);
         Button.addActionListener(this);
+        c=new ClientConnection();
 
 
         setVisible(true);
@@ -29,6 +31,8 @@ public class View extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        c.connect(12000);
+        c.send("asd");
+        //c.disconnect();
     }
 }
