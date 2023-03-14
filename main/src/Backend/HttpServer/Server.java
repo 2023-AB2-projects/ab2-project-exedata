@@ -30,7 +30,6 @@ public class Server {
     private static class RequestHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange httpExchange) throws IOException {
-            // Handling the request
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpExchange.getRequestBody()));
             String message = reader.readLine();
             System.out.println("Server: " + message);

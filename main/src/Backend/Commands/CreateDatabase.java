@@ -1,40 +1,24 @@
 package Backend.Commands;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.File;
-import java.io.StringWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 public class CreateDatabase implements Command {
+    // create a database with name in json file
 
     @Override
-    public void performAction() throws ParserConfigurationException, TransformerException {
-        String fileName = "databases.xml";
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document document = dBuilder.newDocument();
+    public void performAction() {
+        JSONObject database = new JSONObject();
+        database.put("Databases", "Tables");
 
-        try {
-            Element databases = document.createElement("Databases");
-            document.appendChild(databases);
+        JSONArray databaseList = new JSONArray();
+        databaseList.add(database);
 
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource domSource = new DOMSource(document);
-            StreamResult streamResult = new StreamResult(new File(fileName));
-            transformer.transform(domSource, streamResult);
-
-        } catch (Exception e) {
+        try (FileWriter file = new FileWriter("databases.json")) {
+            file.write(database.toJSONString());
+            file.flush();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
