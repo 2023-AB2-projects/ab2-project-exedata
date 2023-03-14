@@ -1,53 +1,64 @@
 package Frontend;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.net.InetAddress;
-import java.net.Socket;
+import com.sun.net.httpserver.HttpServer;
 
-public class ClientConnection{
+import java.io.*;
+import java.net.*;
+
+public class ClientConnection {
     private int status;
     private int port;
-    private InetAddress addr;
-    private Socket sock;
+
+    private HttpURLConnection con;
+
+    private URL url;
 
     public ClientConnection() {
-        status=0;
-
+        status = 0;
     }
 
-    public void connect(int port){
-        this.port=port;
+    public void connect(int port) {
+        this.port = port;
         try {
-            sock = new Socket("127.0.0.1", port);
-            addr = sock.getInetAddress();
-            status=1;
-            System.out.println("Connected to " + addr);
+            url = new URL("http://localhost:" + port + "/");
+            con = (HttpURLConnection) url.openConnection();
+            status = 1;
+            System.out.println("Connected to server on " + port + " port!");
         } catch (java.io.IOException e) {
             System.out.println("Can't connect to Server");
             System.out.println(e);
         }
     }
 
-    public void disconnect(){
-        try{
-            sock.close();
-            status=0;
-            System.out.println("Disconnected from the server");
-        }catch (IOException e) {
-            System.out.println("Can't disconnected from the server");
-        }
+    public void disconnect() {
+        con.disconnect();
+        status = 0;
+        System.out.println("Disconnected from the server");
     }
 
-    public void send(String message){
-        try{
-            BufferedWriter bufferedWriter=new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-            bufferedWriter.write(message);
-            bufferedWriter.flush();
-            System.out.println("Send it!");
-        }catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public void send(String message) throws IOException {
+        con.setRequestMethod("POST");
+        con.setDoOutput(true);
+
+        byte[] messageBytes = message.getBytes(); //encript
+
+        OutputStream out = con.getOutputStream();
+        out.write(messageBytes);
+        out.flush();
+        out.close();
+
+        int responseCode = con.getResponseCode();
+
+//        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+//        String inputLine;
+//        StringBuffer response = new StringBuffer();
+//        while ((inputLine = in.readLine()) != null) {
+//            response.append(inputLine);
+//        }
+//        in.close();
+//
+//        System.out.println("Server response: " + response.toString());
+
+
     }
 }

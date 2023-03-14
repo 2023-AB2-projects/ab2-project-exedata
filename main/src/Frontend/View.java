@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 public class View extends JFrame implements ActionListener {
     private int startPosX=50;
@@ -32,7 +33,11 @@ public class View extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         c.connect(12000);
-        c.send("asd");
-        //c.disconnect();
+        try {
+            c.send("asd");
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+        c.disconnect();
     }
 }
