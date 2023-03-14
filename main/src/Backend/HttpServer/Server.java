@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 
 public class Server {
@@ -24,7 +25,14 @@ public class Server {
         public void handle(HttpExchange httpExchange) throws IOException {
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpExchange.getRequestBody()));
             String message = reader.readLine();
-            System.out.println("Message = " + message);
+            System.out.println("Server: I got your message: " + message);
+
+            // Send the answer
+            OutputStream outputStream = httpExchange.getResponseBody();
+            String response = "Hello client!";
+            httpExchange.sendResponseHeaders(200, response.length());
+            outputStream.write(response.getBytes());
+            outputStream.close();
         }
 
     }
