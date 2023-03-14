@@ -1,4 +1,6 @@
 package Backend.HttpServer;
+import Backend.Exceptions.UnknownCommandException;
+import Backend.Parser;
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -31,7 +33,13 @@ public class Server {
             // Handling the request
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpExchange.getRequestBody()));
             String message = reader.readLine();
-            System.out.println("Server: I got your message: " + message);
+            System.out.println("Server: " + message);
+
+            try {
+                Parser.commandType(message);
+            } catch (UnknownCommandException e) {
+                throw new RuntimeException(e);
+            }
 
             // process the request and send the answer
             // ... (analyze the text) - call the parser
@@ -42,6 +50,7 @@ public class Server {
             httpExchange.sendResponseHeaders(200, response.length());
             outputStream.write(response.getBytes());
             outputStream.close();
+
         }
 
     }
