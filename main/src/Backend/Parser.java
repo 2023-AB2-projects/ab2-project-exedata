@@ -17,15 +17,15 @@ public class Parser {
 
     public static Command commandType(String command) throws UnknownCommandException {
         if (createDatabase.matcher(command).find()) {
-            return new CreateDatabase();
+            return new CreateDatabase(command);
         } else if (createTable.matcher(command).find()) {
-            return new CreateTable();
+            return new CreateTable(command);
         } else if (dropDatabase.matcher(command).find()) {
-            return new DropDatabase();
+            return new DropDatabase(command);
         } else if (createIndex.matcher(command).find()) {
-            return new CreateIndex();
+            return new CreateIndex(command);
         } else if (dropIndex.matcher(command).find()) {
-            return new DropIndex();
+            return new DropIndex(command);
         }
         throw new UnknownCommandException();
     }

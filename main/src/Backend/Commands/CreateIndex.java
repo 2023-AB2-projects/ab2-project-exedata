@@ -6,6 +6,12 @@ import org.json.simple.JSONObject;
 
 public class CreateIndex implements Command {
 
+    private String command;
+
+    public CreateIndex(String command) {
+        this.command = command;
+    }
+
     @Override
     public void performAction() {
 

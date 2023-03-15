@@ -6,6 +6,11 @@ import org.json.simple.JSONObject;
 
 public class DropDatabase implements Command {
     // Drop database from json file
+    private String command;
+
+    public DropDatabase(String command) {
+        this.command = command;
+    }
 
     @Override
     public void performAction() {
