@@ -23,7 +23,7 @@ public class CreateDatabase implements Command {
         try {
             database.createCollection(currentDatabaseName);
         } catch (Exception e) {
-            System.out.println("Collection is already created!");
+            System.out.println("Error. Collection is already created!");
         }
 
 //        //CREATE DATABASE PERSONS;
