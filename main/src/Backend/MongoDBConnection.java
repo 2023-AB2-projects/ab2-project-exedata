@@ -14,6 +14,5 @@ public class MongoDBConnection {
         MongoClient mongoClient = new MongoClient("localhost", 27017);
         MongoDatabase database = mongoClient.getDatabase("Database");
         database.createCollection("FirstCollection");
-        System.out.println("Ok");
     }
 }
