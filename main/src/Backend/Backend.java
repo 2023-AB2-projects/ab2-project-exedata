@@ -12,12 +12,11 @@ public class Backend {
         // Create the HTTP server and start listening to requests
         // Server server = new Server(12000);
         // server.runServer();
-//        try {
-//            Parser.commandType("CREATE DATABASE PERSONS;").performAction();
-//        } catch (UnknownCommandException | ParserConfigurationException | TransformerException e) {
-//            throw new RuntimeException(e);
-//        }
+        try {
+            Parser.commandType("CREATE DATABASE PERSONS;").performAction();
+        } catch (UnknownCommandException | ParserConfigurationException | TransformerException e) {
+            throw new RuntimeException(e);
+        }
 
-        MongoDBConnection.connect();
     }
 }
