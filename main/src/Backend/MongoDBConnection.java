@@ -1,7 +1,6 @@
 package Backend;
 import com.mongodb.*;
 
-
 public class MongoDBConnection {
 
     public static MongoClient connect() {

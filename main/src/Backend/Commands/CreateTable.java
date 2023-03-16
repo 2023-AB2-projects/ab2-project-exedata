@@ -14,6 +14,10 @@ public class CreateTable implements Command {
 
     @Override
     public void performAction() {
-
+//        try {
+//            database.createCollection(currentDatabaseName);
+//        } catch (Exception e) {
+//            System.out.println("Error. Collection is already created!");
+//        }
     }
 }
