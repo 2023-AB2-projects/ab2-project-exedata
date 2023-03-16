@@ -1,4 +1,5 @@
 package Backend.Commands;
+
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -17,21 +18,22 @@ public class CreateDatabase implements Command {
     @Override
     public void performAction() {
 
-        JSONObject databases = new JSONObject();
-        JSONObject database = new JSONObject();
-        JSONObject databaseName = new JSONObject();
         String currentDatabaseName = command.split(" ")[2];
-        if (currentDatabaseName.charAt(currentDatabaseName.length()-1) == ';'){
-            currentDatabaseName = currentDatabaseName.substring(0,currentDatabaseName.length()-1);
+        if (currentDatabaseName.charAt(currentDatabaseName.length() - 1) == ';') {
+            currentDatabaseName = currentDatabaseName.substring(0, currentDatabaseName.length() - 1);
         }
         //CREATE DATABASE PERSONS;
-        databaseName.put("@dataBaseName",currentDatabaseName);
+        JSONObject databaseName = new JSONObject();
+        databaseName.put("@dataBaseName", currentDatabaseName);
+        JSONObject database = new JSONObject();
         database.put("Database", databaseName);
-        databases.put("Databases", database);
-        System.out.println(databases);
 
         JSONArray databasesList = new JSONArray();
-        databasesList.add(databases);
+        databasesList.add(database);
+
+        JSONObject databases = new JSONObject();
+        databases.put("Databases", databasesList);
+        System.out.println(databases);
 
         try (FileWriter file = new FileWriter("databases.json")) {
             file.write(databases.toJSONString());
@@ -40,7 +42,7 @@ public class CreateDatabase implements Command {
             e.printStackTrace();
         }
 
-        MongoDBConnection mongoDBConnection=new MongoDBConnection();
-        mongoDBConnection.connect();
+        //MongoDBConnection mongoDBConnection = new MongoDBConnection();
+        //mongoDBConnection.connect();
     }
 }
