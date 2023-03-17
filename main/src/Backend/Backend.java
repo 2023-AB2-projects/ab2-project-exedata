@@ -15,7 +15,11 @@ public class Backend {
         Server server = new Server(12000);
         //server.runServer();
         try {
-            Parser.commandType("CREATE DATABASE PERSONS;").performAction(); //create a new database
+            Parser.commandType("CREATE TABLE Alkalmazottak (" +
+                    "SzemSzám VARCHAR(13) PRIMARY KEY, " +
+                    "Név VARCHAR(30) UNIQUE, " +
+                    "RészlegID INT REFERENCES Részlegek (RészlegID), " +
+                    "Fizetés INT);").performAction(); //create a new database
         } catch (UnknownCommandException | ParserConfigurationException | TransformerException e) {
             throw new RuntimeException(e);
         }
