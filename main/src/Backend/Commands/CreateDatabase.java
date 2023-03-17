@@ -2,6 +2,8 @@ package Backend.Commands;
 import Backend.MongoDBConnection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.*;
+import org.bson.Document;
+import org.json.simple.JSONObject;
 
 public class CreateDatabase implements Command {
     // create a database with name in json file
@@ -25,12 +27,16 @@ public class CreateDatabase implements Command {
         } catch (Exception e) {
             System.out.println("Error. Collection is already created!");
         }
+        JSONObject primaryKey1 = new JSONObject();
+
+        Document document = new Document();
+        document.append("name", "John");
+        document.append("age", 30);
+        document.append("email", "john@example.com");
+        database.getCollection("PERSONS").insertOne(document);
+        System.out.println("ok");
 
 //        //CREATE DATABASE PERSONS;
-//        JSONObject databaseName = new JSONObject();
-//        databaseName.put("@dataBaseName", currentDatabaseName);
-//        JSONObject database = new JSONObject();
-//        database.put("Database", databaseName);
 //
 //        JSONArray databasesList = new JSONArray();
 //        databasesList.add(database);
