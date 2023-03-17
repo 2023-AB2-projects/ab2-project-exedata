@@ -21,8 +21,8 @@ public class Backend {
         }
         JSONObject a = new JSONObject();
         //SaveJSON.save(a, "databases.json");
-        JSONObject b = LoadJSON.load("databases.json");
-        System.out.println(b);
+        //JSONObject b = LoadJSON.load("databases.json");
+        //System.out.println(b);
 
     }
 }
