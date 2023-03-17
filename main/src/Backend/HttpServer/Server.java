@@ -1,10 +1,10 @@
 package Backend.HttpServer;
-import Backend.Exceptions.UnknownCommandException;
-import Backend.Parser;
+
 import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,18 +13,13 @@ import java.net.InetSocketAddress;
 
 public class Server {
 
-    private final HttpServer httpServer;
+    public Server(int port) throws IOException {
+        HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+        System.out.println("Server started successfully!");
+        HttpContext context = server.createContext("/");
+        context.setHandler(new RequestHandler());
 
-    public Server(int serverPort) throws IOException {
-        httpServer = HttpServer.create(new InetSocketAddress(serverPort), 0);
-        HttpContext httpContext = httpServer.createContext("/");
-        httpContext.setHandler(new RequestHandler());
-        // check other methods!!!
-    }
-
-    public void runServer() {
-        httpServer.start();
-        System.out.println("Server is running...");
+        server.start();
     }
 
     private static class RequestHandler implements HttpHandler {
@@ -32,25 +27,24 @@ public class Server {
         public void handle(HttpExchange httpExchange) throws IOException {
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpExchange.getRequestBody()));
             String message = reader.readLine();
-            System.out.println("Server: " + message);
+            System.out.println("Server: I got your message: " + message);
 
-            try {
-                Parser.commandType(message);
-            } catch (UnknownCommandException e) {
-                throw new RuntimeException(e);
-            }
-
-            // process the request and send the answer
-            // ... (analyze the text) - call the parser
-
-            // Send response to the client
+            // Send the answer
             OutputStream outputStream = httpExchange.getResponseBody();
             String response = "Hello client!";
             httpExchange.sendResponseHeaders(200, response.length());
             outputStream.write(response.getBytes());
             outputStream.close();
-
         }
 
     }
+
+
+    // Create HTTP server
+    // Define a port
+
+    // Listen to requests
+    // Process the request
+    // Should call the parser
+    // Send response to the client
 }
