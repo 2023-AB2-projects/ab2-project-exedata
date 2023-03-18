@@ -45,7 +45,6 @@ public class DatabaseController {
                         }
                         String[] commands = command.split( ";\n" );
                         for (int i=0; i< commands.length; i++) {
-                            System.out.println("Sent: " + commands[i]);
                             ClientConnection.send(commands[i]);
                             // varom a valaszt
                         }

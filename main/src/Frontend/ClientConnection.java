@@ -41,21 +41,9 @@ public class ClientConnection {
         if (status==1) {
             message = message.replaceAll("\n", " ");
             message = message.replaceAll("\t", " ");
-            message = message.replaceAll("  ", " ");
+            message = message.replaceAll(" +", " ");
+            System.out.println("I sent this command: " + message);
             printWriter.println(message);
         }
-
-
-//        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-//        String inputLine;
-//        StringBuffer response = new StringBuffer();
-//        while ((inputLine = in.readLine()) != null) {
-//            response.append(inputLine);
-//        }
-//        //in.close();
-//
-//        System.out.println("Server response: " + response.toString());
-
-
     }
 }
