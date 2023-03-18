@@ -5,7 +5,7 @@ import java.awt.*;
 
 public class DatabaseFrame extends JFrame {
     private PanelTop panelTop;
-    private JPanel panelCenter;
+    private PanelCenter panelCenter;
     private JPanel panelDown;
     private TimerThread timerThread;
     public DatabaseFrame() {
@@ -14,7 +14,7 @@ public class DatabaseFrame extends JFrame {
         this.setBounds(0, 0, 800, 500);
 
         panelTop = new PanelTop();
-        panelCenter = new JPanel();
+        panelCenter = new PanelCenter();
         panelDown = new JPanel();
 
         this.add(panelTop, BorderLayout.NORTH);
