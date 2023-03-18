@@ -19,9 +19,9 @@ public class Parser {
     public static Command commandType(String command) {
         if (use.matcher(command).find()) {
             currentDatabaseName = command.split(" ")[1];
-            currentDatabaseName=currentDatabaseName.substring(0,currentDatabaseName.length()-1);
-        }
-        if (createDatabase.matcher(command).find()) {
+            currentDatabaseName=currentDatabaseName.substring(0,currentDatabaseName.length());
+            return null;
+        } else if (createDatabase.matcher(command).find()) {
             return new CreateDatabase(command);
         } else if (createTable.matcher(command).find()) {
             return new CreateTable(command);

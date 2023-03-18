@@ -25,6 +25,7 @@ public class CreateTable implements Command {
 
     public CreateTable(String command) {
         databaseName = Parser.currentDatabaseName;
+        System.out.println(databaseName);
         this.command = command;
         keyWords = new String[8];
         keyWords[0] = "PRIMARY";
