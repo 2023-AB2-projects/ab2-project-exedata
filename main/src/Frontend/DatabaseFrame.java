@@ -7,7 +7,6 @@ public class DatabaseFrame extends JFrame {
     private PanelTop panelTop;
     private PanelCenter panelCenter;
     private PanelDown panelDown;
-    private TimerThread timerThread;
 
     public DatabaseFrame() {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -24,8 +23,17 @@ public class DatabaseFrame extends JFrame {
 
         this.setVisible(true);
 
-        timerThread = new TimerThread(panelTop);
-        timerThread.run();
+    }
 
+    public PanelTop getPanelTop() {
+        return panelTop;
+    }
+
+    public PanelCenter getPanelCenter() {
+        return panelCenter;
+    }
+
+    public PanelDown getPanelDown() {
+        return panelDown;
     }
 }

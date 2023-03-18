@@ -7,7 +7,7 @@ public class ClientConnection {
     private int status;
     private int port;
 
-    private HttpURLConnection con;
+    private static HttpURLConnection con;
 
     public ClientConnection() {
         status = 0;
@@ -31,9 +31,10 @@ public class ClientConnection {
         System.out.println("Disconnected from the server");
     }
 
-    public void send(String message) throws IOException {
+    public static void send(String message) throws IOException {
         con.setRequestMethod("POST");
         con.setDoOutput(true);
+        System.out.println("ok");
 
         byte[] messageBytes = message.getBytes(); //encript
 
@@ -55,7 +56,7 @@ public class ClientConnection {
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
         }
-        in.close();
+        //in.close();
 
         System.out.println("Server response: " + response.toString());
 

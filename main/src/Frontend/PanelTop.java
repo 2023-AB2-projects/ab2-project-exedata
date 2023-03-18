@@ -3,11 +3,14 @@ package Frontend;
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class PanelTop extends JPanel {
     private JMenuBar menuBar;
-    private JMenu connect;
-    private JMenu disconnect;
+    private JMenu menu;
+    private JMenuItem connect;
+    private JMenuItem disconnect;
     private JMenu databases;
 
     public PanelTop() {
@@ -17,13 +20,27 @@ public class PanelTop extends JPanel {
         this.add(projectLabel);
         this.setBorder(new MatteBorder(0, 0, 2, 0, Color.black));
 
-        connect = new JMenu("Connect");
-        disconnect = new JMenu("Disconnect");
+        menu = new JMenu("Menu");
+        connect = new JMenuItem("Connect");
+        disconnect = new JMenuItem("Disconnect");
+        menu.add(connect);
+        menu.add(disconnect);
         databases = new JMenu("Databases");
+        connect.setEnabled(false);
+        disconnect.setEnabled(true);
+
+
         menuBar = new JMenuBar();
-        menuBar.add(connect);
-        menuBar.add(disconnect);
+        menuBar.add(menu);
         menuBar.add(databases);
         this.add(menuBar);
+    }
+
+    public JMenuItem getConnect() {
+        return connect;
+    }
+
+    public JMenuItem getDisconnect() {
+        return disconnect;
     }
 }

@@ -3,6 +3,8 @@ package Frontend;
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class PanelCenter extends JPanel {
     private JPanel commandLineInput; // left side of PanelCenter
@@ -50,4 +52,11 @@ public class PanelCenter extends JPanel {
         this.add(commandLineResults);
     }
 
+    public JLabel getMessagesLabel() {
+        return messagesLabel;
+    }
+
+    public JTextArea getInputArea() {
+        return inputArea;
+    }
 }

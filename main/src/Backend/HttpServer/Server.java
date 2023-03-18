@@ -26,12 +26,12 @@ public class Server {
         @Override
         public void handle(HttpExchange httpExchange) throws IOException {
             BufferedReader reader = new BufferedReader(new InputStreamReader(httpExchange.getRequestBody()));
-            String message = reader.readLine();
-            System.out.println("Server: I got your message: " + message);
+            String command = reader.readLine();
+            System.out.println("Server: I got your message: " + command);
 
             // Send the answer
             OutputStream outputStream = httpExchange.getResponseBody();
-            String response = "Hello client!";
+            String response = "Hello client!"; //valasz
             httpExchange.sendResponseHeaders(200, response.length());
             outputStream.write(response.getBytes());
             outputStream.close();
