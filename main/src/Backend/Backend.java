@@ -1,4 +1,5 @@
 package Backend;
+
 import Backend.Exceptions.UnknownCommandException;
 import Backend.HttpServer.Server;
 import Backend.SaveLoadJSON.LoadJSON;
@@ -15,18 +16,17 @@ public class Backend {
         Server server = new Server(12000);
         //server.runServer();
         try {
-            Parser.commandType("CREATE TABLE Alkalmazottak (" +
-                    "SzemSzám VARCHAR(13) PRIMARY KEY, " +
-                    "Név VARCHAR(30) UNIQUE, " +
-                    "RészlegID INT REFERENCES Részlegek (RészlegID), " +
+            Parser.commandType("CREATE TABLE Alkalmazottak ( " +
+                    "SzemSzám VARCHAR PRIMARY KEY, " +
+                    "Név VARCHAR UNIQUE, PRIMARY KEY (KocsmaID, ItalID), " +
+                    "RészlegID INT REFERENCES Részlegek (RészlegID), first_name VARCHAR NOT NULL, " +
+                    "FOREIGN KEY (store_id) REFERENCES sales.stores (store_id), order_date DATE DEFAULT CURRENT_DATE, " +
+                    "status VARCHAR CHECK (status IN ('New', 'Processing', 'Shipped', 'Delivered')), " +
+                    "CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES customers (customer_id), " +
+                    "CONSTRAINT pk_order_details PRIMARY KEY (order_id, customer_id), " +
                     "Fizetés INT);").performAction(); //create a new database
         } catch (UnknownCommandException | ParserConfigurationException | TransformerException e) {
             throw new RuntimeException(e);
         }
-        JSONObject a = new JSONObject();
-        //SaveJSON.save(a, "databases.json");
-        //JSONObject b = LoadJSON.load("databases.json");
-        //System.out.println(b);
-
     }
 }
