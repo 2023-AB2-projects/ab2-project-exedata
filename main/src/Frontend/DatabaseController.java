@@ -4,16 +4,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Objects;
 
 public class DatabaseController {
-    private DatabaseFrame databaseFrame;
-    private TimerThread timerThread;
-    private ClientConnection clientConnection;
+    private final DatabaseFrame databaseFrame;
+    private final ClientConnection clientConnection;
 
     public DatabaseController() {
-        DatabaseFrame databaseFrame = new DatabaseFrame();
+        databaseFrame = new DatabaseFrame();
         clientConnection = new ClientConnection();
         clientConnection.connect(12000);
         databaseFrame.getPanelTop().getConnect().addActionListener(new ActionListener() {
@@ -44,8 +41,8 @@ public class DatabaseController {
                             command = databaseFrame.getPanelCenter().getInputArea().getText();
                         }
                         String[] commands = command.split( ";\n" );
-                        for (int i=0; i< commands.length; i++) {
-                            ClientConnection.send(commands[i]);
+                        for (String s : commands) {
+                            ClientConnection.send(s);
                             // varom a valaszt
                         }
 
@@ -58,12 +55,12 @@ public class DatabaseController {
         databaseFrame.getPanelTop().getExit().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ClientConnection.disconnect();
+                clientConnection.disconnect();
                 databaseFrame.dispose();
                 System.exit(0);
             }
         });
-        timerThread = new TimerThread(databaseFrame.getPanelTop());
+        TimerThread timerThread = new TimerThread(databaseFrame.getPanelTop());
         timerThread.run();
     }
 }

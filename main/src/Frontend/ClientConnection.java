@@ -19,7 +19,7 @@ public class ClientConnection {
         }
     }
 
-    public static void connect(int port) {
+    public void connect(int port) {
         try {
             socket = new Socket("localhost", 12000);
             System.out.println("Connected to server");
@@ -30,7 +30,7 @@ public class ClientConnection {
         }
     }
 
-    public static void disconnect() {
+    public void disconnect() {
         try {
             socket.close();
         } catch (Exception e) {

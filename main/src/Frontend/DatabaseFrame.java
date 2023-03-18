@@ -4,9 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 
 public class DatabaseFrame extends JFrame {
-    private PanelTop panelTop;
-    private PanelCenter panelCenter;
-    private PanelDown panelDown;
+    private final PanelTop panelTop;
+    private final PanelCenter panelCenter;
+    private final PanelDown panelDown;
 
     public DatabaseFrame() {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -31,9 +31,5 @@ public class DatabaseFrame extends JFrame {
 
     public PanelCenter getPanelCenter() {
         return panelCenter;
-    }
-
-    public PanelDown getPanelDown() {
-        return panelDown;
     }
 }

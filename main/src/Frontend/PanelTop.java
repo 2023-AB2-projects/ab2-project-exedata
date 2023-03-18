@@ -3,15 +3,11 @@ package Frontend;
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class PanelTop extends JPanel {
-    private JMenuBar menuBar;
-    private JMenu menu;
-    private JMenuItem connect;
-    private JMenuItem disconnect;
-    private JMenuItem exit;
+    private final JMenuItem connect;
+    private final JMenuItem disconnect;
+    private final JMenuItem exit;
 
     public PanelTop() {
         JLabel projectLabel = new JLabel("ExeDataDB");
@@ -20,7 +16,7 @@ public class PanelTop extends JPanel {
         this.add(projectLabel);
         this.setBorder(new MatteBorder(0, 0, 2, 0, Color.black));
 
-        menu = new JMenu("Menu");
+        JMenu menu = new JMenu("Menu");
         connect = new JMenuItem("Connect");
         disconnect = new JMenuItem("Disconnect");
         exit = new JMenuItem("Exit");
@@ -31,7 +27,7 @@ public class PanelTop extends JPanel {
         disconnect.setEnabled(true);
 
 
-        menuBar = new JMenuBar();
+        JMenuBar menuBar = new JMenuBar();
         menuBar.add(menu);
         this.add(menuBar);
     }
