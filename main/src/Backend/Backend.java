@@ -15,6 +15,7 @@ public class Backend {
     public static void main(String[] args) throws IOException {
         Server server = new Server(12000);
         //server.runServer();
+
         try {
             Parser.commandType("CREATE TABLE Alkalmazottak ( " +
                     "SzemSzám VARCHAR PRIMARY KEY, " +
