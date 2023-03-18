@@ -1,8 +1,12 @@
 package Frontend;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class PanelCenter extends JPanel {
     private final JLabel messagesLabel; // messages under query result
@@ -46,7 +50,15 @@ public class PanelCenter extends JPanel {
         // result appear in table format
         JLabel tables = new JLabel("There will appear the results of the query in table format.");
         tables.setBorder(new MatteBorder(0, 2, 0, 2, Color.black));
-        commandLineResults.add(tables, BorderLayout.CENTER);
+        commandLineResults.add(tables, BorderLayout.NORTH);
+        BufferedImage img = null;
+        try {
+            img = ImageIO.read(new File("background.png"));
+            JLabel imageLabel = new JLabel(new ImageIcon(img));
+            commandLineResults.add(imageLabel, BorderLayout.CENTER);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         this.add(commandLineResults);
     }
