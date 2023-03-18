@@ -6,8 +6,9 @@ import java.awt.*;
 public class DatabaseFrame extends JFrame {
     private PanelTop panelTop;
     private PanelCenter panelCenter;
-    private JPanel panelDown;
+    private PanelDown panelDown;
     private TimerThread timerThread;
+
     public DatabaseFrame() {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout());
@@ -15,12 +16,11 @@ public class DatabaseFrame extends JFrame {
 
         panelTop = new PanelTop();
         panelCenter = new PanelCenter();
-        panelDown = new JPanel();
+        panelDown = new PanelDown();
 
         this.add(panelTop, BorderLayout.NORTH);
         this.add(panelCenter, BorderLayout.CENTER);
         this.add(panelDown, BorderLayout.SOUTH);
-
 
         this.setVisible(true);
 

@@ -12,6 +12,7 @@ public class PanelCenter extends JPanel {
     private JLabel messagesLabel; // messages under query result
     private JLabel tables; // result appear in table format
     private JTextArea inputArea; // command input (ex. CREATE TABLE)
+
     public PanelCenter() {
         this.setLayout(new GridLayout(1, 2));
 
@@ -31,7 +32,7 @@ public class PanelCenter extends JPanel {
         //=====================================
         commandLineResults = new JPanel();
         commandLineResults.setLayout(new BorderLayout());
-        commandLineResultsLabel = new JLabel("Results");
+        commandLineResultsLabel = new JLabel("Results:");
         commandLineResultsLabel.setFont(new Font("Courier New", Font.BOLD, 15));
         commandLineResultsLabel.setBorder(new MatteBorder(0, 0, 2, 0, Color.black));
         commandLineResults.add(commandLineResultsLabel, BorderLayout.NORTH);
