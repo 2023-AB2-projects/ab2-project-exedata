@@ -1,4 +1,5 @@
 package Backend.HttpServer;
+import Backend.Commands.Command;
 import Backend.Parser;
 
 import java.io.BufferedReader;
@@ -20,7 +21,10 @@ public class Server {
                 while ((command = reader.readLine()) != null) {
                     System.out.println(command);
                     // feldolgozas
-                    Parser.commandType(command).performAction();
+                    Command a = Parser.commandType(command);
+                    if (a!=null) {
+                        a.performAction();
+                    }
                 }
             } catch (Exception e) {
 
