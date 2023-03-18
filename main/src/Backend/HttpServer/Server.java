@@ -10,41 +10,23 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class Server {
 
+    private ServerSocket serverSocket;
+    private Socket clientSocket;
     public Server(int port) throws IOException {
-        HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+        serverSocket =  new ServerSocket(12000);
         System.out.println("Server started successfully!");
-        HttpContext context = server.createContext("/");
-        context.setHandler(new RequestHandler());
-
-        server.start();
-    }
-
-    private static class RequestHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange httpExchange) throws IOException {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(httpExchange.getRequestBody()));
-            String command = reader.readLine();
-            System.out.println("Server: I got your message: " + command);
-
-            // Send the answer
-            OutputStream outputStream = httpExchange.getResponseBody();
-            String response = "Hello client!"; //valasz
-            httpExchange.sendResponseHeaders(200, response.length());
-            outputStream.write(response.getBytes());
-            outputStream.close();
+        while (true) {
+            clientSocket = serverSocket.accept();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            String command;
+            while ((command = reader.readLine()) != null) {
+                System.out.println("I got this command from the client: " + command);
+            }
         }
-
     }
-
-
-    // Create HTTP server
-    // Define a port
-
-    // Listen to requests
-    // Process the request
-    // Should call the parser
-    // Send response to the client
 }
