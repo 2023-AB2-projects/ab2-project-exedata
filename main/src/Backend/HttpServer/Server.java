@@ -1,4 +1,6 @@
 package Backend.HttpServer;
+import Backend.Parser;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,10 +17,10 @@ public class Server {
                 Socket clientSocket = serverSocket.accept();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String command;
-                String full = null;
                 while ((command = reader.readLine()) != null) {
-                    full = full + command;
                     System.out.println(command);
+                    // feldolgozas
+                    Parser.commandType(command).performAction();
                 }
             } catch (Exception e) {
 
