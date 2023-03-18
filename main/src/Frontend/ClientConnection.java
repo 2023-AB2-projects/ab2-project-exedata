@@ -15,7 +15,7 @@ public class ClientConnection {
             printWriter = new PrintWriter(socket.getOutputStream(), true);
         } catch (IOException e) {
             status = 0;
-            System.out.println("Can't connect to Server");
+            System.out.println("Server connection failed.");
         }
     }
 
@@ -23,8 +23,10 @@ public class ClientConnection {
         try {
             socket = new Socket("localhost", 12000);
             System.out.println("Connected to server");
+            status = 1;
         } catch (IOException e) {
-            System.out.println("Can't connect to Server");
+            status = 0;
+            System.out.println("Server connection failed.");
         }
     }
 
@@ -35,6 +37,7 @@ public class ClientConnection {
             System.out.println("Error with disconnect!");
         }
         System.out.println("Disconnected from the server");
+        status = 0;
     }
 
     public static void send(String message) throws IOException {
