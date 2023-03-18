@@ -7,25 +7,28 @@ public class ClientConnection {
     private static Socket socket;
     private static PrintWriter printWriter;
 
+    private static int status = 1;
+
     public ClientConnection() {
         try {
             socket = new Socket("localhost", 12000);
             printWriter = new PrintWriter(socket.getOutputStream(), true);
         } catch (IOException e) {
+            status = 0;
             System.out.println("Can't connect to Server");
         }
     }
 
-    public void connect(int port) {
+    public static void connect(int port) {
         try {
             socket = new Socket("localhost", 12000);
-            System.out.println("Reconnect to server");
+            System.out.println("Connected to server");
         } catch (IOException e) {
             System.out.println("Can't connect to Server");
         }
     }
 
-    public void disconnect() {
+    public static void disconnect() {
         try {
             socket.close();
         } catch (Exception e) {
@@ -35,7 +38,9 @@ public class ClientConnection {
     }
 
     public static void send(String message) throws IOException {
-        printWriter.println(message);
+        if (status==1) {
+            printWriter.println(message);
+        }
 
 
 //        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));

@@ -11,7 +11,7 @@ public class PanelTop extends JPanel {
     private JMenu menu;
     private JMenuItem connect;
     private JMenuItem disconnect;
-    private JMenu databases;
+    private JMenuItem exit;
 
     public PanelTop() {
         JLabel projectLabel = new JLabel("ExeDataDB");
@@ -23,16 +23,16 @@ public class PanelTop extends JPanel {
         menu = new JMenu("Menu");
         connect = new JMenuItem("Connect");
         disconnect = new JMenuItem("Disconnect");
+        exit = new JMenuItem("Exit");
         menu.add(connect);
         menu.add(disconnect);
-        databases = new JMenu("Databases");
+        menu.add(exit);
         connect.setEnabled(false);
         disconnect.setEnabled(true);
 
 
         menuBar = new JMenuBar();
         menuBar.add(menu);
-        menuBar.add(databases);
         this.add(menuBar);
     }
 
@@ -42,5 +42,9 @@ public class PanelTop extends JPanel {
 
     public JMenuItem getDisconnect() {
         return disconnect;
+    }
+
+    public JMenuItem getExit() {
+        return exit;
     }
 }

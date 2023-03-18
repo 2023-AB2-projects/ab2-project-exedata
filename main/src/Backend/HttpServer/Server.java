@@ -21,11 +21,15 @@ public class Server {
         serverSocket =  new ServerSocket(12000);
         System.out.println("Server started successfully!");
         while (true) {
-            clientSocket = serverSocket.accept();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            String command;
-            while ((command = reader.readLine()) != null) {
-                System.out.println("I got this command from the client: " + command);
+            try {
+                clientSocket = serverSocket.accept();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                String command;
+                while ((command = reader.readLine()) != null) {
+                    System.out.println("I got this command from the client: " + command);
+                }
+            } catch (Exception e) {
+
             }
         }
     }

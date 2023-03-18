@@ -49,6 +49,14 @@ public class DatabaseController {
                 }
             }
         });
+        databaseFrame.getPanelTop().getExit().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ClientConnection.disconnect();
+                databaseFrame.dispose();
+                System.exit(0);
+            }
+        });
         timerThread = new TimerThread(databaseFrame.getPanelTop());
         timerThread.run();
     }
