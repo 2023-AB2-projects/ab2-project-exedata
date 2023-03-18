@@ -10,6 +10,7 @@ public class Parser {
     // Add to the response
     private static final Pattern createDatabase = Pattern.compile("^\s*CREATE\sDATABASE\s[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
     private static final Pattern createTable = Pattern.compile("^\s*CREATE\s*TABLE\s*[A-Za-z0-9_]+\s*\\(.*\\);?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern dropTable = Pattern.compile("^\s*DROP\s*TABLE\s*[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
     private static final Pattern dropDatabase = Pattern.compile("^\s*DROP\s*DATABASE\s*[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
     private static final Pattern createIndex = Pattern.compile("^\s*CREATE\s*INDEX\s*[A-Za-z0-9_]+\s*ON\s[A-Za-z0-9_]+\s*\\(.*\\);?", Pattern.CASE_INSENSITIVE);
     private static final Pattern dropIndex = Pattern.compile("^\s*DROP\s*INDEX\s*[A-Za-z0-9_]+\s*ON\s[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
@@ -27,6 +28,8 @@ public class Parser {
             return new CreateTable(command);
         } else if (dropDatabase.matcher(command).find()) {
             return new DropDatabase(command);
+        } else if (dropTable.matcher(command).find()) {
+            return new DropTable(command);
         } else if (createIndex.matcher(command).find()) {
             return new CreateIndex(command);
         } else if (dropIndex.matcher(command).find()) {

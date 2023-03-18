@@ -91,10 +91,10 @@ public class CreateTable implements Command {
         //CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES customers (customer_id),
         //CONSTRAINT pk_order_details PRIMARY KEY (order_id, customer_id),
         //System.out.println(table);
-        JSONObject databases=LoadJSON.load("databases.json");
-        if(databases==null){
+        JSONObject databases = LoadJSON.load("databases.json");
+        if (databases == null) {
             System.out.println("Doesn't exists JSONFile!");
-        }else{
+        } else {
             boolean exists = false;
             //databaseName
             JSONArray jsonArray = (JSONArray) databases.get("Databases"); //main name
@@ -107,12 +107,12 @@ public class CreateTable implements Command {
                     for (Object i : tables) {
                         JSONObject table = (JSONObject) i;
                         String tableName = (String) table.get("tableName");
-                        if(tableName.equals(currentTableName)){
+                        if (tableName.equals(currentTableName)) {
                             System.out.println("Table is exists!");
-                            exists=true;
+                            exists = true;
                         }
                     }
-                    if(!exists){
+                    if (!exists) {
                         tables.add(table);
                         SaveJSON.save(databases, "databases.json");
                     }
@@ -168,7 +168,7 @@ public class CreateTable implements Command {
                                     primaryKey.add(reserve);
                                 } else {
                                     //System.out.println("Syntax error!");
-                                    syntaxError=true;
+                                    syntaxError = true;
                                     break;
                                 }
                             }
@@ -189,33 +189,33 @@ public class CreateTable implements Command {
                             && words[startIndex + 4].toUpperCase().equals(keyWords[3])
                     ) {//RészlegID INT FOREIGN KEY REFERENCES Részlegek(RészlegID),
                         String foreignTableName = commandToRightFromat(i, startIndex, words[i], words[i - 1], 6);
-                        String foreignAttributeName=foreignTableName.split(" ")[1];
-                        foreignTableName=foreignTableName.split(" ")[0];
+                        String foreignAttributeName = foreignTableName.split(" ")[1];
+                        foreignTableName = foreignTableName.split(" ")[0];
 //                        foreignTableName=foreignTableName.split(" ")[0];
 //                        System.out.println(words[startIndex]+" "+foreignTableName+" "+foreignAttributeName);
 //                        System.out.println(existsInStructure(words[startIndex])
 //                                +" "+existsAttributeInTable(foreignTableName, foreignAttributeName));
                         if (existsInStructure(words[startIndex])
                                 && existsAttributeInTable(foreignTableName, foreignAttributeName)) {
-                            addForeignKeyToJsonFile(words[startIndex],foreignTableName,foreignAttributeName);
+                            addForeignKeyToJsonFile(words[startIndex], foreignTableName, foreignAttributeName);
                         }
                     } else if (words[startIndex].toUpperCase().equals(keyWords[5])
                             && words[startIndex + 1].toUpperCase().equals(keyWords[1])
                             && words[startIndex + 3].toUpperCase().equals(keyWords[3])
                     ) {//FOREIGN KEY (store_id) REFERENCES sales.stores (store_id),
                         String foreignTableName = commandToRightFromat(i, startIndex, words[i], words[i - 1], 5);
-                        String foreignAttributeName=foreignTableName.split(" ")[1];
-                        foreignTableName=foreignTableName.split(" ")[0];
+                        String foreignAttributeName = foreignTableName.split(" ")[1];
+                        foreignTableName = foreignTableName.split(" ")[0];
                         if (existsInStructure(withoutAnyBrackets(words[startIndex]))
                                 && existsAttributeInTable(foreignTableName, foreignAttributeName)) {
-                            addForeignKeyToJsonFile(withoutAnyBrackets(words[startIndex]),foreignTableName,foreignAttributeName);
+                            addForeignKeyToJsonFile(withoutAnyBrackets(words[startIndex]), foreignTableName, foreignAttributeName);
                         }
                     }
                 }
                 //else{
-                    //CONSTRAINT pk_order_details PRIMARY KEY (order_id, customer_id),
-                    //CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES customers (customer_id),
-                    //Need???????????
+                //CONSTRAINT pk_order_details PRIMARY KEY (order_id, customer_id),
+                //CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES customers (customer_id),
+                //Need???????????
                 //}
                 numberOfKeyWords = 0;
                 startIndex = i + 1;
@@ -223,19 +223,19 @@ public class CreateTable implements Command {
         }
     }
 
-    private void addForeignKeyToJsonFile(String attribute, String foreignTableName, String foreignAttributeName){
-        JSONArray jsonArray=new JSONArray();
-        JSONObject tableName=new JSONObject();
-        tableName.put("refTable",foreignTableName);
+    private void addForeignKeyToJsonFile(String attribute, String foreignTableName, String foreignAttributeName) {
+        JSONArray jsonArray = new JSONArray();
+        JSONObject tableName = new JSONObject();
+        tableName.put("refTable", foreignTableName);
 
-        JSONObject attributeName=new JSONObject();
-        attributeName.put("refAttribute",foreignAttributeName);
+        JSONObject attributeName = new JSONObject();
+        attributeName.put("refAttribute", foreignAttributeName);
 
         jsonArray.add(tableName);
         jsonArray.add(attributeName);
 
-        JSONObject foreignkey=new JSONObject();
-        foreignkey.put("fkAttribute",attribute);
+        JSONObject foreignkey = new JSONObject();
+        foreignkey.put("fkAttribute", attribute);
         foreignkey.put("references", jsonArray);
         foreignKeys.add(foreignkey);
     }
@@ -280,7 +280,7 @@ public class CreateTable implements Command {
         return false;
     }
 
-    private String withoutAnyBrackets(String word){
+    private String withoutAnyBrackets(String word) {
         //(abc) -> abc
         return word.split("\\(")[0].split("\\)")[0];
     }
