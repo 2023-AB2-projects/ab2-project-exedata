@@ -14,5 +14,6 @@ public class Use implements Command{
         //USE persons;
         String currentDatabaseName = command.split(" ")[1];
         currentDatabaseName=currentDatabaseName.substring(0,currentDatabaseName.length()-1);
+
     }
 }
