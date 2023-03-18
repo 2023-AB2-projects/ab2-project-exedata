@@ -4,6 +4,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class DatabaseController {
@@ -42,8 +43,13 @@ public class DatabaseController {
                         if (command==null) {
                             command = databaseFrame.getPanelCenter().getInputArea().getText();
                         }
-                        ClientConnection.send(command);
-                        System.out.println("I sent this command to the server: " + command);
+                        String[] commands = command.split( ";\n" );
+                        for (int i=0; i< commands.length; i++) {
+                            System.out.println("Sent: " + commands[i]);
+                            ClientConnection.send(commands[i]);
+                            // varom a valaszt
+                        }
+
                     } catch (IOException ex) {
                         databaseFrame.getPanelCenter().getMessagesLabel().setText("Connection ERROR to server on 12000 port!");
                     }
