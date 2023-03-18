@@ -1,5 +1,6 @@
 package Backend.Commands;
 
+import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
 import org.json.simple.JSONArray;
@@ -23,6 +24,7 @@ public class CreateTable implements Command {
     private String databaseName;
 
     public CreateTable(String command) {
+        databaseName = Parser.currentDatabaseName;
         this.command = command;
         keyWords = new String[8];
         keyWords[0] = "PRIMARY";

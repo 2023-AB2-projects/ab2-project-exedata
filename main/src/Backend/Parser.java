@@ -14,8 +14,13 @@ public class Parser {
     private static final Pattern createIndex = Pattern.compile("^\s*CREATE\s*INDEX\s*[A-Za-z0-9_]+\s*ON\s[A-Za-z0-9_]+\s*\\(.*\\);?", Pattern.CASE_INSENSITIVE);
     private static final Pattern dropIndex = Pattern.compile("^\s*DROP\s*INDEX\s*[A-Za-z0-9_]+\s*ON\s[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
     private static final Pattern use = Pattern.compile("^\s*USE\s*[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
+    public static String currentDatabaseName;
 
     public static Command commandType(String command) {
+        if (use.matcher(command).find()) {
+            currentDatabaseName = command.split(" ")[1];
+            currentDatabaseName=currentDatabaseName.substring(0,currentDatabaseName.length()-1);
+        }
         if (createDatabase.matcher(command).find()) {
             return new CreateDatabase(command);
         } else if (createTable.matcher(command).find()) {
@@ -26,8 +31,6 @@ public class Parser {
             return new CreateIndex(command);
         } else if (dropIndex.matcher(command).find()) {
             return new DropIndex(command);
-        } else if (use.matcher(command).find()) {
-            return null; //need to be modified to new Use(command);
         }
         System.out.println("Wrong command!");
         return null;
