@@ -5,10 +5,9 @@ import javax.swing.border.MatteBorder;
 import java.awt.*;
 
 public class PanelTop extends JPanel {
-    private JMenuBar menuBar;
-    private JMenu connect;
-    private JMenu disconnect;
-    private JMenu databases;
+    private final JMenuItem connect;
+    private final JMenuItem disconnect;
+    private final JMenuItem exit;
 
     public PanelTop() {
         JLabel projectLabel = new JLabel("ExeDataDB");
@@ -17,13 +16,31 @@ public class PanelTop extends JPanel {
         this.add(projectLabel);
         this.setBorder(new MatteBorder(0, 0, 2, 0, Color.black));
 
-        connect = new JMenu("Connect");
-        disconnect = new JMenu("Disconnect");
-        databases = new JMenu("Databases");
-        menuBar = new JMenuBar();
-        menuBar.add(connect);
-        menuBar.add(disconnect);
-        menuBar.add(databases);
+        JMenu menu = new JMenu("Menu");
+        connect = new JMenuItem("Connect");
+        disconnect = new JMenuItem("Disconnect");
+        exit = new JMenuItem("Exit");
+        menu.add(connect);
+        menu.add(disconnect);
+        menu.add(exit);
+        connect.setEnabled(false);
+        disconnect.setEnabled(true);
+
+
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.add(menu);
         this.add(menuBar);
+    }
+
+    public JMenuItem getConnect() {
+        return connect;
+    }
+
+    public JMenuItem getDisconnect() {
+        return disconnect;
+    }
+
+    public JMenuItem getExit() {
+        return exit;
     }
 }

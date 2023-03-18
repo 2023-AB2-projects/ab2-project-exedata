@@ -1,27 +1,29 @@
 package Frontend;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class PanelCenter extends JPanel {
-    private JPanel commandLineInput; // left side of PanelCenter
-    private JPanel commandLineResults; // right side of PanelCenter
-    private JLabel commandLineInputLabel; // left label
-    private JLabel commandLineResultsLabel; // right label
-    private JLabel messagesLabel; // messages under query result
-    private JLabel tables; // result appear in table format
-    private JTextArea inputArea; // command input (ex. CREATE TABLE)
+    private final JLabel messagesLabel; // messages under query result
+    private final JTextArea inputArea; // command input (ex. CREATE TABLE)
 
     public PanelCenter() {
         this.setLayout(new GridLayout(1, 2));
 
-        commandLineInput = new JPanel();
+        // left side of PanelCenter
+        JPanel commandLineInput = new JPanel();
         inputArea = new JTextArea();
-        inputArea.setBackground(Color.gray);
-        inputArea.setForeground(Color.white);
-        inputArea.setFont(new Font("Courier New", Font.PLAIN, 15));
-        commandLineInputLabel = new JLabel("Command line:");
+        inputArea.setBackground(new Color(171, 173, 182));
+        inputArea.setForeground(Color.black);
+        inputArea.setFont(new Font("Courier New", Font.BOLD, 15));
+        inputArea.setCaretColor(Color.black);
+        // left label
+        JLabel commandLineInputLabel = new JLabel("Command line:");
         commandLineInput.setLayout(new BorderLayout());
         commandLineInputLabel.setFont(new Font("Courier New", Font.BOLD, 15));
         commandLineInputLabel.setBorder(new MatteBorder(0, 0, 2, 0, Color.black));
@@ -30,9 +32,11 @@ public class PanelCenter extends JPanel {
         this.add(commandLineInput);
 
         //=====================================
-        commandLineResults = new JPanel();
+        // right side of PanelCenter
+        JPanel commandLineResults = new JPanel();
         commandLineResults.setLayout(new BorderLayout());
-        commandLineResultsLabel = new JLabel("Results:");
+        // right label
+        JLabel commandLineResultsLabel = new JLabel("Results:");
         commandLineResultsLabel.setFont(new Font("Courier New", Font.BOLD, 15));
         commandLineResultsLabel.setBorder(new MatteBorder(0, 0, 2, 0, Color.black));
         commandLineResults.add(commandLineResultsLabel, BorderLayout.NORTH);
@@ -43,11 +47,27 @@ public class PanelCenter extends JPanel {
         commandLineResults.add(messagesLabel, BorderLayout.SOUTH);
 
         //=====================================
-        tables = new JLabel("There will appear the results of the query in table format.");
+        // result appear in table format
+        JLabel tables = new JLabel("There will appear the results of the query in table format.");
         tables.setBorder(new MatteBorder(0, 2, 0, 2, Color.black));
-        commandLineResults.add(tables, BorderLayout.CENTER);
+        commandLineResults.add(tables, BorderLayout.NORTH);
+        BufferedImage img = null;
+        try {
+            img = ImageIO.read(new File("background.png"));
+            JLabel imageLabel = new JLabel(new ImageIcon(img));
+            commandLineResults.add(imageLabel, BorderLayout.CENTER);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         this.add(commandLineResults);
     }
 
+    public JLabel getMessagesLabel() {
+        return messagesLabel;
+    }
+
+    public JTextArea getInputArea() {
+        return inputArea;
+    }
 }

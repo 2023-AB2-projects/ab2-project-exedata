@@ -4,65 +4,49 @@ import java.io.*;
 import java.net.*;
 
 public class ClientConnection {
-    private int status;
-    private int port;
+    private static Socket socket;
+    private static PrintWriter printWriter;
 
-    private HttpURLConnection con;
+    private static int status = 1;
 
     public ClientConnection() {
-        status = 0;
+        try {
+            socket = new Socket("localhost", 12000);
+            printWriter = new PrintWriter(socket.getOutputStream(), true);
+        } catch (IOException e) {
+            status = 0;
+            System.out.println("Server connection failed.");
+        }
     }
 
     public void connect(int port) {
-        this.port = port;
         try {
-            URL url = new URL("http://localhost:" + port + "/");
-            con = (HttpURLConnection) url.openConnection();
+            socket = new Socket("localhost", 12000);
+            System.out.println("Connected to server");
             status = 1;
-            System.out.println("Connected to server on " + port + " port!");
-        } catch (java.io.IOException e) {
-            System.out.println("Can't connect to Server");
+        } catch (IOException e) {
+            status = 0;
+            System.out.println("Server connection failed.");
         }
     }
 
     public void disconnect() {
-        con.disconnect();
-        status = 0;
-        System.out.println("Disconnected from the server");
-    }
-
-    public void send(String message) throws IOException {
-        con.setRequestMethod("POST");
-        con.setDoOutput(true);
-
-        byte[] messageBytes = message.getBytes(); //encript
-
-        OutputStream out;
         try {
-            out = con.getOutputStream();
-            out.write(messageBytes);
-            out.flush();
-            out.close();
-            int responseCode = con.getResponseCode();
+            socket.close();
         } catch (Exception e) {
-            System.out.println("Can't send this text!");
+            System.out.println("Error with disconnect!");
         }
-
-
-        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer response = new StringBuffer();
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
-
-        System.out.println("Server response: " + response.toString());
-
-
+        System.out.println("Disconnected from the server");
+        status = 0;
     }
 
-    public int getStatus() {
-        return status;
+    public static void send(String message) throws IOException {
+        if (status==1) {
+            message = message.replaceAll("\n", " ");
+            message = message.replaceAll("\t", " ");
+            message = message.replaceAll(" +", " ");
+            System.out.println("I sent this command: " + message);
+            printWriter.println(message);
+        }
     }
 }
