@@ -20,9 +20,10 @@ public class PanelCenter extends JPanel {
 
         commandLineInput = new JPanel();
         inputArea = new JTextArea();
-        inputArea.setBackground(Color.gray);
-        inputArea.setForeground(Color.white);
-        inputArea.setFont(new Font("Courier New", Font.PLAIN, 15));
+        inputArea.setBackground(new Color(171, 173, 182));
+        inputArea.setForeground(Color.black);
+        inputArea.setFont(new Font("Courier New", Font.BOLD, 15));
+        inputArea.setCaretColor(Color.black);
         commandLineInputLabel = new JLabel("Command line:");
         commandLineInput.setLayout(new BorderLayout());
         commandLineInputLabel.setFont(new Font("Courier New", Font.BOLD, 15));

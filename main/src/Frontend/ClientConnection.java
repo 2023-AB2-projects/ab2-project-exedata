@@ -39,6 +39,9 @@ public class ClientConnection {
 
     public static void send(String message) throws IOException {
         if (status==1) {
+            message = message.replaceAll("\n", " ");
+            message = message.replaceAll("\t", " ");
+            message = message.replaceAll("  ", " ");
             printWriter.println(message);
         }
 
