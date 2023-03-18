@@ -38,11 +38,12 @@ public class DatabaseController {
                 if (e.getKeyCode()==116) {
                     // elkuldes a szervernek
                     try {
-                        String command = databaseFrame.getPanelCenter().getInputArea().getText();
-                        if (Objects.equals(command, "")) {
+                        String command = databaseFrame.getPanelCenter().getInputArea().getSelectedText();
+                        if (command==null) {
                             command = databaseFrame.getPanelCenter().getInputArea().getText();
                         }
                         ClientConnection.send(command);
+                        System.out.println("I sent this command to the server: " + command);
                     } catch (IOException ex) {
                         databaseFrame.getPanelCenter().getMessagesLabel().setText("Connection ERROR to server on 12000 port!");
                     }
