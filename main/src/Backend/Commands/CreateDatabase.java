@@ -51,7 +51,6 @@ public class CreateDatabase implements Command {
             databases.put("Databases", databasesArray);
             SaveJSON.save(databases, "databases.json");
         } else {
-
             boolean exists = false;
             JSONArray jsonArray = (JSONArray) databases.get("Databases"); //main name
             for (Object object : jsonArray) {
