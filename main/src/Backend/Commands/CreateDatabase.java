@@ -37,11 +37,11 @@ public class CreateDatabase implements Command {
 //        }
 
         //CREATE DATABASE PERSONS;
-        JSONArray TabelsArray = new JSONArray();
+        JSONArray TablesArray = new JSONArray();
 
         JSONObject database = new JSONObject();
         database.put("databaseName", currentDatabaseName);
-        database.put("Tabels", TabelsArray);
+        database.put("Tables", TablesArray);
 
         JSONObject databases = LoadJSON.load("databases.json");
         if (databases == null) {

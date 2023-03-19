@@ -1,4 +1,5 @@
 package Backend.Commands;
+
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -19,15 +20,10 @@ public class DropTable implements Command {
 
     @Override
     public void performAction() {
-
         String currentTableName = command.split(" ")[2];
         if (currentTableName.charAt(currentTableName.length() - 1) == ';') {
             currentTableName = currentTableName.substring(0, currentTableName.length() - 1);
         }
-        System.out.println(currentTableName);
-        System.out.println(Parser.currentDatabaseName);
-
-
         JSONObject databases = LoadJSON.load("databases.json");
         if (databases == null) {
             System.out.println("JSONFile Doesn't exists!");
@@ -36,20 +32,12 @@ public class DropTable implements Command {
             for (Object object : jsonArray) {
                 JSONObject jsonObjectSearch = (JSONObject) object;
                 String name = (String) jsonObjectSearch.get("databaseName");
-                System.out.println("1");
-                System.out.println(jsonObjectSearch);
-                if (name != null && name.equals(Parser.currentDatabaseName)) { //searched databasename
-                    JSONArray tables= (JSONArray) jsonObjectSearch.get("Tabels");
-                    System.out.println("1.5");
-                    System.out.println(tables);
+                if (name != null && name.equals(Parser.currentDatabaseName)) { //searched databaseName
+                    JSONArray tables = (JSONArray) jsonObjectSearch.get("Tables");
                     for (Object object2 : tables) {
                         JSONObject table = (JSONObject) object2;
                         String tableName = (String) table.get("tableName");
-                        System.out.println("2");
-                        System.out.println(table);
-                        System.out.println(tableName+" "+currentTableName);
                         if (tableName != null && tableName.equals(currentTableName)) {
-                            System.out.println("3");
                             tables.remove(table);
                             break;
                         }

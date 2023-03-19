@@ -6,8 +6,8 @@ import Backend.SaveLoadJSON.SaveJSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class CreateTable implements Command {
     // create table in a certain database with primary key, foreign key, attributes, null value, default value, constraints, ...
@@ -25,7 +25,6 @@ public class CreateTable implements Command {
 
     public CreateTable(String command) {
         databaseName = Parser.currentDatabaseName;
-        System.out.println(databaseName);
         this.command = command;
         keyWords = new String[8];
         keyWords[0] = "PRIMARY";
@@ -55,16 +54,21 @@ public class CreateTable implements Command {
         foreignKeys = new JSONArray();
         uniqueKeys = new JSONArray();
         indexFiles = new JSONArray();
-        //System.out.println(command);
+        if (command.charAt(command.length() - 1) == ';') {
+            command = command.substring(0, command.length() - 1);
+        }
+        if (command.charAt(command.length() - 1) == ')') {
+            command = command.substring(0, command.length() - 1) + ',';
+        }
 
-        String[] rows = command.split("\\(", 2);
-        String currentTableName = rows[0].split(" ")[2];
+        String[] beforeAndAfterTheFirstOpenBracket = command.split("\\(", 2);
+        String currentTableName = beforeAndAfterTheFirstOpenBracket[0].split(" ")[2];
 
-        //vegig megyek es keresem az osszes attributomot
-        //System.out.println(rows[1]);
         syntaxError = false;
-        checkStructure(rows[1]);
-        checkConstraint(rows[1]);
+        getItemFromStructure(beforeAndAfterTheFirstOpenBracket[1]);
+        fillJSONArrayByConstraint(beforeAndAfterTheFirstOpenBracket[1]);
+        createPrimaryKeyDefaultIndex(currentTableName);
+
         if (!syntaxError) {
             table.put("IndexFiles", indexFiles);
             table.put("uniqueKeys", uniqueKeys);
@@ -103,7 +107,7 @@ public class CreateTable implements Command {
                 String name = (String) jsonObjectSearch.get("databaseName");
                 if (name != null && name.equals(databaseName)) { //searched databasename
 
-                    JSONArray tables = (JSONArray) jsonObjectSearch.get("Tabels");
+                    JSONArray tables = (JSONArray) jsonObjectSearch.get("Tables");
                     for (Object i : tables) {
                         JSONObject table = (JSONObject) i;
                         String tableName = (String) table.get("tableName");
@@ -123,10 +127,41 @@ public class CreateTable implements Command {
         }
     }
 
-    private void checkConstraint(String line) {
+    private void createPrimaryKeyDefaultIndex(String currentTableName) {
+        //indexFiles
+        //primaryKey
+        String indexFileName = currentTableName + ".ind";
+        JSONObject indexName = new JSONObject();
+        indexName.put("indexName", indexFileName);
+        createEmptyIndexFile(indexFileName);
+        JSONArray indexAttributes = new JSONArray();
+        String primaryKeyName;
+        JSONObject localPrimaryKey;
+        for (Object i : primaryKey) {
+            localPrimaryKey = (JSONObject) i;
+            primaryKeyName = (String) localPrimaryKey.get("pkAttribute");
+            JSONObject reserve = new JSONObject();
+            reserve.put("IAttribute", primaryKeyName);
+            indexAttributes.add(reserve);
+        }
+        JSONArray indexFile = new JSONArray();
+        indexFile.add(indexName);
+        indexFile.add(indexAttributes);
+        indexFiles.add(indexFile);
+    }
+
+    private void createEmptyIndexFile(String indexFileName) {
+        try (FileWriter fileWriter = new FileWriter(indexFileName)) {
+            fileWriter.write("");
+            fileWriter.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void fillJSONArrayByConstraint(String line) {
         String[] words = line.split(" ");
         String[] words2;
-        String word;
         int i = 0, startIndex = 0;
         int numberOfOpenBrackets = 0;
         int numberOfCloseBrackets = 0;
@@ -137,6 +172,7 @@ public class CreateTable implements Command {
             startIndex = i;
         }
         for (; i < words.length; i++) {
+            System.out.println(words[i]);
             if (words[i].indexOf('(') != -1) {
                 numberOfOpenBrackets += 1;
             }
@@ -259,7 +295,7 @@ public class CreateTable implements Command {
         for (Object i : reserve) {
             reserve2 = (JSONObject) i;
             if (reserve2.get("databaseName").equals(databaseName)) {
-                JSONArray reserve3 = (JSONArray) reserve2.get("Tabels");
+                JSONArray reserve3 = (JSONArray) reserve2.get("Tables");
                 for (Object j : reserve3) {
                     JSONObject reserve4 = (JSONObject) j;
                     if (reserve4.get("tableName").equals(tableName)) {
@@ -305,13 +341,7 @@ public class CreateTable implements Command {
         return false;
     }
 
-    private void checkStructure(String line) {
-        if (line.charAt(line.length() - 1) == ';') {
-            line = line.substring(0, line.length() - 1);
-        }
-        if (line.charAt(line.length() - 1) == ')') {
-            line = line.substring(0, line.length() - 1) + ',';
-        }
+    private void getItemFromStructure(String line) {
         String[] words = line.split(" ");
         boolean hasKeyWord = false;
         boolean hasType = false;

@@ -13,7 +13,7 @@ public class Parser {
     private static final Pattern dropTable = Pattern.compile("^\s*DROP\s*TABLE\s*[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
     private static final Pattern dropDatabase = Pattern.compile("^\s*DROP\s*DATABASE\s*[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
     private static final Pattern createIndex = Pattern.compile("^\s*CREATE\s*INDEX\s*[A-Za-z0-9_]+\s*ON\s[A-Za-z0-9_]+\s*\\(.*\\);?", Pattern.CASE_INSENSITIVE);
-    private static final Pattern dropIndex = Pattern.compile("^\s*DROP\s*INDEX\s*[A-Za-z0-9_]+\s*ON\s[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern dropIndex = Pattern.compile("^\s*DROP\s*INDEX\s*[A-Za-z0-9_.]+\s*ON\s[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
     private static final Pattern use = Pattern.compile("^\s*USE\s*[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
     public static String currentDatabaseName;
 
