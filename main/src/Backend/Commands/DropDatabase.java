@@ -1,13 +1,7 @@
 package Backend.Commands;
 
-import java.io.FileWriter;
-import java.io.IOException;
-
-import Backend.MongoDBConnection;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoDatabase;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 

@@ -1,17 +1,8 @@
 package Backend.Commands;
-
-import Backend.MongoDBConnection;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.*;
-import com.mongodb.util.JSON;
-import org.bson.Document;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
-import java.io.FileWriter;
-import java.io.IOException;
 
 public class CreateDatabase implements Command {
     // create a database with name in json file
