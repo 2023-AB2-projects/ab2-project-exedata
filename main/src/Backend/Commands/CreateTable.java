@@ -3,25 +3,23 @@ package Backend.Commands;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import Backend.Databases.*;
 
 public class CreateTable implements Command {
     // create table in a certain database with primary key, foreign key, attributes, null value, default value, constraints, ...
     private String command;
-    private JSONObject table;
-    private JSONArray structure;
-    private JSONArray primaryKey;
-    private JSONArray foreignKeys;
-    private JSONArray uniqueKeys;
-    private JSONArray indexFiles;
+    private Table table;
     private final String[] keyWords;
     private final String[] type;
     private boolean syntaxError;
-    private String databaseName;
+    private final String databaseName;
+    private Databases databases;
 
     public CreateTable(String command) {
         databaseName = Parser.currentDatabaseName;
@@ -48,12 +46,11 @@ public class CreateTable implements Command {
 
     @Override
     public void performAction() {
-        table = new JSONObject();
-        structure = new JSONArray();
-        primaryKey = new JSONArray();
-        foreignKeys = new JSONArray();
-        uniqueKeys = new JSONArray();
-        indexFiles = new JSONArray();
+        List<Attribute> attributeList = new ArrayList<>();
+        List<String> primaryKeyList = new ArrayList<>();
+        List<ForeignKey> foreignKeysList = new ArrayList<>();
+        List<String> uniqueKeysList = new ArrayList<>();
+        List<IndexFile> indexFilesList = new ArrayList<>();
         if (command.charAt(command.length() - 1) == ';') {
             command = command.substring(0, command.length() - 1);
         }
@@ -63,94 +60,51 @@ public class CreateTable implements Command {
         if (command.charAt(command.length() - 2) == ' ') {
             command = command.substring(0, command.length() - 2) + ',';
         }
-        System.out.println(command);
+        while (command.charAt(0) == ' ') {
+            command = command.substring(1);
+        }
+        //System.out.println(command);
         String[] beforeAndAfterTheFirstOpenBracket = command.split("\\(", 2);
         String currentTableName = beforeAndAfterTheFirstOpenBracket[0].split(" ")[2];
+        table = new Table(currentTableName, attributeList, primaryKeyList, foreignKeysList, uniqueKeysList, indexFilesList);
+
+        databases = LoadJSON.load("databases.json");
+        if (databases == null) {
+            System.out.println("Doesn't exists JSONFile!");
+            return;
+        }
 
         syntaxError = false;
         getItemFromStructure(beforeAndAfterTheFirstOpenBracket[1]);
         fillJSONArrayByConstraint(beforeAndAfterTheFirstOpenBracket[1]);
         createPrimaryKeyDefaultIndex(currentTableName);
 
-        if (!syntaxError) {
-            table.put("IndexFiles", indexFiles);
-            table.put("uniqueKeys", uniqueKeys);
-            table.put("foreignKeys", foreignKeys);
-            table.put("primaryKey", primaryKey);
-            table.put("Structure", structure);
-            table.put("tableName", currentTableName);
-        } else
+        if (syntaxError) {
             System.out.println("Syntax Error!");
-//        CREATE TABLE Alkalmazottak (
-//                SzemSzam VARCHAR PRIMARY KEY,
-//                Nev VARCHAR UNIQUE, PRIMARY KEY(Nev, asd, ItalID), PRIMARY KEY(KocsmaID),
-//                RészlegID INT FOREIGN KEY REFERENCES Részlegek(RészlegID),
-//                first_name VARCHAR NoT NULL,
-//                FOREIGN KEY (store_id) REFERENCES sales.stores (store_id),
-//                Fizetes INT);
-        //PRIMARY KEY(KocsmaID, ItalID),
-        //SzemSzám VARCHAR PRIMARY KEY,
-        //Név VARCHAR UNIQUE,
-        //RészlegID INT REFERENCES Részlegek (RészlegID),
-        //Fizetés INT,
-        //first_name VARCHAR NOT NULL,
-        //FOREIGN KEY (store_id) REFERENCES sales.stores (store_id),
-        //CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES customers (customer_id),
-        //CONSTRAINT pk_order_details PRIMARY KEY (order_id, customer_id),
-        //System.out.println(table);
-        JSONObject databases = LoadJSON.load("databases.json");
+            return;
+        }
         if (databases == null) {
             System.out.println("Doesn't exists JSONFile!");
         } else {
-            boolean exists = false;
-            //databaseName
-            JSONArray jsonArray = (JSONArray) databases.get("Databases"); //main name
-            for (Object object : jsonArray) {
-                JSONObject jsonObjectSearch = (JSONObject) object;
-                String name = (String) jsonObjectSearch.get("databaseName");
-                if (name != null && name.equals(databaseName)) { //searched databasename
-
-                    JSONArray tables = (JSONArray) jsonObjectSearch.get("Tables");
-                    for (Object i : tables) {
-                        JSONObject table = (JSONObject) i;
-                        String tableName = (String) table.get("tableName");
-                        if (tableName.equals(currentTableName)) {
-                            System.out.println("Table is exists!");
-                            exists = true;
-                        }
-                    }
-                    if (!exists) {
-                        tables.add(table);
-                        SaveJSON.save(databases, "databases.json");
-                    }
-                    break;
+            if (databases.checkDatabaseExists(databaseName)) {
+                if (!databases.getDatabase(databaseName).checkTableExists(table.getName())) {
+                    databases.getDatabase(databaseName).addTable(table);
+                    SaveJSON.save(databases, "databases.json");
+                } else {
+                    System.out.println("Table is exists!");
                 }
+            } else {
+                System.out.println("Doesn't exists this database!");
             }
-
         }
     }
 
     private void createPrimaryKeyDefaultIndex(String currentTableName) {
         //indexFiles
         //primaryKey
-        String indexFileName = currentTableName + ".ind";
-        JSONObject indexName = new JSONObject();
-        indexName.put("indexName", indexFileName);
-        createEmptyIndexFile(indexFileName);
-        JSONArray indexAttributes = new JSONArray();
-        String primaryKeyName;
-        JSONObject localPrimaryKey;
-        for (Object i : primaryKey) {
-            localPrimaryKey = (JSONObject) i;
-            primaryKeyName = (String) localPrimaryKey.get("pkAttribute");
-            JSONObject reserve = new JSONObject();
-            reserve.put("IAttribute", primaryKeyName);
-            indexAttributes.add(reserve);
-        }
-        JSONArray indexFile = new JSONArray();
-        indexFile.add(indexName);
-        indexFile.add(indexAttributes);
-        indexFiles.add(indexFile);
+        List<String> attributeName = table.getPrimaryKey();
+        table.addIndexFile(new IndexFile(currentTableName, currentTableName + ".ind", attributeName));
+        createEmptyIndexFile(currentTableName + ".ind");
     }
 
     private void createEmptyIndexFile(String indexFileName) {
@@ -169,13 +123,12 @@ public class CreateTable implements Command {
         int numberOfOpenBrackets = 0;
         int numberOfCloseBrackets = 0;
         int numberOfKeyWords = 0;
-        JSONObject reserve;
         if (words[i].equals("")) {
             i++;
             startIndex = i;
         }
         for (; i < words.length; i++) {
-            System.out.println(words[i]);
+            //System.out.println(words[i]);
             if (words[i].indexOf('(') != -1) {
                 numberOfOpenBrackets += 1;
             }
@@ -189,22 +142,16 @@ public class CreateTable implements Command {
                 //System.out.println(words[i] + " " + numberOfKeyWords);
                 if (numberOfKeyWords == 1) {
                     //System.out.println("d");
-                    if (words[i].toUpperCase().equals(keyWords[2] + ',') && existsInStructure(words[startIndex])) {//Név VARCHAR UNIQUE,
-                        JSONObject uniqueAttribute = new JSONObject();
-                        uniqueAttribute.put("UniqueAttribute", words[startIndex]);
-                        uniqueKeys.add(uniqueAttribute);
+                    if (words[i].toUpperCase().equals(keyWords[2] + ',') && table.checkAttributeExists(words[startIndex])) {//Név VARCHAR UNIQUE,
+                        table.addUnique(words[startIndex]);
                     } else if (words[startIndex].toUpperCase().equals(keyWords[0])) {//PRIMARY KEY(KocsmaID, asd, ItalID),
                         //PRIMARY KEY(KocsmaID),
                         words2 = words[startIndex + 1].split("\\(");
-                        if (words2[0].toUpperCase().equals(keyWords[1]) && existsInStructure(withoutComma(words2[1]))) {
-                            reserve = new JSONObject();
-                            reserve.put("pkAttribute", withoutComma(words2[1]));
-                            primaryKey.add(reserve);
+                        if (words2[0].toUpperCase().equals(keyWords[1]) && table.checkAttributeExists(withoutComma(words2[1]))) {
+                            table.addPrimaryKey(withoutComma(words2[1]));
                             for (int j = startIndex + 2; j <= i; j++) {
-                                if (existsInStructure(withoutComma(words[j]))) {
-                                    reserve = new JSONObject();
-                                    reserve.put("pkAttribute", withoutComma(words[j]));
-                                    primaryKey.add(reserve);
+                                if (table.checkAttributeExists(withoutComma(words[j]))) {
+                                    table.addPrimaryKey(withoutComma(words[j]));
                                 } else {
                                     //System.out.println("Syntax error!");
                                     syntaxError = true;
@@ -212,50 +159,65 @@ public class CreateTable implements Command {
                                 }
                             }
                         }
+                    } else if (words[startIndex + 2].toUpperCase().equals(keyWords[3])) {
+                        //SpecID varchar REFERENCES specialization (SpecID)
+                        String foreignTableName = commandToRightFormat(i, startIndex, words[i], words[i - 1], 4);
+                        String foreignAttributeName = foreignTableName.split(" ")[1];
+                        foreignTableName = foreignTableName.split(" ")[0];
+                        if (table.checkAttributeExists(words[startIndex])
+                                && existsAttributeForeignInTable(foreignTableName, foreignAttributeName)) {
+                            addForeignKeyToJsonFile(words[startIndex], foreignTableName, foreignAttributeName);
+                        }
                     }
                 } else if (numberOfKeyWords == 2) {
-                    //SzemSzám VARCHAR PRIMARY KEY,
-                    //first_name VARCHAR NoT NULL,
-                    if (words[i - 1].toUpperCase().equals(keyWords[0]) && existsInStructure(words[startIndex])
-                            && words[i].toUpperCase().equals(keyWords[1] + ',')) {
-                        reserve = new JSONObject();
-                        reserve.put("pkAttribute", withoutComma(words[startIndex]));
-                        primaryKey.add(reserve);
+                    //PRIMARY KEY (StudID,DiscID)
+                    if (words[startIndex].toUpperCase().equals(keyWords[0])
+                            && words[startIndex + 1].toUpperCase().equals(keyWords[1])) {
+                        words2 = withoutAnyBrackets(words[i]).split(",");
+                        for (String j : words2) {
+                            if (!j.equals("")) {
+                                if (table.checkAttributeExists(withoutComma(j))) {
+                                    table.addPrimaryKey(withoutComma(j));
+                                } else {
+                                    System.out.println("Syntax error!");
+                                    syntaxError = true;
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        //SzemSzám VARCHAR PRIMARY KEY,
+                        //first_name VARCHAR NoT NULL,
+                        if (words[i - 1].toUpperCase().equals(keyWords[0]) && table.checkAttributeExists(words[startIndex])
+                                && words[i].toUpperCase().equals(keyWords[1] + ',')) {
+                            table.addPrimaryKey(withoutComma(words[startIndex]));
+                        }
                     }
                 } else if (numberOfKeyWords == 3) {
                     if (words[startIndex + 2].toUpperCase().equals(keyWords[5])
                             && words[startIndex + 3].toUpperCase().equals(keyWords[1])
                             && words[startIndex + 4].toUpperCase().equals(keyWords[3])
                     ) {//RészlegID INT FOREIGN KEY REFERENCES Részlegek(RészlegID),
-                        String foreignTableName = commandToRightFromat(i, startIndex, words[i], words[i - 1], 6);
+                        String foreignTableName = commandToRightFormat(i, startIndex, words[i], words[i - 1], 6);
                         String foreignAttributeName = foreignTableName.split(" ")[1];
                         foreignTableName = foreignTableName.split(" ")[0];
-//                        foreignTableName=foreignTableName.split(" ")[0];
-//                        System.out.println(words[startIndex]+" "+foreignTableName+" "+foreignAttributeName);
-//                        System.out.println(existsInStructure(words[startIndex])
-//                                +" "+existsAttributeInTable(foreignTableName, foreignAttributeName));
-                        if (existsInStructure(words[startIndex])
-                                && existsAttributeInTable(foreignTableName, foreignAttributeName)) {
+                        if (table.checkAttributeExists(words[startIndex])
+                                && existsAttributeForeignInTable(foreignTableName, foreignAttributeName)) {
                             addForeignKeyToJsonFile(words[startIndex], foreignTableName, foreignAttributeName);
                         }
                     } else if (words[startIndex].toUpperCase().equals(keyWords[5])
                             && words[startIndex + 1].toUpperCase().equals(keyWords[1])
                             && words[startIndex + 3].toUpperCase().equals(keyWords[3])
                     ) {//FOREIGN KEY (store_id) REFERENCES sales.stores (store_id),
-                        String foreignTableName = commandToRightFromat(i, startIndex, words[i], words[i - 1], 5);
+                        String foreignTableName = commandToRightFormat(i, startIndex, words[i], words[i - 1], 5);
                         String foreignAttributeName = foreignTableName.split(" ")[1];
                         foreignTableName = foreignTableName.split(" ")[0];
-                        if (existsInStructure(withoutAnyBrackets(words[startIndex]))
-                                && existsAttributeInTable(foreignTableName, foreignAttributeName)) {
+                        if (table.checkAttributeExists(withoutAnyBrackets(words[startIndex]))
+                                && existsAttributeForeignInTable(foreignTableName, foreignAttributeName)) {
                             addForeignKeyToJsonFile(withoutAnyBrackets(words[startIndex]), foreignTableName, foreignAttributeName);
                         }
                     }
                 }
-                //else{
-                //CONSTRAINT pk_order_details PRIMARY KEY (order_id, customer_id),
-                //CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES customers (customer_id),
-                //Need???????????
-                //}
                 numberOfKeyWords = 0;
                 startIndex = i + 1;
             }
@@ -263,27 +225,15 @@ public class CreateTable implements Command {
     }
 
     private void addForeignKeyToJsonFile(String attribute, String foreignTableName, String foreignAttributeName) {
-        JSONArray jsonArray = new JSONArray();
-        JSONObject tableName = new JSONObject();
-        tableName.put("refTable", foreignTableName);
-
-        JSONObject attributeName = new JSONObject();
-        attributeName.put("refAttribute", foreignAttributeName);
-
-        jsonArray.add(tableName);
-        jsonArray.add(attributeName);
-
-        JSONObject foreignkey = new JSONObject();
-        foreignkey.put("fkAttribute", attribute);
-        foreignkey.put("references", jsonArray);
-        foreignKeys.add(foreignkey);
+        ForeignKey foreignKey = new ForeignKey(attribute, foreignTableName, foreignAttributeName);
+        table.addForeignKey(foreignKey);
     }
 
-    private String commandToRightFromat(int i, int startIndex, String word2, String word1, int x) {
+    private String commandToRightFormat(int i, int startIndex, String word2, String word1, int x) {
         String s;
         if (startIndex + x == i) {
-            s = word1;
-            s = s + " " + word2;
+            s = withoutComma(word1);
+            s = s + " " + withoutComma(word2);
         } else {
             s = word2.split("\\(")[0];
             s = s + " " + withoutComma(word2.split("\\(")[1]);
@@ -291,37 +241,22 @@ public class CreateTable implements Command {
         return s;
     }
 
-    private boolean existsAttributeInTable(String tableName, String attributeName) {
-        JSONObject jsonFile = LoadJSON.load("databases.json");
-        JSONArray reserve = (JSONArray) jsonFile.get("Databases");
-        JSONObject reserve2;
-        for (Object i : reserve) {
-            reserve2 = (JSONObject) i;
-            if (reserve2.get("databaseName").equals(databaseName)) {
-                JSONArray reserve3 = (JSONArray) reserve2.get("Tables");
-                for (Object j : reserve3) {
-                    JSONObject reserve4 = (JSONObject) j;
-                    if (reserve4.get("tableName").equals(tableName)) {
-                        JSONArray reserve5 = (JSONArray) reserve4.get("Structure");
-                        for (Object k : reserve5) {
-                            JSONObject reserve6 = (JSONObject) k;
-                            if (reserve6.get("attributeName").equals(attributeName)) {
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                    return false;
-                }
-                return false;
+    private boolean existsAttributeForeignInTable(String tableName, String attributeName) {
+        if (databases.getDatabase(databaseName) != null) {
+            if (databases.getDatabase(databaseName).getTable(tableName) != null) {
+                return databases.getDatabase(databaseName).getTable(tableName).checkAttributeExists(attributeName);
+            } else {
+                System.out.println("Table doesn't exists!");
             }
+        } else {
+            System.out.println("Database doesn't exists!!!");
         }
-        return false;
+        return true;
     }
 
     private String withoutAnyBrackets(String word) {
         //(abc) -> abc
-        return word.split("\\(")[0].split("\\)")[0];
+        return word.split("\\(")[1].split("\\)")[0];
     }
 
     private String withoutComma(String word) {
@@ -331,17 +266,10 @@ public class CreateTable implements Command {
         if (word.charAt(word.length() - 1) == ')') {
             word = word.substring(0, word.length() - 1);
         }
-        return word;
-    }
-
-    private boolean existsInStructure(String word) {
-        JSONObject jsonObject;
-        for (Object i : structure) {
-            jsonObject = (JSONObject) i;
-            if (jsonObject.get("attributeName").equals(word))
-                return true;
+        if (word.charAt(0) == '(') {
+            word = word.substring(1);
         }
-        return false;
+        return word;
     }
 
     private void getItemFromStructure(String line) {
@@ -349,7 +277,7 @@ public class CreateTable implements Command {
         boolean hasKeyWord = false;
         boolean hasType = false;
         int startIndex = 0;
-        JSONObject attribute;
+        Attribute attribute;
         for (int i = 0; i < words.length; i++) {
             if (words[i].equals("")) {
                 i++;
@@ -363,20 +291,16 @@ public class CreateTable implements Command {
             if (words[i].indexOf(',') != -1) {
                 if (!hasKeyWord && hasType) {
                     words[startIndex + 1] = words[startIndex + 1].substring(0, words[startIndex + 1].length() - 1);
-                    attribute = new JSONObject();
-                    attribute.put("attributeName", words[startIndex]);
-                    attribute.put("type", words[startIndex + 1]);
-                    attribute.put("isnull", 1);
-                    structure.add(attribute);
+                    attribute = new Attribute(words[startIndex], words[startIndex + 1], "1");
+                    table.addAttribute(attribute);
                 } else if (hasKeyWord && hasType) {
-                    attribute = new JSONObject();
-                    attribute.put("attributeName", words[startIndex]);
-                    attribute.put("type", words[startIndex + 1]);
+                    String isnull;
                     if (startIndex + 3 == i && words[startIndex + 2].toUpperCase().equals(keyWords[6]) && words[startIndex + 3].toUpperCase().equals(keyWords[7] + ','))
-                        attribute.put("isnull", 0);
+                        isnull = "0";
                     else
-                        attribute.put("isnull", 1);
-                    structure.add(attribute);
+                        isnull = "1";
+                    attribute = new Attribute(words[startIndex], words[startIndex + 1], isnull);
+                    table.addAttribute(attribute);
                 }
                 hasKeyWord = false;
                 hasType = false;

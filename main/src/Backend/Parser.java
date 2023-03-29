@@ -18,9 +18,14 @@ public class Parser {
     public static String currentDatabaseName;
 
     public static Command commandType(String command) {
+        while (command.charAt(0) == ' ') {
+            command = command.substring(1);
+        }
         if (use.matcher(command).find()) {
             currentDatabaseName = command.split(" ")[1];
-            currentDatabaseName=currentDatabaseName.substring(0,currentDatabaseName.length());
+            if (currentDatabaseName.charAt(currentDatabaseName.length() - 1) == ';') {
+                currentDatabaseName = currentDatabaseName.substring(0, command.length() - 1);
+            }
             return null;
         } else if (createDatabase.matcher(command).find()) {
             return new CreateDatabase(command);

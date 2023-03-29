@@ -1,17 +1,16 @@
 package Backend.SaveLoadJSON;
 
-import org.json.simple.JSONObject;
-
-import java.io.FileWriter;
-import java.io.IOException;
+import Backend.Databases.Databases;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
 
 public class SaveJSON {
-    public static void save(JSONObject a, String jsonFileName) {
-        try (FileWriter fileWriter = new FileWriter(jsonFileName)) {
-            fileWriter.write(a.toJSONString());
-            fileWriter.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    public static void save(Databases databases, String jsonFileName) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            objectMapper.writeValue(new File(jsonFileName), databases);
+        } catch(Exception e){
+            System.out.println(e);
         }
     }
 }

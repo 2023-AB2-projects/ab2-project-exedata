@@ -2,19 +2,19 @@ package Backend.Commands;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import Backend.Databases.Databases;
+import Backend.Databases.IndexFile;
+import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import static Backend.Parser.currentDatabaseName;
 
 public class CreateIndex implements Command {
 
     private final String command;
-    private JSONArray indexFiles;
-    private JSONArray tableStructure;
+    private Databases databases;
 
     public CreateIndex(String command) {
         this.command = command;
@@ -22,52 +22,48 @@ public class CreateIndex implements Command {
 
     @Override
     public void performAction() {
-        JSONObject databases = LoadJSON.load("databases.json");
+        databases = LoadJSON.load("databases.json");
         if (databases == null) {
             System.out.println("Databases doesn't exists!");
             return;
         }
-
         String[] commandWords = command.split(" ");
         String currentTableName = commandWords[4];
-        String indexName=commandWords[2];
-        setIndexFilesAndTableStructure(databases, currentTableName);
-        createIndex(commandWords, indexName);
-        SaveJSON.save(databases, "databases.json");
+        String indexName = commandWords[2];
+        if (databases.getDatabase(Parser.currentDatabaseName) != null) {
+            if (databases.getDatabase(Parser.currentDatabaseName).checkTableExists(currentTableName)) {
+                if (createIndex(commandWords, indexName, currentTableName)) {
+                    createEmptyIndexFile(indexName + ".ind");
+                    SaveJSON.save(databases, "databases.json");
+                } else
+                    System.out.println("Syntax error!");
+            } else {
+                System.out.println("Table doesn't exists!");
+            }
+        } else {
+            System.out.println("Database doesn't exists!");
+        }
     }
 
-    private void createIndex(String[] commandWords, String IndexName) {
+    private boolean createIndex(String[] commandWords, String IndexName, String currentTableName) {
         //CREATE INDEX index_name
         //ON table_name (column1, column2, ...);
+        //table.addIndexFile(new IndexFile(currentTableName, currentTableName + ".ind", attributeName));
         String indexFileName = IndexName + ".ind";
         String column;
-        JSONObject indexName = new JSONObject();
-        indexName.put("indexName", indexFileName);
-        createEmptyIndexFile(indexFileName);
-        JSONArray indexAttributes = new JSONArray();
+        List<String> indexAttributes = new ArrayList<>();
 
         for (int i = 5; i < commandWords.length; i++) {
             column = withoutCommaAndBrackets(commandWords[i]);
-            if (existsInStructure(column)) {
-                JSONObject reserve = new JSONObject();
-                reserve.put("IAttribute", column);
-                indexAttributes.add(reserve);
+            if (databases.getDatabase(Parser.currentDatabaseName).getTable(currentTableName).checkAttributeExists(column)) {
+                indexAttributes.add(column);
+            } else {
+                System.out.println("Column doesn't exists!");
+                return false;
             }
         }
-        JSONArray indexFile = new JSONArray();
-        indexFile.add(indexName);
-        indexFile.add(indexAttributes);
-        indexFiles.add(indexFile);
-    }
-
-    private boolean existsInStructure(String word) {
-        JSONObject jsonObject;
-        for (Object i : tableStructure) {
-            jsonObject = (JSONObject) i;
-            if (jsonObject.get("attributeName").equals(word))
-                return true;
-        }
-        return false;
+        databases.getDatabase(Parser.currentDatabaseName).getTable(currentTableName).addIndexFile(new IndexFile(IndexName, indexFileName, indexAttributes));
+        return true;
     }
 
     private String withoutCommaAndBrackets(String word) {
@@ -93,30 +89,6 @@ public class CreateIndex implements Command {
             fileWriter.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    private void setIndexFilesAndTableStructure(JSONObject databases, String currentTableName) {
-        JSONArray jsonArray = (JSONArray) databases.get("Databases");
-        boolean exists = false;
-        for (Object object : jsonArray) {
-            JSONObject jsonObjectSearch = (JSONObject) object;
-            String name = (String) jsonObjectSearch.get("databaseName");
-            if (name != null && name.equals(currentDatabaseName)) {
-                JSONArray tables = (JSONArray) jsonObjectSearch.get("Tables");
-                for (Object i : tables) {
-                    JSONObject table = (JSONObject) i;
-                    String tableName = (String) table.get("tableName");
-                    if (tableName != null && tableName.equals(currentTableName)) {
-                        indexFiles = (JSONArray) table.get("IndexFiles");
-                        tableStructure = (JSONArray) table.get("Structure");
-                        exists = true;
-                    }
-                }
-            }
-        }
-        if (!exists) {
-            System.out.println("Tables or Database doesn't exist!");
         }
     }
 }

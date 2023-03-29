@@ -1,29 +1,18 @@
 package Backend.SaveLoadJSON;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import Backend.Databases.Databases;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
 
 public class LoadJSON {
-    public static JSONObject load(String jsonFileName) {  //return with null, if file doesn't exists or something went wrong
-        JSONParser parser = new JSONParser();
-        JSONObject jsonObject = null;
-        String content;
-        try {
-            content = Files.readString(Path.of(jsonFileName));
-        } catch (IOException e) {
-            System.out.println("JSON file doesnt exists!");
+    public static Databases load(String jsonFileName) {  //return with null, if file doesn't exists or something went wrong
+        ObjectMapper objectMapper = new ObjectMapper();
+        Databases databases;
+        try{
+            databases = objectMapper.readValue(new File(jsonFileName), Databases.class);
+        }catch (Exception e){
             return null;
         }
-        try {
-            jsonObject = (JSONObject) parser.parse(content);
-        } catch (ParseException e) {
-            System.out.println("Read from JSON file ERROR!");
-        }
-        return jsonObject;
+        return databases;
     }
 }

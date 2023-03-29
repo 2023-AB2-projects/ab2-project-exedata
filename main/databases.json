@@ -1,1 +1,1 @@
-{"Databases":[{"databaseName":"asd","Tables":[{"IndexFiles":[[{"indexName":"tab.ind"},[]]],"foreignKeys":[],"uniqueKeys":[],"Structure":[{"isnull":1,"attributeName":"alma","type":"int"},{"isnull":1,"attributeName":"korte","type":"int"}],"primaryKey":[],"tableName":"tab"}]}]}
+{"databaseList":[]}
