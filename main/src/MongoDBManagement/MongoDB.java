@@ -12,6 +12,7 @@ public class MongoDB {
     private MongoDatabase database;
     public MongoDB() {
         mongoClient = null;
+        connectToLocalhost();
     }
     public void connectToLocalhost() {
         try {
