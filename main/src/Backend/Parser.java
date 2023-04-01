@@ -43,6 +43,4 @@ public class Parser {
         System.out.println("Wrong command!");
         return null;
     }
-
-    // Return the values to the http server
 }
