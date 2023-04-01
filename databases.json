@@ -93,6 +93,31 @@
     {
       "name": "DB2",
       "tables": []
+    },
+    {
+      "name": "University",
+      "tables": [
+        {
+          "name": "disciplines",
+          "structure": [
+            {
+              "name": "CreditNr",
+              "type": "int",
+              "isnull": "1"
+            }
+          ],
+          "primaryKey": [],
+          "foreignKeys": [],
+          "uniqueKeys": [],
+          "indexFiles": [
+            {
+              "indexName": "disciplines",
+              "fileName": "disciplines.ind",
+              "indexAttributes": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }

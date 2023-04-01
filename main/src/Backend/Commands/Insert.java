@@ -1,13 +1,19 @@
 package Backend.Commands;
 
+import Backend.Databases.Databases;
 import Backend.Parser;
+import Backend.SaveLoadJSON.LoadJSON;
+import Backend.SaveLoadJSON.SaveJSON;
 import MongoDBManagement.MongoDB;
 import org.bson.Document;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import java.io.File;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 public class Insert implements Command {
     private final String command;
@@ -39,20 +45,30 @@ public class Insert implements Command {
                 }
             }
             insertValue = insertValue.substring(0, insertValue.length()-1);
-            Document document = new Document();
 
-            int freeID = 1; // here should be primary key, foreign key, ...!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            document.append("_id", String.valueOf(freeID));
-            document.append("Value", insertValue);
-
+            Parser.currentDatabaseName = "University";
             if (Parser.currentDatabaseName == null) {
                 System.out.println("Please select your database first!");
             } else {
+                List<String> list = getPrimaryKeys(Parser.currentDatabaseName, tableName);
+                Document document = new Document();
+                int freeID = 100; // here should be primary key, foreign key, ...!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                document.append("_id", String.valueOf(freeID));
+                document.append("Value", insertValue);
                 mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
                 mongoDB.insertOne(tableName, document);
             }
             // }
         }
         mongoDB.disconnectFromLocalhost();
+    }
+
+    public List<String> getPrimaryKeys(String dataBaseName, String tableName) {
+//        Databases databases2 = new Databases();
+//        SaveJSON.save(databases2, "databases3.json");
+        Databases databases = LoadJSON.load("databases.json");
+        assert databases != null;
+        return databases.getDatabase(dataBaseName).getTable(tableName).getPrimaryKey();
     }
 }
