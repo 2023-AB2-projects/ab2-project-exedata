@@ -1,4 +1,4 @@
-package Backend.HttpServer;
+package Backend.SocketServer;
 import Backend.Commands.Command;
 import Backend.Parser;
 
