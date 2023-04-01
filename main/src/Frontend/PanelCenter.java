@@ -53,7 +53,7 @@ public class PanelCenter extends JPanel {
         commandLineResults.add(tables, BorderLayout.NORTH);
         BufferedImage img = null;
         try {
-            img = ImageIO.read(new File("background.png"));
+            img = ImageIO.read(new File("main/background.png"));
             JLabel imageLabel = new JLabel(new ImageIcon(img));
             commandLineResults.add(imageLabel, BorderLayout.CENTER);
         } catch (IOException e) {
