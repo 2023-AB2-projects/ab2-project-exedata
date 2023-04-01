@@ -7,19 +7,33 @@
           "name": "disciplines",
           "structure": [
             {
+              "name": "DiscID",
+              "type": "varchar",
+              "isnull": "1"
+            },
+            {
+              "name": "DName",
+              "type": "varchar",
+              "isnull": "1"
+            },
+            {
               "name": "CreditNr",
               "type": "int",
               "isnull": "1"
             }
           ],
-          "primaryKey": [],
+          "primaryKey": [
+            "DiscID"
+          ],
           "foreignKeys": [],
           "uniqueKeys": [],
           "indexFiles": [
             {
               "indexName": "disciplines",
               "fileName": "disciplines.ind",
-              "indexAttributes": []
+              "indexAttributes": [
+                "DiscID"
+              ]
             }
           ]
         }

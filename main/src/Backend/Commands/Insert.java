@@ -1,17 +1,24 @@
 package Backend.Commands;
 
+import Backend.Databases.Attribute;
+import Backend.Databases.Databases;
 import Backend.Parser;
+import Backend.SaveLoadJSON.LoadJSON;
 import MongoDBManagement.MongoDB;
 import org.bson.Document;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 public class Insert implements Command {
     private final String command;
     private MongoDB mongoDB;
+    private List<String> primaryKeys;
 
     public Insert(String command) {
         this.command = command;
@@ -30,29 +37,103 @@ public class Insert implements Command {
             String[] value = matcher.group(3).replaceAll("\\s+", "").split(",");
 
             // if(insertValidation(tableName,fieldName,value)) {
-            String insertValue = "";
-            for(int i=0; i<fieldName.length; i++) {
-                if (value[i].charAt(0) == '\"') {
-                    insertValue = insertValue.concat(value[i].substring(1, value[i].length()-1) + "#");
-                } else {
-                    insertValue = insertValue.concat(value[i] + "#");
-                }
-            }
-            insertValue = insertValue.substring(0, insertValue.length()-1);
-            Document document = new Document();
 
-            int freeID = 1; // here should be primary key, foreign key, ...!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            document.append("_id", String.valueOf(freeID));
-            document.append("Value", insertValue);
-
+            Parser.currentDatabaseName = "University";
             if (Parser.currentDatabaseName == null) {
                 System.out.println("Please select your database first!");
             } else {
+                primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName);
+                String primaryKeysString = allPrimaryKeyValueDividedByHash(fieldName, value, primaryKeys);
+                List<Attribute> attributeList = getAllAttribute(Parser.currentDatabaseName, tableName);
+                String[] fieldNameFilled = listToStringArray(attributeList);
+                String[] valueFilled = addNullValues(fieldNameFilled, fieldName, value);
+                String insertValueWithHash = allAttributeValueExceptPKDividedByHash(fieldNameFilled, valueFilled);
+
+                Document document = new Document();
+                document.append("_id", primaryKeysString);
+                document.append("Value", insertValueWithHash);
                 mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
                 mongoDB.insertOne(tableName, document);
             }
             // }
         }
         mongoDB.disconnectFromLocalhost();
+    }
+
+    public List<String> getPrimaryKeys(String dataBaseName, String tableName) {
+//        Databases databases2 = new Databases();
+//        SaveJSON.save(databases2, "databases3.json");
+        Databases databases = LoadJSON.load("databases.json");
+        assert databases != null;
+        return databases.getDatabase(dataBaseName).getTable(tableName).getPrimaryKey();
+    }
+
+    public List<Attribute> getAllAttribute(String dataBaseName, String tableName) {
+        Databases databases = LoadJSON.load("databases.json");
+        assert databases != null;
+        return databases.getDatabase(dataBaseName).getTable(tableName).getStructure();
+    }
+
+    public boolean isPrimaryKey(String fieldName) {
+        for (String primaryKey : primaryKeys) {
+            if (primaryKey.equals(fieldName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String allPrimaryKeyValueDividedByHash(String[] fieldName, String[] value, List<String> primaryKeys) {
+        String primaryKeysString = "";
+        for (int i=0; i<fieldName.length; i++) {
+            for (int j=0; j<primaryKeys.size(); j++) {
+                if (Objects.equals(primaryKeys.get(j), fieldName[i])) {
+                    primaryKeysString = primaryKeysString.concat(value[i] + "#");
+                }
+            }
+        }
+        primaryKeysString = primaryKeysString.substring(0, primaryKeysString.length()-1);
+        return primaryKeysString;
+    }
+
+    public String allAttributeValueExceptPKDividedByHash(String[] fieldName, String[] value) {
+        String insertValue = "";
+        for(int i=0; i<fieldName.length; i++) {
+            if (value[i].charAt(0) == '\"') {
+                value[i] = value[i].substring(1, value[i].length()-1);
+            }
+            if (!isPrimaryKey(fieldName[i])) {
+                insertValue = insertValue.concat(value[i] + "#");
+            }
+        }
+        insertValue = insertValue.substring(0, insertValue.length()-1);
+        return insertValue;
+    }
+
+    public String[] listToStringArray(List<Attribute> attributeList) {
+        String[] fieldName = new String[attributeList.size()];
+        for (int i=0; i<attributeList.size(); i++) {
+            fieldName[i] = attributeList.get(i).getName();
+        }
+        return fieldName;
+    }
+
+    private String[] addNullValues(String[] fieldNameFilled, String[] fieldName, String[] value) {
+        String[] newValue = new String[fieldNameFilled.length];
+        boolean ok;
+        for(int i=0; i<fieldNameFilled.length; i++) {
+            ok = false;
+            for (int j=0; j<fieldName.length; j++) {
+                if (fieldNameFilled[i].equals(fieldName[j])) {
+                    ok = true;
+                    newValue[i] = value[j];
+                    break;
+                }
+            }
+            if (!ok) {
+                newValue[i] = "null";
+            }
+        }
+        return newValue;
     }
 }
