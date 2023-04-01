@@ -4,6 +4,8 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
 
+import java.util.List;
+
 public class MongoDB {
 
     private MongoClient mongoClient;
@@ -55,7 +57,15 @@ public class MongoDB {
         database.getCollection(collectionName).insertOne(document);
     }
 
+    public void insertMany(String collectionName, List<Document> documents) {
+        database.getCollection(collectionName).insertMany(documents);
+    }
+
     public void deleteOne(String collectionName, String fieldName, String value) {
         database.getCollection(collectionName).deleteOne(Filters.eq(fieldName, value));
+    }
+
+    public void deleteMany(String collectionName, String fieldName, String value) {
+        database.getCollection(collectionName).deleteMany(Filters.eq(fieldName, value));
     }
 }
