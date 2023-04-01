@@ -56,6 +56,7 @@ public class CreateTable implements Command {
         command = command + ',';
         System.out.println(command);
 
+
         String[] beforeAndAfterTheFirstOpenBracket = command.split("\\(", 2);
         String currentTableName = beforeAndAfterTheFirstOpenBracket[0].split(" ")[2];
         table = new Table(currentTableName, attributeList, primaryKeyList, foreignKeysList, uniqueKeysList, indexFilesList);
