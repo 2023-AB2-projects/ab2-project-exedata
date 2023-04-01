@@ -257,7 +257,7 @@ public class CreateTable implements Command {
             if (words[i].indexOf(',') != -1) {
                 if (!hasKeyWord && hasType) {
                     words[startIndex + 1] = words[startIndex + 1].substring(0, words[startIndex + 1].length() - 1);
-                    attribute = new Attribute(words[startIndex], words[startIndex + 1], "1");
+                    attribute = new Attribute(words[startIndex], words[startIndex + 1].toUpperCase(), "1");
                     table.addAttribute(attribute);
                 } else if (hasKeyWord && hasType) {
                     String isnull;
@@ -265,7 +265,7 @@ public class CreateTable implements Command {
                         isnull = "0";
                     else
                         isnull = "1";
-                    attribute = new Attribute(words[startIndex], words[startIndex + 1], isnull);
+                    attribute = new Attribute(words[startIndex], words[startIndex + 1].toUpperCase(), isnull);
                     table.addAttribute(attribute);
                 }
                 hasKeyWord = false;

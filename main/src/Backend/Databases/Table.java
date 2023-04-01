@@ -1,5 +1,6 @@
 package Backend.Databases;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Table {
@@ -20,6 +21,37 @@ public class Table {
     }
 
     public Table() {
+    }
+
+    public boolean checkInsertColumn(String[] column) {
+        int numberOfPrimaryKey = primaryKey.size();
+        for (String i : column) {
+            if (!checkAttributeExists(i)) {
+                System.out.println("This column doesn't exists: " + i);
+            }
+            if (primaryKey.contains(i)) {
+                numberOfPrimaryKey--;
+            }
+        }
+        if (numberOfPrimaryKey != 0) {
+            System.out.println("Have a problem with primary keys!");
+            return false;
+        }
+        for (Attribute i : structure) {
+            if (i.getIsnull().equalsIgnoreCase("0") && !Arrays.stream(column).toList().contains(i)) {
+                System.out.println(i.getName() + " can not be null!");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public Attribute getAttribute(String attributeName){
+        for (Attribute i : structure){
+            if(i.getName().equalsIgnoreCase(attributeName))
+                return i;
+        }
+        return null;
     }
 
     public boolean checkAttributeExists(String attributeName) {
