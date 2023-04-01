@@ -1,16 +1,14 @@
 package Backend.Commands;
 
+import Backend.Databases.Attribute;
 import Backend.Databases.Databases;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
-import Backend.SaveLoadJSON.SaveJSON;
 import MongoDBManagement.MongoDB;
 import org.bson.Document;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -45,30 +43,12 @@ public class Insert implements Command {
                 System.out.println("Please select your database first!");
             } else {
                 primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName);
-                String primaryKeysString = "";
-                for (String s : fieldName) {
-                    for (int i=0; i<primaryKeys.size(); i++) {
-                        if (Objects.equals(primaryKeys.get(i), s)) {
-                            primaryKeysString = primaryKeysString.concat(value[i] + "#");
-                        }
-                    }
-                }
-                primaryKeysString = primaryKeysString.substring(0, primaryKeysString.length()-1);
-
-                String insertValue = "";
-                for(int i=0; i<fieldName.length; i++) {
-                    if (value[i].charAt(0) == '\"') {
-                        value[i] = value[i].substring(1, value[i].length()-1);
-                    }
-                    if (!isPrimaryKey(fieldName[i])) {
-                        insertValue = insertValue.concat(value[i] + "#");
-                    }
-                }
-                insertValue = insertValue.substring(0, insertValue.length()-1);
+                String primaryKeysString = allPrimaryKeyValueDividedByHash(fieldName, value, primaryKeys);
+                String insertValueString = allAttributeValueDividedByHash(fieldName, value);
 
                 Document document = new Document();
                 document.append("_id", primaryKeysString);
-                document.append("Value", insertValue);
+                document.append("Value", insertValueString);
                 mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
                 mongoDB.insertOne(tableName, document);
             }
@@ -85,6 +65,12 @@ public class Insert implements Command {
         return databases.getDatabase(dataBaseName).getTable(tableName).getPrimaryKey();
     }
 
+    public List<Attribute> getAllAttribute(String dataBaseName, String tableName) {
+        Databases databases = LoadJSON.load("databases.json");
+        assert databases != null;
+        return databases.getDatabase(dataBaseName).getTable(tableName).getStructure();
+    }
+
     public boolean isPrimaryKey(String fieldName) {
         for (String primaryKey : primaryKeys) {
             if (primaryKey.equals(fieldName)) {
@@ -92,5 +78,32 @@ public class Insert implements Command {
             }
         }
         return false;
+    }
+
+    public String allPrimaryKeyValueDividedByHash(String[] fieldName, String[] value, List<String> primaryKeys) {
+        String primaryKeysString = "";
+        for (String s : fieldName) {
+            for (int i=0; i<primaryKeys.size(); i++) {
+                if (Objects.equals(primaryKeys.get(i), s)) {
+                    primaryKeysString = primaryKeysString.concat(value[i] + "#");
+                }
+            }
+        }
+        primaryKeysString = primaryKeysString.substring(0, primaryKeysString.length()-1);
+        return primaryKeysString;
+    }
+
+    public String allAttributeValueDividedByHash(String[] fieldName, String[] value) {
+        String insertValue = "";
+        for(int i=0; i<fieldName.length; i++) {
+            if (value[i].charAt(0) == '\"') {
+                value[i] = value[i].substring(1, value[i].length()-1);
+            }
+            if (!isPrimaryKey(fieldName[i])) {
+                insertValue = insertValue.concat(value[i] + "#");
+            }
+        }
+        insertValue = insertValue.substring(0, insertValue.length()-1);
+        return insertValue;
     }
 }
