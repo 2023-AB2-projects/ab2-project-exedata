@@ -39,7 +39,7 @@ public class Insert implements Command {
             System.out.println("Document inserted!");
             // }
         }
-
+        mongoDB.disconnectFromLocalhost();
     }
 
     @Override
