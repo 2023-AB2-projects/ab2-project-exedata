@@ -8,17 +8,17 @@
           "structure": [
             {
               "name": "DiscID",
-              "type": "varchar",
+              "type": "VARCHAR",
               "isnull": "1"
             },
             {
               "name": "DName",
-              "type": "varchar",
+              "type": "VARCHAR",
               "isnull": "1"
             },
             {
               "name": "CreditNr",
-              "type": "int",
+              "type": "INT",
               "isnull": "1"
             }
           ],

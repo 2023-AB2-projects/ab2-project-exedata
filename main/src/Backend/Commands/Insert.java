@@ -36,26 +36,26 @@ public class Insert implements Command {
             String[] fieldName = matcher.group(2).replaceAll("\\s+", "").split(",");
             String[] value = matcher.group(3).replaceAll("\\s+", "").split(",");
 
-            // if(insertValidation(tableName,fieldName,value)) {
-
             Parser.currentDatabaseName = "University";
-            if (Parser.currentDatabaseName == null) {
-                System.out.println("Please select your database first!");
-            } else {
-                primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName);
-                String primaryKeysString = allPrimaryKeyValueDividedByHash(fieldName, value, primaryKeys);
-                List<Attribute> attributeList = getAllAttribute(Parser.currentDatabaseName, tableName);
-                String[] fieldNameFilled = listToStringArray(attributeList);
-                String[] valueFilled = addNullValues(fieldNameFilled, fieldName, value);
-                String insertValueWithHash = allAttributeValueExceptPKDividedByHash(fieldNameFilled, valueFilled);
+            System.out.println(tableName);
+            if(ValidateInsertData.checkInsertData(tableName,fieldName,value)) {
+                if (Parser.currentDatabaseName == null) {
+                    System.out.println("Please select your database first!");
+                } else {
+                    primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName);
+                    String primaryKeysString = allPrimaryKeyValueDividedByHash(fieldName, value, primaryKeys);
+                    List<Attribute> attributeList = getAllAttribute(Parser.currentDatabaseName, tableName);
+                    String[] fieldNameFilled = listToStringArray(attributeList);
+                    String[] valueFilled = addNullValues(fieldNameFilled, fieldName, value);
+                    String insertValueWithHash = allAttributeValueExceptPKDividedByHash(fieldNameFilled, valueFilled);
 
-                Document document = new Document();
-                document.append("_id", primaryKeysString);
-                document.append("Value", insertValueWithHash);
-                mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
-                mongoDB.insertOne(tableName, document);
+                    Document document = new Document();
+                    document.append("_id", primaryKeysString);
+                    document.append("Value", insertValueWithHash);
+                    mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
+                    mongoDB.insertOne(tableName, document);
+                }
             }
-            // }
         }
         mongoDB.disconnectFromLocalhost();
     }

@@ -25,9 +25,9 @@ public class ValidateInsertData {
             System.out.println("Syntax error!");
             return false;
         }
-        for (String i : values) {
-            if (!checkType(i, databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getAttribute(i).getType())) {
-                System.out.println("The " + i + " type isn't correct!");
+        for (int i=0;i<values.length;i++) {
+            if (!checkType(values[i], databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getAttribute(column[i]).getType())) {
+                System.out.println("The " + values[i] + " type isn't correct!");
                 return false;
             }
         }
