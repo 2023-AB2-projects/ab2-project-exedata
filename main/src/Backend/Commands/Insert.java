@@ -44,11 +44,14 @@ public class Insert implements Command {
             } else {
                 primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName);
                 String primaryKeysString = allPrimaryKeyValueDividedByHash(fieldName, value, primaryKeys);
-                String insertValueString = allAttributeValueDividedByHash(fieldName, value);
+                List<Attribute> attributeList = getAllAttribute(Parser.currentDatabaseName, tableName);
+                String[] fieldNameFilled = listToStringArray(attributeList);
+                String[] valueFilled = addNullValues(fieldNameFilled, fieldName, value);
+                String insertValueWithHash = allAttributeValueExceptPKDividedByHash(fieldNameFilled, valueFilled);
 
                 Document document = new Document();
                 document.append("_id", primaryKeysString);
-                document.append("Value", insertValueString);
+                document.append("Value", insertValueWithHash);
                 mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
                 mongoDB.insertOne(tableName, document);
             }
@@ -82,9 +85,9 @@ public class Insert implements Command {
 
     public String allPrimaryKeyValueDividedByHash(String[] fieldName, String[] value, List<String> primaryKeys) {
         String primaryKeysString = "";
-        for (String s : fieldName) {
-            for (int i=0; i<primaryKeys.size(); i++) {
-                if (Objects.equals(primaryKeys.get(i), s)) {
+        for (int i=0; i<fieldName.length; i++) {
+            for (int j=0; j<primaryKeys.size(); j++) {
+                if (Objects.equals(primaryKeys.get(j), fieldName[i])) {
                     primaryKeysString = primaryKeysString.concat(value[i] + "#");
                 }
             }
@@ -93,7 +96,7 @@ public class Insert implements Command {
         return primaryKeysString;
     }
 
-    public String allAttributeValueDividedByHash(String[] fieldName, String[] value) {
+    public String allAttributeValueExceptPKDividedByHash(String[] fieldName, String[] value) {
         String insertValue = "";
         for(int i=0; i<fieldName.length; i++) {
             if (value[i].charAt(0) == '\"') {
@@ -105,5 +108,32 @@ public class Insert implements Command {
         }
         insertValue = insertValue.substring(0, insertValue.length()-1);
         return insertValue;
+    }
+
+    public String[] listToStringArray(List<Attribute> attributeList) {
+        String[] fieldName = new String[attributeList.size()];
+        for (int i=0; i<attributeList.size(); i++) {
+            fieldName[i] = attributeList.get(i).getName();
+        }
+        return fieldName;
+    }
+
+    private String[] addNullValues(String[] fieldNameFilled, String[] fieldName, String[] value) {
+        String[] newValue = new String[fieldNameFilled.length];
+        boolean ok;
+        for(int i=0; i<fieldNameFilled.length; i++) {
+            ok = false;
+            for (int j=0; j<fieldName.length; j++) {
+                if (fieldNameFilled[i].equals(fieldName[j])) {
+                    ok = true;
+                    newValue[i] = value[j];
+                    break;
+                }
+            }
+            if (!ok) {
+                newValue[i] = "null";
+            }
+        }
+        return newValue;
     }
 }
