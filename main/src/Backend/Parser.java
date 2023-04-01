@@ -1,8 +1,12 @@
 package Backend;
 
 import Backend.Commands.*;
+import Backend.Databases.Databases;
+import Backend.SaveLoadJSON.LoadJSON;
 
 import java.util.regex.Pattern;
+
+import static Backend.Commands.FormatCommand.formatCommand;
 
 public class Parser {
     // Create instances of the matched type
@@ -18,29 +22,39 @@ public class Parser {
     public static String currentDatabaseName;
 
     public static Command commandType(String command) {
-        while (command.charAt(0) == ' ') {
-            command = command.substring(1);
-        }
+        System.out.println(command);
         if (use.matcher(command).find()) {
-            currentDatabaseName = command.split(" ")[1];
-            if (currentDatabaseName.charAt(currentDatabaseName.length() - 1) == ';') {
-                currentDatabaseName = currentDatabaseName.substring(0, command.length() - 1);
-            }
+            currentDatabaseName = returnTheDatabaseName(formatCommand(command));
             return null;
         } else if (createDatabase.matcher(command).find()) {
-            return new CreateDatabase(command);
+            return new CreateDatabase(formatCommand(command));
         } else if (createTable.matcher(command).find()) {
-            return new CreateTable(command);
+            return new CreateTable(formatCommand(command));
         } else if (dropDatabase.matcher(command).find()) {
-            return new DropDatabase(command);
+            return new DropDatabase(formatCommand(command));
         } else if (dropTable.matcher(command).find()) {
-            return new DropTable(command);
+            return new DropTable(formatCommand(command));
         } else if (createIndex.matcher(command).find()) {
-            return new CreateIndex(command);
+            return new CreateIndex(formatCommand(command));
         } else if (dropIndex.matcher(command).find()) {
-            return new DropIndex(command);
+            return new DropIndex(formatCommand(command));
         }
         System.out.println("Wrong command!");
         return null;
+    }
+
+    private static String returnTheDatabaseName(String command) {
+        String databaseName = command.split(" ")[1];
+        Databases databases = LoadJSON.load("databases.json");
+        if (databases == null) {
+            System.out.println("Doesn't exists this database!");
+            return null;
+        }
+        if (databases.checkDatabaseExists(databaseName))
+            return databaseName;
+        else {
+            System.out.println("Doesn't exists this database!");
+            return null;
+        }
     }
 }

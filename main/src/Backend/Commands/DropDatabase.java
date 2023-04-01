@@ -14,10 +14,8 @@ public class DropDatabase implements Command {
 
     @Override
     public void performAction() {
+        //DROP DATABASE PERSONS;
         String currentDatabaseName = command.split(" ")[2];
-        if (currentDatabaseName.charAt(currentDatabaseName.length() - 1) == ';') {
-            currentDatabaseName = currentDatabaseName.substring(0, currentDatabaseName.length() - 1);
-        }
 
         Databases databases = LoadJSON.load("databases.json");
         if (databases == null) {

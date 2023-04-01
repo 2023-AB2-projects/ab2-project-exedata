@@ -17,20 +17,9 @@ public class CreateDatabase implements Command {
 
     @Override
     public void performAction() {
-
-        String currentDatabaseName = command.split(" ")[2];
-        if (currentDatabaseName.charAt(currentDatabaseName.length() - 1) == ';') {
-            currentDatabaseName = currentDatabaseName.substring(0, currentDatabaseName.length() - 1);
-        }
-//        MongoClient mongoClient = MongoDBConnection.connect();
-//        MongoDatabase database = mongoClient.getDatabase(currentDatabaseName);
-//        try {
-//            database.createCollection(currentDatabaseName);
-//        } catch (Exception e) {
-//            System.out.println("Error. Collection is already created!");
-//        }
-
         //CREATE DATABASE PERSONS;
+        String currentDatabaseName = command.split(" ")[2];
+
         Databases databases = LoadJSON.load("databases.json");
         if (databases == null) {
             List<Database> databaseList = new ArrayList<>();
@@ -40,12 +29,20 @@ public class CreateDatabase implements Command {
         } else {
             if (databases.checkDatabaseExists(currentDatabaseName)) {
                 System.out.println("Database is exists!");
+                return;
             } else {
                 List<Table> tableList = new ArrayList<>();
                 databases.addDatabase(new Database(currentDatabaseName, tableList));
             }
         }
         SaveJSON.save(databases, "databases.json");
+        //        MongoClient mongoClient = MongoDBConnection.connect();
+//        MongoDatabase database = mongoClient.getDatabase(currentDatabaseName);
+//        try {
+//            database.createCollection(currentDatabaseName);
+//        } catch (Exception e) {
+//            System.out.println("Error. Collection is already created!");
+//        }
 
         //System.out.println(databases);
 

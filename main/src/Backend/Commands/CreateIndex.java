@@ -11,6 +11,8 @@ import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
 
+import static Backend.Commands.FormatCommand.formatWords;
+
 public class CreateIndex implements Command {
 
     private final String command;
@@ -22,6 +24,8 @@ public class CreateIndex implements Command {
 
     @Override
     public void performAction() {
+        //CREATE INDEX index_name
+        //ON table_name (column1, column2, ...);
         databases = LoadJSON.load("databases.json");
         if (databases == null) {
             System.out.println("Databases doesn't exists!");
@@ -46,15 +50,13 @@ public class CreateIndex implements Command {
     }
 
     private boolean createIndex(String[] commandWords, String IndexName, String currentTableName) {
-        //CREATE INDEX index_name
-        //ON table_name (column1, column2, ...);
         //table.addIndexFile(new IndexFile(currentTableName, currentTableName + ".ind", attributeName));
         String indexFileName = IndexName + ".ind";
         String column;
         List<String> indexAttributes = new ArrayList<>();
 
         for (int i = 5; i < commandWords.length; i++) {
-            column = withoutCommaAndBrackets(commandWords[i]);
+            column = formatWords(commandWords[i]);
             if (databases.getDatabase(Parser.currentDatabaseName).getTable(currentTableName).checkAttributeExists(column)) {
                 indexAttributes.add(column);
             } else {
@@ -66,24 +68,7 @@ public class CreateIndex implements Command {
         return true;
     }
 
-    private String withoutCommaAndBrackets(String word) {
-        String result = word;
-        if (result.charAt(0) == '(') {
-            result = result.substring(1);
-        }
-        if (result.charAt(result.length() - 1) == ';') {
-            result = result.substring(0, result.length() - 1);
-        }
-        if (result.charAt(result.length() - 1) == ')') {
-            result = result.substring(0, result.length() - 1);
-        }
-        if (result.charAt(result.length() - 1) == ',') {
-            result = result.substring(0, result.length() - 1);
-        }
-        return result;
-    }
-
-    private void createEmptyIndexFile(String indexFileName) {
+    protected static void createEmptyIndexFile(String indexFileName) {
         try (FileWriter fileWriter = new FileWriter(indexFileName)) {
             fileWriter.write("");
             fileWriter.flush();

@@ -19,7 +19,7 @@ public class Server {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String command;
                 while ((command = reader.readLine()) != null) {
-                    System.out.println(command);
+                    //System.out.println(command);
                     // feldolgozas
                     Command a = Parser.commandType(command);
                     if (a!=null) {

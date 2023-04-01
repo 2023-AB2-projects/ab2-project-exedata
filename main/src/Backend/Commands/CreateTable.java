@@ -4,12 +4,13 @@ import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import Backend.Databases.*;
+
+import static Backend.Commands.CreateIndex.createEmptyIndexFile;
+import static Backend.Commands.FormatCommand.formatWords;
 
 public class CreateTable implements Command {
     // create table in a certain database with primary key, foreign key, attributes, null value, default value, constraints, ...
@@ -51,19 +52,10 @@ public class CreateTable implements Command {
         List<ForeignKey> foreignKeysList = new ArrayList<>();
         List<String> uniqueKeysList = new ArrayList<>();
         List<IndexFile> indexFilesList = new ArrayList<>();
-        if (command.charAt(command.length() - 1) == ';') {
-            command = command.substring(0, command.length() - 1);
-        }
-        if (command.charAt(command.length() - 1) == ')') {
-            command = command.substring(0, command.length() - 1) + ',';
-        }
-        if (command.charAt(command.length() - 2) == ' ') {
-            command = command.substring(0, command.length() - 2) + ',';
-        }
-        while (command.charAt(0) == ' ') {
-            command = command.substring(1);
-        }
-        //System.out.println(command);
+
+        command = command + ',';
+        System.out.println(command);
+
         String[] beforeAndAfterTheFirstOpenBracket = command.split("\\(", 2);
         String currentTableName = beforeAndAfterTheFirstOpenBracket[0].split(" ")[2];
         table = new Table(currentTableName, attributeList, primaryKeyList, foreignKeysList, uniqueKeysList, indexFilesList);
@@ -107,15 +99,6 @@ public class CreateTable implements Command {
         createEmptyIndexFile(currentTableName + ".ind");
     }
 
-    private void createEmptyIndexFile(String indexFileName) {
-        try (FileWriter fileWriter = new FileWriter(indexFileName)) {
-            fileWriter.write("");
-            fileWriter.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private void fillJSONArrayByConstraint(String line) {
         String[] words = line.split(" ");
         String[] words2;
@@ -147,11 +130,11 @@ public class CreateTable implements Command {
                     } else if (words[startIndex].toUpperCase().equals(keyWords[0])) {//PRIMARY KEY(KocsmaID, asd, ItalID),
                         //PRIMARY KEY(KocsmaID),
                         words2 = words[startIndex + 1].split("\\(");
-                        if (words2[0].toUpperCase().equals(keyWords[1]) && table.checkAttributeExists(withoutComma(words2[1]))) {
-                            table.addPrimaryKey(withoutComma(words2[1]));
+                        if (words2[0].toUpperCase().equals(keyWords[1]) && table.checkAttributeExists(formatWords(words2[1]))) {
+                            table.addPrimaryKey(formatWords(words2[1]));
                             for (int j = startIndex + 2; j <= i; j++) {
-                                if (table.checkAttributeExists(withoutComma(words[j]))) {
-                                    table.addPrimaryKey(withoutComma(words[j]));
+                                if (table.checkAttributeExists(formatWords(words[j]))) {
+                                    table.addPrimaryKey(formatWords(words[j]));
                                 } else {
                                     //System.out.println("Syntax error!");
                                     syntaxError = true;
@@ -173,11 +156,11 @@ public class CreateTable implements Command {
                     //PRIMARY KEY (StudID,DiscID)
                     if (words[startIndex].toUpperCase().equals(keyWords[0])
                             && words[startIndex + 1].toUpperCase().equals(keyWords[1])) {
-                        words2 = withoutAnyBrackets(words[i]).split(",");
+                        words2 = formatWords(words[i]).split(",");
                         for (String j : words2) {
                             if (!j.equals("")) {
-                                if (table.checkAttributeExists(withoutComma(j))) {
-                                    table.addPrimaryKey(withoutComma(j));
+                                if (table.checkAttributeExists(formatWords(j))) {
+                                    table.addPrimaryKey(formatWords(j));
                                 } else {
                                     System.out.println("Syntax error!");
                                     syntaxError = true;
@@ -190,7 +173,7 @@ public class CreateTable implements Command {
                         //first_name VARCHAR NoT NULL,
                         if (words[i - 1].toUpperCase().equals(keyWords[0]) && table.checkAttributeExists(words[startIndex])
                                 && words[i].toUpperCase().equals(keyWords[1] + ',')) {
-                            table.addPrimaryKey(withoutComma(words[startIndex]));
+                            table.addPrimaryKey(formatWords(words[startIndex]));
                         }
                     }
                 } else if (numberOfKeyWords == 3) {
@@ -212,9 +195,9 @@ public class CreateTable implements Command {
                         String foreignTableName = commandToRightFormat(i, startIndex, words[i], words[i - 1], 5);
                         String foreignAttributeName = foreignTableName.split(" ")[1];
                         foreignTableName = foreignTableName.split(" ")[0];
-                        if (table.checkAttributeExists(withoutAnyBrackets(words[startIndex]))
+                        if (table.checkAttributeExists(formatWords(words[startIndex]))
                                 && existsAttributeForeignInTable(foreignTableName, foreignAttributeName)) {
-                            addForeignKeyToJsonFile(withoutAnyBrackets(words[startIndex]), foreignTableName, foreignAttributeName);
+                            addForeignKeyToJsonFile(formatWords(words[startIndex]), foreignTableName, foreignAttributeName);
                         }
                     }
                 }
@@ -232,11 +215,11 @@ public class CreateTable implements Command {
     private String commandToRightFormat(int i, int startIndex, String word2, String word1, int x) {
         String s;
         if (startIndex + x == i) {
-            s = withoutComma(word1);
-            s = s + " " + withoutComma(word2);
+            s = formatWords(word1);
+            s = s + " " + formatWords(word2);
         } else {
             s = word2.split("\\(")[0];
-            s = s + " " + withoutComma(word2.split("\\(")[1]);
+            s = s + " " + formatWords(word2.split("\\(")[1]);
         }
         return s;
     }
@@ -252,24 +235,6 @@ public class CreateTable implements Command {
             System.out.println("Database doesn't exists!!!");
         }
         return true;
-    }
-
-    private String withoutAnyBrackets(String word) {
-        //(abc) -> abc
-        return word.split("\\(")[1].split("\\)")[0];
-    }
-
-    private String withoutComma(String word) {
-        if (word.charAt(word.length() - 1) == ',') {
-            word = word.substring(0, word.length() - 1);
-        }
-        if (word.charAt(word.length() - 1) == ')') {
-            word = word.substring(0, word.length() - 1);
-        }
-        if (word.charAt(0) == '(') {
-            word = word.substring(1);
-        }
-        return word;
     }
 
     private void getItemFromStructure(String line) {

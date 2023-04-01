@@ -18,9 +18,7 @@ public class DropTable implements Command {
     public void performAction() {
         //drop table tableName;
         String currentTableName = command.split(" ")[2];
-        if (currentTableName.charAt(currentTableName.length() - 1) == ';') {
-            currentTableName = currentTableName.substring(0, currentTableName.length() - 1);
-        }
+
         Databases databases = LoadJSON.load("databases.json");
         if (databases == null) {
             System.out.println("JSONFile Doesn't exists!");

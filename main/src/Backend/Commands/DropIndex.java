@@ -8,7 +8,7 @@ import Backend.SaveLoadJSON.SaveJSON;
 import static Backend.Parser.currentDatabaseName;
 
 public class DropIndex implements Command {
-    private String command;
+    private final String command;
 
     public DropIndex(String command) {
         this.command = command;
@@ -17,7 +17,6 @@ public class DropIndex implements Command {
     @Override
     public void performAction() {
         //DROP INDEX index_name ON table_name;
-        command = command.substring(0, command.length() - 1);
         Databases databases = LoadJSON.load("databases.json");
         if (databases == null) {
             System.out.println("Databases doesn't exists!");
