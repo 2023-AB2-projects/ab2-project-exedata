@@ -1,1 +1,98 @@
-{"databaseList":[{"name":"db","tables":[{"name":"alma","structure":[{"name":"alma","type":"int","isnull":"1"},{"name":"korte","type":"int","isnull":"1"}],"primaryKey":[],"foreignKeys":[],"uniqueKeys":[],"indexFiles":[{"indexName":"alma","fileName":"alma.ind","indexAttributes":[]}]},{"name":"NEW","structure":[{"name":"ID","type":"INT","isnull":"1"},{"name":"Name","type":"VARCHAR","isnull":"1"},{"name":"City","type":"VARCHAR","isnull":"1"},{"name":"Salary","type":"FLOAT","isnull":"1"}],"primaryKey":[],"foreignKeys":[],"uniqueKeys":[],"indexFiles":[{"indexName":"NEW","fileName":"NEW.ind","indexAttributes":[]}]},{"name":"Szemelyek","structure":[{"name":"ID","type":"INT","isnull":"1"},{"name":"Nev","type":"VARCHAR","isnull":"1"}],"primaryKey":[],"foreignKeys":[],"uniqueKeys":[],"indexFiles":[{"indexName":"Szemelyek","fileName":"Szemelyek.ind","indexAttributes":[]}]}]},{"name":"DB2","tables":[]}]}
+{
+  "databaseList": [
+    {
+      "name": "db",
+      "tables": [
+        {
+          "name": "alma",
+          "structure": [
+            {
+              "name": "alma",
+              "type": "int",
+              "isnull": "1"
+            },
+            {
+              "name": "korte",
+              "type": "int",
+              "isnull": "1"
+            }
+          ],
+          "primaryKey": [],
+          "foreignKeys": [],
+          "uniqueKeys": [],
+          "indexFiles": [
+            {
+              "indexName": "alma",
+              "fileName": "alma.ind",
+              "indexAttributes": []
+            }
+          ]
+        },
+        {
+          "name": "NEW",
+          "structure": [
+            {
+              "name": "ID",
+              "type": "INT",
+              "isnull": "1"
+            },
+            {
+              "name": "Name",
+              "type": "VARCHAR",
+              "isnull": "1"
+            },
+            {
+              "name": "City",
+              "type": "VARCHAR",
+              "isnull": "1"
+            },
+            {
+              "name": "Salary",
+              "type": "FLOAT",
+              "isnull": "1"
+            }
+          ],
+          "primaryKey": [],
+          "foreignKeys": [],
+          "uniqueKeys": [],
+          "indexFiles": [
+            {
+              "indexName": "NEW",
+              "fileName": "NEW.ind",
+              "indexAttributes": []
+            }
+          ]
+        },
+        {
+          "name": "Szemelyek",
+          "structure": [
+            {
+              "name": "ID",
+              "type": "INT",
+              "isnull": "1"
+            },
+            {
+              "name": "Nev",
+              "type": "VARCHAR",
+              "isnull": "1"
+            }
+          ],
+          "primaryKey": [],
+          "foreignKeys": [],
+          "uniqueKeys": [],
+          "indexFiles": [
+            {
+              "indexName": "Szemelyek",
+              "fileName": "Szemelyek.ind",
+              "indexAttributes": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DB2",
+      "tables": []
+    }
+  ]
+}

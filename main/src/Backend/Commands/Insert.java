@@ -15,6 +15,10 @@ public class Insert implements Command {
 
     public Insert(String command) {
         this.command = command;
+    }
+
+    @Override
+    public void performAction() throws ParserConfigurationException, TransformerException {
         mongoDB = new MongoDB();
 
         Pattern pattern = Pattern.compile("^\\s*INSERT\\s+INTO\\s+([A-Za-z0-9]+)\\s+\\((.*)\\)\\s+VALUES\\s+\\((.*)\\);?");
@@ -26,24 +30,29 @@ public class Insert implements Command {
             String[] value = matcher.group(3).replaceAll("\\s+", "").split(",");
 
             // if(insertValidation(tableName,fieldName,value)) {
-            Document document = new Document();
+            String insertValue = "";
             for(int i=0; i<fieldName.length; i++) {
                 if (value[i].charAt(0) == '\"') {
-                    document.append(fieldName[i], value[i].substring(1, value[i].length()-1));
+                    insertValue = insertValue.concat(value[i].substring(1, value[i].length()-1) + "#");
                 } else {
-                    document.append(fieldName[i], value[i]);
+                    insertValue = insertValue.concat(value[i] + "#");
                 }
             }
-            mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
-            mongoDB.insertOne(Parser.currentDatabaseName, document);
-            System.out.println("Document inserted!");
+            insertValue = insertValue.substring(0, insertValue.length()-1);
+            Document document = new Document();
+
+            int freeID = 1; // here should be primary key, foreign key, ...!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            document.append("_id", String.valueOf(freeID));
+            document.append("Value", insertValue);
+
+            if (Parser.currentDatabaseName == null) {
+                System.out.println("Please select your database first!");
+            } else {
+                mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
+                mongoDB.insertOne(tableName, document);
+            }
             // }
         }
         mongoDB.disconnectFromLocalhost();
-    }
-
-    @Override
-    public void performAction() throws ParserConfigurationException, TransformerException {
-
     }
 }

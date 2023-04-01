@@ -55,11 +55,23 @@ public class MongoDB {
     }
 
     public void insertOne(String collectionName, Document document) {
-        database.getCollection(collectionName).insertOne(document);
+        if (!existsID(collectionName, document)) {
+            database.getCollection(collectionName).insertOne(document);
+            System.out.println("Document inserted!");
+        } else {
+            System.out.println("Insert error, _id already exists!");
+        }
     }
 
     public void insertMany(String collectionName, List<Document> documents) {
-        database.getCollection(collectionName).insertMany(documents);
+        for(int i=0; i<documents.size(); i++) {
+            if (!existsID(collectionName, documents.get(i))) {
+                database.getCollection(collectionName).insertOne(documents.get(i));
+                System.out.println("Document inserted!" + " (data: " + i + ")");
+            } else {
+                System.out.println("Insert error, _id already exists!" + " (data: " + i + ")");
+            }
+        }
     }
 
     public void deleteOne(String collectionName, String fieldName, String value) {
@@ -68,5 +80,9 @@ public class MongoDB {
 
     public void deleteMany(String collectionName, String fieldName, String value) {
         database.getCollection(collectionName).deleteMany(Filters.eq(fieldName, value));
+    }
+
+    public boolean existsID(String collectionName, Document document) {
+        return (database.getCollection(collectionName).find(new Document("_id", document.get("_id"))).first()!=null);
     }
 }
