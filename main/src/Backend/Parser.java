@@ -12,13 +12,15 @@ public class Parser {
     // Create instances of the matched type
     // Perform action on the type
     // Add to the response
-    private static final Pattern createDatabase = Pattern.compile("^\s*CREATE\sDATABASE\s[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
-    private static final Pattern createTable = Pattern.compile("^\s*CREATE\s*TABLE\s*[A-Za-z0-9_]+\s*\\(.*\\);?", Pattern.CASE_INSENSITIVE);
-    private static final Pattern dropTable = Pattern.compile("^\s*DROP\s*TABLE\s*[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
-    private static final Pattern dropDatabase = Pattern.compile("^\s*DROP\s*DATABASE\s*[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
-    private static final Pattern createIndex = Pattern.compile("^\s*CREATE\s*INDEX\s*[A-Za-z0-9_]+\s*ON\s[A-Za-z0-9_]+\s*\\(.*\\);?", Pattern.CASE_INSENSITIVE);
-    private static final Pattern dropIndex = Pattern.compile("^\s*DROP\s*INDEX\s*[A-Za-z0-9_.]+\s*ON\s[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
-    private static final Pattern use = Pattern.compile("^\s*USE\s*[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern createDatabase = Pattern.compile("^\\s*CREATE\\s+DATABASE\\s+[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern createTable = Pattern.compile("^\\s*CREATE\\s+TABLE\\s+[A-Za-z0-9_]+\\s*\\(.*\\);?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern dropTable = Pattern.compile("^\\s*DROP\\s+TABLE\\s+[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern dropDatabase = Pattern.compile("^\\s*DROP\\s+DATABASE\\s+[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern createIndex = Pattern.compile("^\\s*CREATE\\s+INDEX\\s+[A-Za-z0-9_]+\\s+ON\\s+[A-Za-z0-9_]+\\s*\\(.*\\);?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern dropIndex = Pattern.compile("^\\s*DROP\\s+INDEX\\s+[A-Za-z0-9_.]+\\s+ON\\s[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern insert = Pattern.compile("^\\s*INSERT\\s+INTO\\s+[a-zA-Z0-9_]+\\s+VALUES\\s*\\(.*\\)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern delete = Pattern.compile("^\\s*DELETE\\s+FROM\\s+[a-zA-Z0-9_]+", Pattern.CASE_INSENSITIVE);
+    private static final Pattern use = Pattern.compile("^\\s*USE\\s+[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
     public static String currentDatabaseName;
 
     public static Command commandType(String command) {
@@ -38,6 +40,10 @@ public class Parser {
             return new CreateIndex(formatCommand(command));
         } else if (dropIndex.matcher(command).find()) {
             return new DropIndex(formatCommand(command));
+        } else if (insert.matcher(command).find()) {
+            return new Insert(formatCommand(command));
+        } else if (delete.matcher(command).find()) {
+            return new Delete(formatCommand(command));
         }
         System.out.println("Wrong command!");
         return null;
