@@ -3,6 +3,7 @@ package Backend.Commands;
 import Backend.Databases.*;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
+import MongoDBManagement.MongoDB;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,6 @@ public class CreateDatabase implements Command {
     public void performAction() {
         //CREATE DATABASE PERSONS;
         String currentDatabaseName = command.split(" ")[2];
-
         Databases databases = LoadJSON.load("databases.json");
         if (databases == null) {
             List<Database> databaseList = new ArrayList<>();
@@ -36,21 +36,8 @@ public class CreateDatabase implements Command {
             }
         }
         SaveJSON.save(databases, "databases.json");
-        //        MongoClient mongoClient = MongoDBConnection.connect();
-//        MongoDatabase database = mongoClient.getDatabase(currentDatabaseName);
-//        try {
-//            database.createCollection(currentDatabaseName);
-//        } catch (Exception e) {
-//            System.out.println("Error. Collection is already created!");
-//        }
-
-        //System.out.println(databases);
-
-//        Document document = new Document();
-//        document.append("name", "John");
-//        document.append("age", 30);
-//        document.append("email", "john@example.com");
-//        database.getCollection("PERSONS").insertOne(document);
-//        System.out.println("ok");
+        MongoDB mongoDB = new MongoDB();
+        mongoDB.createDatabaseOrUse(currentDatabaseName);
+        mongoDB.disconnectFromLocalhost();
     }
 }

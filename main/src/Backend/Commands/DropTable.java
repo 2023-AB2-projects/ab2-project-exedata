@@ -4,6 +4,7 @@ import Backend.Databases.Databases;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
+import MongoDBManagement.MongoDB;
 
 public class DropTable implements Command {
     // drop table from json file
@@ -25,6 +26,10 @@ public class DropTable implements Command {
         } else {
             databases.getDatabase(Parser.currentDatabaseName).dropTable(currentTableName);
             SaveJSON.save(databases, "databases.json");
+            MongoDB mongoDB = new MongoDB();
+            mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
+            mongoDB.dropCollection(currentTableName);
+            mongoDB.disconnectFromLocalhost();
         }
     }
 }

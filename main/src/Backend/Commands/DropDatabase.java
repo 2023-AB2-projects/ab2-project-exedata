@@ -3,6 +3,7 @@ package Backend.Commands;
 import Backend.Databases.Databases;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
+import MongoDBManagement.MongoDB;
 
 public class DropDatabase implements Command {
     // Drop database from json file
@@ -20,13 +21,13 @@ public class DropDatabase implements Command {
         Databases databases = LoadJSON.load("databases.json");
         if (databases == null) {
             System.out.println("JSONFile Doesn't exists!");
+            return;
         } else {
             databases.dropDatabase(currentDatabaseName);
         }
         SaveJSON.save(databases, "databases.json");
-
-//        MongoClient mongoClient = MongoDBConnection.connect();
-//        MongoDatabase database = mongoClient.getDatabase(currentDatabaseName);
-//        database.drop();
+        MongoDB mongoDB = new MongoDB();
+        mongoDB.dropDatabase(currentDatabaseName);
+        mongoDB.disconnectFromLocalhost();
     }
 }
