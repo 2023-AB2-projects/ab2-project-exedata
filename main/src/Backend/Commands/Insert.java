@@ -17,7 +17,6 @@ import java.util.regex.Pattern;
 
 public class Insert implements Command {
     private final String command;
-    private MongoDB mongoDB;
     private List<String> primaryKeys;
 
     public Insert(String command) {
@@ -26,7 +25,7 @@ public class Insert implements Command {
 
     @Override
     public void performAction() throws ParserConfigurationException, TransformerException {
-        mongoDB = new MongoDB();
+        MongoDB mongoDB = new MongoDB();
 
         Pattern pattern = Pattern.compile("^\\s*INSERT\\s+INTO\\s+([A-Za-z0-9]+)\\s+\\((.*)\\)\\s+VALUES\\s+\\((.*)\\);?");
         Matcher matcher = pattern.matcher(command);
@@ -36,8 +35,8 @@ public class Insert implements Command {
             String[] fieldName = matcher.group(2).replaceAll("\\s+", "").split(",");
             String[] value = matcher.group(3).replaceAll("\\s+", "").split(",");
 
-            Parser.currentDatabaseName = "University";
-            System.out.println(tableName);
+            //Parser.currentDatabaseName = "University";
+            //System.out.println(tableName);
             if(ValidateInsertData.checkInsertData(tableName,fieldName,value)) {
                 if (Parser.currentDatabaseName == null) {
                     System.out.println("Please select your database first!");
@@ -61,8 +60,6 @@ public class Insert implements Command {
     }
 
     public List<String> getPrimaryKeys(String dataBaseName, String tableName) {
-//        Databases databases2 = new Databases();
-//        SaveJSON.save(databases2, "databases3.json");
         Databases databases = LoadJSON.load("databases.json");
         assert databases != null;
         return databases.getDatabase(dataBaseName).getTable(tableName).getPrimaryKey();
