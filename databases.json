@@ -4,35 +4,37 @@
       "name": "University",
       "tables": [
         {
-          "name": "disciplines",
+          "name": "Students4",
           "structure": [
             {
-              "name": "DiscID",
-              "type": "VARCHAR",
-              "isnull": "1"
-            },
-            {
-              "name": "DName",
-              "type": "VARCHAR",
-              "isnull": "1"
-            },
-            {
-              "name": "CreditNr",
+              "name": "ID",
               "type": "INT",
+              "isnull": "1"
+            },
+            {
+              "name": "NRMATRICOL",
+              "type": "INT",
+              "isnull": "1"
+            },
+            {
+              "name": "Media",
+              "type": "FLOAT",
               "isnull": "1"
             }
           ],
           "primaryKey": [
-            "DiscID"
+            "ID",
+            "NRMATRICOL"
           ],
           "foreignKeys": [],
           "uniqueKeys": [],
           "indexFiles": [
             {
-              "indexName": "disciplines",
-              "fileName": "disciplines.ind",
+              "indexName": "Students4",
+              "fileName": "Students4.ind",
               "indexAttributes": [
-                "DiscID"
+                "ID",
+                "NRMATRICOL"
               ]
             }
           ]

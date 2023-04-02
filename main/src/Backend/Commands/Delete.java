@@ -23,7 +23,7 @@ public class Delete implements Command {
     public void performAction() throws ParserConfigurationException, TransformerException {
         Pattern pattern = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s+WHERE\\s+([^ ]*)\\s*=\\s*([^ ]*)\\s*;", Pattern.CASE_INSENSITIVE);
         Pattern patternAll = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s*;", Pattern.CASE_INSENSITIVE);
-        Pattern patternMultiplePK = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s+WHERE\\s+([^ ]*)\\s*=\\s*([^ ]*)\\s* AND .*;", Pattern.CASE_INSENSITIVE);
+        Pattern patternMultiplePK = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s+WHERE\\s+([^ ]*\\s*=\\s*[^ ]*\\s+AND\\s+.*)\\s*;", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(command);
         Matcher matcherAll = patternAll.matcher(command);
         Matcher matcherMultiplePK = patternMultiplePK.matcher(command);
@@ -56,7 +56,16 @@ public class Delete implements Command {
                 mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
                 mongoDB.deleteAll(tableName);
             } else if (matcherMultiplePK.matches()) {
-                System.out.println("PK");
+                String tableName = matcherMultiplePK.group(1);
+                String keyString = matcherMultiplePK.group(2);
+                keyString = keyString.replace(" ", "");
+                String[] keyValuePairs = keyString.split("AND", Pattern.CASE_INSENSITIVE);
+
+                primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName);
+                String deleteValue = buildKey(primaryKeys, keyValuePairs);
+
+                mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
+                mongoDB.deleteOne(tableName, "_id", deleteValue);
             }
             mongoDB.disconnectFromLocalhost();
         }
@@ -77,5 +86,26 @@ public class Delete implements Command {
             }
         }
         return false;
+    }
+
+    public String buildKey(List<String> primaryKeys, String[] keyValuePair) {
+        String deleteValue = "";
+        String[] key = new String[keyValuePair.length];
+        String[] value = new String[keyValuePair.length];
+        String[] oneKeyOneValue;
+        for (int i=0; i<keyValuePair.length; i++) {
+            oneKeyOneValue = keyValuePair[i].split("=");
+            key[i] = oneKeyOneValue[0];
+            value[i] = oneKeyOneValue[1];
+        }
+        for (int i=0; i<primaryKeys.size(); i++) {
+            for (int j=0; j<key.length; j++) {
+                if (primaryKeys.get(i).equals(key[j])) {
+                    deleteValue = deleteValue.concat(value[j] + "#");
+                }
+            }
+        }
+        deleteValue = deleteValue.substring(0, deleteValue.length()-1);
+        return deleteValue;
     }
 }

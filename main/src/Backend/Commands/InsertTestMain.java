@@ -8,9 +8,9 @@ import javax.xml.transform.TransformerException;
 public class InsertTestMain {
     public static void main(String[] args) throws ParserConfigurationException, TransformerException {
         Parser.currentDatabaseName = "University";
-        //Command insert = new Insert("INSERT INTO disciplines (DiscID, DName) VALUES (9, \"Anna\");");
+        //Command insert = new Insert("INSERT INTO Students4 (ID, NRMATRICOL) VALUES (5, 2000);");
         //insert.performAction();
-        Command delete = new Delete("DELETE FROM disciplines WHERE DiscID = 5 AND DiscID = 10;");
+        Command delete = new Delete("DELETE FROM Students4 WHERE ID = 5 AND NRMATRICOL = 2000;");
         delete.performAction();
     }
 }

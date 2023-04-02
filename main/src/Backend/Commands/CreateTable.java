@@ -155,6 +155,7 @@ public class CreateTable implements Command {
                     }
                 } else if (numberOfKeyWords == 2) {
                     //PRIMARY KEY (StudID,DiscID)
+                    System.out.println("alma");
                     if (words[startIndex].toUpperCase().equals(keyWords[0])
                             && words[startIndex + 1].toUpperCase().equals(keyWords[1])) {
                         words2 = formatWords(words[i]).split(",");

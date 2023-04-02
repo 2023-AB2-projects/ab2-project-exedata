@@ -26,9 +26,9 @@ public class FormatCommand {
                 command = command.substring(0, command.length() - 1);
             }
 
-            if (command.charAt(command.length() - 1) == ')') {
-                command = command.substring(0, command.length() - 1);
-            }
+//            if (command.charAt(command.length() - 1) == ')') {
+//                command = command.substring(0, command.length() - 1);
+//            }
         }
 
         return command;
