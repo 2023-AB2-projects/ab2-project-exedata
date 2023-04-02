@@ -5,7 +5,7 @@ import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class TimerThread implements Runnable {
+public class TimerThread extends Thread {
     private final JLabel timeLabel;
     public TimerThread(PanelTop panelTop) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");

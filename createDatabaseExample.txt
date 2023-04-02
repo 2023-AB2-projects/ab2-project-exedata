@@ -1,0 +1,11 @@
+CREATE DATABASE University;
+
+USE University;
+
+CREATE TABLE Students4
+(
+	ID INT,
+	NRMATRICOL INT,
+	Media FLOAT,
+	PRIMARY KEY (ID,NRMATRICOL)
+);

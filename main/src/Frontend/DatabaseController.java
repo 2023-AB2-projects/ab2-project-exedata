@@ -61,6 +61,8 @@ public class DatabaseController {
             }
         });
         TimerThread timerThread = new TimerThread(databaseFrame.getPanelTop());
-        timerThread.run();
+        timerThread.start();
+        ErrorChannelThread errorChannelThread = new ErrorChannelThread(databaseFrame.getPanelDown());
+        errorChannelThread.start();
     }
 }
