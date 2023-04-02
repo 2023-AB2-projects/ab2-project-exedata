@@ -39,13 +39,17 @@ public class Delete implements Command {
                 String value = matcher.group(3);
 
                 if (fieldName.charAt(0) == '"') {
-                    fieldName = fieldName.substring(1, fieldName.length()-1);
+                    fieldName = fieldName.substring(1, fieldName.length() - 1);
                 }
 
                 primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName);
                 mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
                 if (isPrimaryKey(fieldName)) {
-                    mongoDB.deleteOne(tableName, "_id", value);
+                    if (primaryKeys.size() != 1) {
+                        System.out.println("Error with deletion! Please specify all the primary keys!");
+                    } else {
+                        mongoDB.deleteOne(tableName, "_id", value);
+                    }
                 } else {
                     System.out.println("Document can only be deleted according to the PRIMARY KEY!");
                 }
@@ -63,9 +67,12 @@ public class Delete implements Command {
 
                 primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName);
                 String deleteValue = buildKey(primaryKeys, keyValuePairs);
-
-                mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
-                mongoDB.deleteOne(tableName, "_id", deleteValue);
+                if (deleteValue.equals("!!!!!")) {
+                    System.out.println("Error with deletion! Please specify all the primary keys!");
+                } else {
+                    mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
+                    mongoDB.deleteOne(tableName, "_id", deleteValue);
+                }
             }
             mongoDB.disconnectFromLocalhost();
         }
@@ -93,19 +100,24 @@ public class Delete implements Command {
         String[] key = new String[keyValuePair.length];
         String[] value = new String[keyValuePair.length];
         String[] oneKeyOneValue;
-        for (int i=0; i<keyValuePair.length; i++) {
+        for (int i = 0; i < keyValuePair.length; i++) {
             oneKeyOneValue = keyValuePair[i].split("=");
             key[i] = oneKeyOneValue[0];
             value[i] = oneKeyOneValue[1];
         }
-        for (int i=0; i<primaryKeys.size(); i++) {
-            for (int j=0; j<key.length; j++) {
+        int nr = 0;
+        for (int i = 0; i < primaryKeys.size(); i++) {
+            for (int j = 0; j < key.length; j++) {
                 if (primaryKeys.get(i).equals(key[j])) {
                     deleteValue = deleteValue.concat(value[j] + "#");
+                    nr++;
                 }
             }
         }
-        deleteValue = deleteValue.substring(0, deleteValue.length()-1);
+        deleteValue = deleteValue.substring(0, deleteValue.length() - 1);
+        if (nr != primaryKeys.size()) {
+            deleteValue = "!!!!!";
+        }
         return deleteValue;
     }
 }
