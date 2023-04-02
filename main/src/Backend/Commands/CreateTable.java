@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Backend.Databases.*;
+import MongoDBManagement.MongoDB;
 
 import static Backend.Commands.CreateIndex.createEmptyIndexFile;
 import static Backend.Commands.FormatCommand.formatWords;
@@ -83,6 +84,10 @@ public class CreateTable implements Command {
                 if (!databases.getDatabase(databaseName).checkTableExists(table.getName())) {
                     databases.getDatabase(databaseName).addTable(table);
                     SaveJSON.save(databases, "databases.json");
+                    MongoDB mongoDB = new MongoDB();
+                    mongoDB.createDatabaseOrUse(databaseName);
+                    mongoDB.createCollection(table.getName());
+                    mongoDB.disconnectFromLocalhost();
                 } else {
                     System.out.println("Table is exists!");
                 }
