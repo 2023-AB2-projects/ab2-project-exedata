@@ -1,6 +1,5 @@
 package Backend.Commands;
 
-import Backend.Databases.Attribute;
 import Backend.Databases.Databases;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
@@ -22,10 +21,12 @@ public class Delete implements Command {
 
     @Override
     public void performAction() throws ParserConfigurationException, TransformerException {
-        Pattern pattern = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s+WHERE\\s+([^ ]*)\\s*=\\s*([^ ]*)\\s*;");
-        Pattern patternAll = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s*;");
+        Pattern pattern = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s+WHERE\\s+([^ ]*)\\s*=\\s*([^ ]*)\\s*;", Pattern.CASE_INSENSITIVE);
+        Pattern patternAll = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s*;", Pattern.CASE_INSENSITIVE);
+        Pattern patternMultiplePK = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s+WHERE\\s+([^ ]*)\\s*=\\s*([^ ]*)\\s* AND .*;", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(command);
         Matcher matcherAll = patternAll.matcher(command);
+        Matcher matcherMultiplePK = patternMultiplePK.matcher(command);
 
         //Parser.currentDatabaseName = "University";
         if (Parser.currentDatabaseName == null) {
@@ -54,6 +55,8 @@ public class Delete implements Command {
 
                 mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
                 mongoDB.deleteAll(tableName);
+            } else if (matcherMultiplePK.matches()) {
+                System.out.println("PK");
             }
             mongoDB.disconnectFromLocalhost();
         }

@@ -10,7 +10,7 @@ public class InsertTestMain {
         Parser.currentDatabaseName = "University";
         //Command insert = new Insert("INSERT INTO disciplines (DiscID, DName) VALUES (9, \"Anna\");");
         //insert.performAction();
-        //Command delete = new Delete("DELETE FROM disciplines;");
-        //delete.performAction();
+        Command delete = new Delete("DELETE FROM disciplines WHERE DiscID = 5 AND DiscID = 10;");
+        delete.performAction();
     }
 }

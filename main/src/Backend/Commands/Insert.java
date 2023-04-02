@@ -25,7 +25,7 @@ public class Insert implements Command {
 
     @Override
     public void performAction() throws ParserConfigurationException, TransformerException {
-        Pattern pattern = Pattern.compile("^\\s*INSERT\\s+INTO\\s+([A-Za-z0-9]+)\\s+\\((.*)\\)\\s+VALUES\\s+\\((.*)\\);?");
+        Pattern pattern = Pattern.compile("^\\s*INSERT\\s+INTO\\s+([A-Za-z0-9]+)\\s+\\((.*)\\)\\s+VALUES\\s+\\((.*)\\);?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(command);
 
         if (Parser.currentDatabaseName == null) {
