@@ -14,6 +14,8 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static Backend.SocketServer.Server.errorClient;
+
 
 public class Insert implements Command {
     private final String command;
@@ -30,6 +32,7 @@ public class Insert implements Command {
 
         if (Parser.currentDatabaseName == null) {
             System.out.println("Please select your database first!");
+            errorClient.send("Please select your database first!");
         } else {
             if (matcher.matches()) {
                 String tableName = matcher.group(1);

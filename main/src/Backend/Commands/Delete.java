@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static Backend.SocketServer.Server.errorClient;
+
 public class Delete implements Command {
     private final String command;
     List<String> primaryKeys;
@@ -31,6 +33,7 @@ public class Delete implements Command {
         //Parser.currentDatabaseName = "University";
         if (Parser.currentDatabaseName == null) {
             System.out.println("Please select your database first!");
+            errorClient.send("Please select your database first!");
         } else {
             MongoDB mongoDB = new MongoDB();
             if (matcher.matches()) {
@@ -47,11 +50,13 @@ public class Delete implements Command {
                 if (isPrimaryKey(fieldName)) {
                     if (primaryKeys.size() != 1) {
                         System.out.println("Error with deletion! Please specify all the primary keys!");
+                        errorClient.send("Error with deletion! Please specify all the primary keys!");
                     } else {
                         mongoDB.deleteOne(tableName, "_id", value);
                     }
                 } else {
                     System.out.println("Document can only be deleted according to the PRIMARY KEY!");
+                    errorClient.send("Document can only be deleted according to the PRIMARY KEY!");
                 }
 
             } else if (matcherAll.matches()) {
@@ -69,6 +74,7 @@ public class Delete implements Command {
                 String deleteValue = buildKey(primaryKeys, keyValuePairs);
                 if (deleteValue.equals("!!!!!")) {
                     System.out.println("Error with deletion! Please specify all the primary keys!");
+                    errorClient.send("Error with deletion! Please specify all the primary keys!");
                 } else {
                     mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
                     mongoDB.deleteOne(tableName, "_id", deleteValue);

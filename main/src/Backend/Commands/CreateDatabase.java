@@ -8,6 +8,8 @@ import MongoDBManagement.MongoDB;
 import java.util.ArrayList;
 import java.util.List;
 
+import static Backend.SocketServer.Server.errorClient;
+
 public class CreateDatabase implements Command {
     // create a database with name in json file
     private final String command;
@@ -29,6 +31,7 @@ public class CreateDatabase implements Command {
         } else {
             if (databases.checkDatabaseExists(currentDatabaseName)) {
                 System.out.println("Database is exists!");
+                errorClient.send("Database is exists!");
                 return;
             } else {
                 List<Table> tableList = new ArrayList<>();

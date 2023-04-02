@@ -5,6 +5,7 @@ import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
 
+import static Backend.SocketServer.Server.errorClient;
 import static Backend.Parser.currentDatabaseName;
 
 public class DropIndex implements Command {
@@ -20,6 +21,7 @@ public class DropIndex implements Command {
         Databases databases = LoadJSON.load("databases.json");
         if (databases == null) {
             System.out.println("Databases doesn't exists!");
+            errorClient.send("Databases doesn't exists!");
             return;
         }
         String[] commandWords = command.split(" ");
@@ -32,9 +34,11 @@ public class DropIndex implements Command {
                 SaveJSON.save(databases, "databases.json");
             } else {
                 System.out.println("Table doesn't exists!");
+                errorClient.send("Table doesn't exists!");
             }
         } else {
             System.out.println("Database doesn't exists!");
+            errorClient.send("Databases doesn't exists!");
         }
     }
 }

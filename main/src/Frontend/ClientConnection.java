@@ -35,6 +35,7 @@ public class ClientConnection {
             socket.close();
         } catch (Exception e) {
             System.out.println("Error with disconnect!");
+            return;
         }
         System.out.println("Disconnected from the server");
         status = 0;
