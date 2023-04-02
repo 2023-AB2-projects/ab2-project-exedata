@@ -25,22 +25,19 @@ public class Insert implements Command {
 
     @Override
     public void performAction() throws ParserConfigurationException, TransformerException {
-        MongoDB mongoDB = new MongoDB();
-
         Pattern pattern = Pattern.compile("^\\s*INSERT\\s+INTO\\s+([A-Za-z0-9]+)\\s+\\((.*)\\)\\s+VALUES\\s+\\((.*)\\);?");
         Matcher matcher = pattern.matcher(command);
 
-        if (matcher.matches()) {
-            String tableName = matcher.group(1);
-            String[] fieldName = matcher.group(2).replaceAll("\\s+", "").split(",");
-            String[] value = matcher.group(3).replaceAll("\\s+", "").split(",");
+        if (Parser.currentDatabaseName == null) {
+            System.out.println("Please select your database first!");
+        } else {
+            if (matcher.matches()) {
+                String tableName = matcher.group(1);
+                String[] fieldName = matcher.group(2).replaceAll("\\s+", "").split(",");
+                String[] value = matcher.group(3).replaceAll("\\s+", "").split(",");
 
-            //Parser.currentDatabaseName = "University";
-            //System.out.println(tableName);
-            if(ValidateInsertData.checkInsertData(tableName,fieldName,value)) {
-                if (Parser.currentDatabaseName == null) {
-                    System.out.println("Please select your database first!");
-                } else {
+                if(ValidateInsertData.checkInsertData(tableName,fieldName,value)) {
+                    MongoDB mongoDB = new MongoDB();
                     primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName);
                     String primaryKeysString = allPrimaryKeyValueDividedByHash(fieldName, value, primaryKeys);
                     List<Attribute> attributeList = getAllAttribute(Parser.currentDatabaseName, tableName);
@@ -53,22 +50,16 @@ public class Insert implements Command {
                     document.append("Value", insertValueWithHash);
                     mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
                     mongoDB.insertOne(tableName, document);
+                    mongoDB.disconnectFromLocalhost();
                 }
             }
         }
-        mongoDB.disconnectFromLocalhost();
     }
 
     public List<String> getPrimaryKeys(String dataBaseName, String tableName) {
         Databases databases = LoadJSON.load("databases.json");
         assert databases != null;
         return databases.getDatabase(dataBaseName).getTable(tableName).getPrimaryKey();
-    }
-
-    public List<Attribute> getAllAttribute(String dataBaseName, String tableName) {
-        Databases databases = LoadJSON.load("databases.json");
-        assert databases != null;
-        return databases.getDatabase(dataBaseName).getTable(tableName).getStructure();
     }
 
     public boolean isPrimaryKey(String fieldName) {
@@ -78,6 +69,12 @@ public class Insert implements Command {
             }
         }
         return false;
+    }
+
+    public List<Attribute> getAllAttribute(String dataBaseName, String tableName) {
+        Databases databases = LoadJSON.load("databases.json");
+        assert databases != null;
+        return databases.getDatabase(dataBaseName).getTable(tableName).getStructure();
     }
 
     public String allPrimaryKeyValueDividedByHash(String[] fieldName, String[] value, List<String> primaryKeys) {

@@ -1,0 +1,15 @@
+USE University;
+
+INSERT INTO disciplines (DiscID, DName)
+VALUES (9, "Anna");
+
+INSERT INTO disciplines (DiscID, DName, CreditNr)
+VALUES (10, "Anna", 36);
+
+INSERT INTO disciplines (DiscID, DName, CreditNr)
+VALUES (11, "Jozsef", 30);
+
+INSERT INTO disciplines (DiscID, DName)
+VALUES (10, "John Smith");
+
+DELETE FROM disciplines WHERE DiscID = 11;

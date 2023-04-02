@@ -57,9 +57,9 @@ public class MongoDB {
     public void insertOne(String collectionName, Document document) {
         if (!existsID(collectionName, document)) {
             database.getCollection(collectionName).insertOne(document);
-            System.out.println("Document inserted!");
+            System.out.println("Document inserted to " + collectionName + "!");
         } else {
-            System.out.println("Insert error, _id already exists!");
+            System.out.println("Insert error to " + collectionName + ", _id already exists!");
         }
     }
 
@@ -67,19 +67,26 @@ public class MongoDB {
         for(int i=0; i<documents.size(); i++) {
             if (!existsID(collectionName, documents.get(i))) {
                 database.getCollection(collectionName).insertOne(documents.get(i));
-                System.out.println("Document inserted!" + " (data: " + i + ")");
+                System.out.println("Document inserted to " + collectionName + "!" + " (data: " + i + ")");
             } else {
-                System.out.println("Insert error, _id already exists!" + " (data: " + i + ")");
+                System.out.println("Insert error to " + collectionName + ", _id already exists!" + " (data: " + i + ")");
             }
         }
     }
 
     public void deleteOne(String collectionName, String fieldName, String value) {
         database.getCollection(collectionName).deleteOne(Filters.eq(fieldName, value));
+        System.out.println("Document deleted from " + collectionName + "!");
     }
 
     public void deleteMany(String collectionName, String fieldName, String value) {
         database.getCollection(collectionName).deleteMany(Filters.eq(fieldName, value));
+        System.out.println("All documents delete from " + collectionName + "!");
+    }
+
+    public void deleteAll(String collectionName) {
+        database.getCollection(collectionName).drop();
+        database.createCollection(collectionName);
     }
 
     public boolean existsID(String collectionName, Document document) {
