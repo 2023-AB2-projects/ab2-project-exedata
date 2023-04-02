@@ -84,6 +84,9 @@ public class Insert implements Command {
         String primaryKeysString = "";
         for (int i=0; i<fieldName.length; i++) {
             for (int j=0; j<primaryKeys.size(); j++) {
+                if (value[i].charAt(0) == '\"' || value[i].charAt(0) == '\'') {
+                    value[i] = value[i].substring(1, value[i].length()-1);
+                }
                 if (Objects.equals(primaryKeys.get(j), fieldName[i])) {
                     primaryKeysString = primaryKeysString.concat(value[i] + "#");
                 }
@@ -96,7 +99,7 @@ public class Insert implements Command {
     public String allAttributeValueExceptPKDividedByHash(String[] fieldName, String[] value) {
         String insertValue = "";
         for(int i=0; i<fieldName.length; i++) {
-            if (value[i].charAt(0) == '\"') {
+            if (value[i].charAt(0) == '\"' || value[i].charAt(0) == '\'') {
                 value[i] = value[i].substring(1, value[i].length()-1);
             }
             if (!isPrimaryKey(fieldName[i])) {

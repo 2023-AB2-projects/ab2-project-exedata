@@ -41,7 +41,7 @@ public class Delete implements Command {
                 String fieldName = matcher.group(2);
                 String value = matcher.group(3);
 
-                if (fieldName.charAt(0) == '"') {
+                if (fieldName.charAt(0) == '"' || fieldName.charAt(0) == '\'') {
                     fieldName = fieldName.substring(1, fieldName.length() - 1);
                 }
 
@@ -68,7 +68,8 @@ public class Delete implements Command {
                 String tableName = matcherMultiplePK.group(1);
                 String keyString = matcherMultiplePK.group(2);
                 keyString = keyString.replace(" ", "");
-                String[] keyValuePairs = keyString.split("AND", Pattern.CASE_INSENSITIVE);
+                String[] keyValuePairs = keyString.split("AND");
+                keyValuePairs = keyString.split("and");
 
                 primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName);
                 String deleteValue = buildKey(primaryKeys, keyValuePairs);
@@ -107,9 +108,12 @@ public class Delete implements Command {
         String[] value = new String[keyValuePair.length];
         String[] oneKeyOneValue;
         for (int i = 0; i < keyValuePair.length; i++) {
-            oneKeyOneValue = keyValuePair[i].split("=");
+            oneKeyOneValue = keyValuePair[i].split("=");;
             key[i] = oneKeyOneValue[0];
             value[i] = oneKeyOneValue[1];
+            if (value[i].charAt(0) == '\"' || value[i].charAt(0) == '\'') {
+                value[i] = value[i].substring(1, value[i].length()-1);
+            }
         }
         int nr = 0;
         for (int i = 0; i < primaryKeys.size(); i++) {
