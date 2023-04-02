@@ -12,5 +12,6 @@ public class InsertTestMain {
         insert.performAction();
         Command delete = new Delete("DELETE FROM Students4 WHERE ID = 5;");
         delete.performAction();
+
     }
 }
