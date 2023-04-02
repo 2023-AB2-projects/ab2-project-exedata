@@ -10,12 +10,16 @@ import java.io.IOException;
 
 public class PanelCenter extends JPanel {
     private final JLabel messagesLabel; // messages under query result
+    private JPanel cards;
+    private JPanel inputAreaPanelCommandLine;
+    private InsertDeleteQuery inputAreaPanelInsDelQuery;
     private final JTextArea inputArea; // command input (ex. CREATE TABLE)
-    private InsertDeleteQuery insertDeleteQuery;
     private JPanel commandLineInput;
     private JPanel commandLineHeader;
     private JButton buttonCommandLine;
     private JButton buttonInsertDeleteQuery;
+    private final String panelCommandString = "PANELCOMMAND";
+    private final String panelInsDelQuery = "PANELINSDELQUERY";
 
     public PanelCenter() {
         this.setLayout(new GridLayout(1, 2));
@@ -29,8 +33,6 @@ public class PanelCenter extends JPanel {
         inputArea.setCaretColor(Color.black);
 
         // left label
-        insertDeleteQuery = new InsertDeleteQuery(this);
-
         //top of commandLine
         commandLineHeader = new JPanel();
         commandLineHeader.setLayout(new GridLayout(1, 2));
@@ -54,11 +56,26 @@ public class PanelCenter extends JPanel {
         commandLineHeader.add(commandLineInputLabel);
         commandLineHeader.add(commandLineInputButtonPanel);
 
+        //init 2 JPanel to card
+        //================================================================================================
+        cards = new JPanel();
+        inputAreaPanelCommandLine = new JPanel();
+        inputAreaPanelInsDelQuery = new InsertDeleteQuery();
+
+        inputAreaPanelCommandLine.setLayout(new GridLayout(1, 1));
+        inputAreaPanelCommandLine.add(inputArea);
+
+        cards.setLayout(new CardLayout());
+
+        //add two side to the card
+        cards.add(inputAreaPanelCommandLine, panelCommandString);
+        cards.add(inputAreaPanelInsDelQuery, panelInsDelQuery);
+
         commandLineInput.add(commandLineHeader, BorderLayout.NORTH);
-        commandLineInput.add(inputArea, BorderLayout.CENTER);
+        commandLineInput.add(cards, BorderLayout.CENTER);
         this.add(commandLineInput);
 
-        //=====================================
+        //================================================================================================
         // right side of PanelCenter
         JPanel commandLineResults = new JPanel();
         commandLineResults.setLayout(new BorderLayout());
@@ -66,12 +83,12 @@ public class PanelCenter extends JPanel {
         commandLineResults.setFont(new Font("Courier New", Font.BOLD, 15));
         commandLineResults.setBorder(new MatteBorder(0, 0, 2, 0, Color.black));
 
-        //=====================================
+        //================================================================================================
         messagesLabel = new JLabel("There will appear compilation results.");
         messagesLabel.setBorder(new MatteBorder(2, 2, 2, 2, Color.black));
         commandLineResults.add(messagesLabel, BorderLayout.SOUTH);
 
-        //=====================================
+        //================================================================================================
         BufferedImage img = null;
         try {
             img = ImageIO.read(new File("main/background.png"));
@@ -94,5 +111,25 @@ public class PanelCenter extends JPanel {
 
     public JPanel getCommandLineInput() {
         return commandLineInput;
+    }
+
+    public JPanel getCards() {
+        return cards;
+    }
+
+    public JButton getButtonCommandLine() {
+        return buttonCommandLine;
+    }
+
+    public JButton getButtonInsertDeleteQuery() {
+        return buttonInsertDeleteQuery;
+    }
+
+    public String getPanelCommandString() {
+        return panelCommandString;
+    }
+
+    public String getPanelInsDelQuery() {
+        return panelInsDelQuery;
     }
 }

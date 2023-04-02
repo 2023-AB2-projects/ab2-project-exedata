@@ -1,4 +1,6 @@
 package Frontend;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -58,6 +60,22 @@ public class DatabaseController {
                 clientConnection.disconnect();
                 databaseFrame.dispose();
                 System.exit(0);
+            }
+        });
+        databaseFrame.getPanelCenter().getButtonCommandLine().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JPanel cards = databaseFrame.getPanelCenter().getCards();
+                CardLayout cl = (CardLayout)(cards.getLayout());
+                cl.show(cards, databaseFrame.getPanelCenter().getPanelCommandString());
+            }
+        });
+        databaseFrame.getPanelCenter().getButtonInsertDeleteQuery().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JPanel cards = databaseFrame.getPanelCenter().getCards();
+                CardLayout cl = (CardLayout)(cards.getLayout());
+                cl.show(cards, databaseFrame.getPanelCenter().getPanelInsDelQuery());
             }
         });
         TimerThread timerThread = new TimerThread(databaseFrame.getPanelTop());
