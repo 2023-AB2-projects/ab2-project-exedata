@@ -23,9 +23,9 @@ public class Delete implements Command {
 
     @Override
     public void performAction() throws ParserConfigurationException, TransformerException {
-        Pattern pattern = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s+WHERE\\s+([^ ]*)\\s*=\\s*([^ ]*)\\s*;", Pattern.CASE_INSENSITIVE);
-        Pattern patternAll = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s*;", Pattern.CASE_INSENSITIVE);
-        Pattern patternMultiplePK = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s+WHERE\\s+([^ ]*\\s*=\\s*[^ ]*\\s+AND\\s+.*)\\s*;", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s+WHERE\\s+([^ ]*)\\s*=\\s*([^ ]*)\\s*;?", Pattern.CASE_INSENSITIVE);
+        Pattern patternAll = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s*;?", Pattern.CASE_INSENSITIVE);
+        Pattern patternMultiplePK = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s+WHERE\\s+([^ ]*\\s*=\\s*[^ ]*\\s+AND\\s+.*)\\s*;?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(command);
         Matcher matcherAll = patternAll.matcher(command);
         Matcher matcherMultiplePK = patternMultiplePK.matcher(command);
@@ -114,6 +114,7 @@ public class Delete implements Command {
             if (value[i].charAt(0) == '\"' || value[i].charAt(0) == '\'') {
                 value[i] = value[i].substring(1, value[i].length()-1);
             }
+            System.out.println(key[i] + " " + value[i]);
         }
         int nr = 0;
         for (int i = 0; i < primaryKeys.size(); i++) {

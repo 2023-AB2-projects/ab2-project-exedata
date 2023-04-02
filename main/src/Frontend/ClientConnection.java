@@ -45,7 +45,8 @@ public class ClientConnection {
         if (status==1) {
             message = message.replaceAll("\n", " ");
             message = message.replaceAll("\t", " ");
-            message = message.replaceAll(" +", " ");
+            message = message.replaceAll("\s+", " ");
+            message = message.replaceAll("^\s+", "");
             System.out.println("I sent this command: " + message);
             printWriter.println(message);
         }
