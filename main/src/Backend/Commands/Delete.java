@@ -114,7 +114,6 @@ public class Delete implements Command {
             if (value[i].charAt(0) == '\"' || value[i].charAt(0) == '\'') {
                 value[i] = value[i].substring(1, value[i].length()-1);
             }
-            System.out.println(key[i] + " " + value[i]);
         }
         int nr = 0;
         for (int i = 0; i < primaryKeys.size(); i++) {
