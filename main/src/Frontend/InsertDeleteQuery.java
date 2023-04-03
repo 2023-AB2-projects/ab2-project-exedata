@@ -25,7 +25,7 @@ public class InsertDeleteQuery extends JPanel {
     private JComboBox tableComboBox;
     private JPanel centerDown;
     private JTable table;
-   // private DefaultTableModel defaultTableModel;
+    // private DefaultTableModel defaultTableModel;
     private JButton insertButton;
     private JButton deleteButton;
     private String[] allDatabases;
@@ -33,6 +33,7 @@ public class InsertDeleteQuery extends JPanel {
     private String[] allAttributes;
     private ClientConnection clientConnectionInsertDelete;
     Databases d;
+
     public InsertDeleteQuery() {
         this.setLayout(new BorderLayout());
         header = new JPanel();
@@ -142,48 +143,49 @@ public class InsertDeleteQuery extends JPanel {
     }
 
 
-public String[] getAllDatabases () {
-    List<Database> databases = d.getDatabaseList();
-    String[] list = new String[databases.size()];
-    for (int i=0; i<databases.size(); i++) {
-        list[i] = databases.get(i).getName();
+    public String[] getAllDatabases() {
+        List<Database> databases = d.getDatabaseList();
+        String[] list = new String[databases.size()];
+        for (int i = 0; i < databases.size(); i++) {
+            list[i] = databases.get(i).getName();
+        }
+        return list;
     }
-    return list;
-}
-public String[] getAllTables() {
-    List<Table> tables = d.getDatabase(Parser.currentDatabaseName).getTables();
-    String[] list = new String[tables.size()];
-    for (int i=0; i<tables.size(); i++) {
-        list[i] = tables.get(i).getName();
-    }
-    return list;
-}
 
-public String[] getAllAttributes() {
-    List<Attribute> attributes = d.getDatabase(Parser.currentDatabaseName).getTable(Parser.currentTableName).getStructure();
-    String[] list = new String[attributes.size()];
-    for (int i=0; i<attributes.size(); i++) {
-        list[i] = attributes.get(i).getName();
+    public String[] getAllTables() {
+        List<Table> tables = d.getDatabase(Parser.currentDatabaseName).getTables();
+        String[] list = new String[tables.size()];
+        for (int i = 0; i < tables.size(); i++) {
+            list[i] = tables.get(i).getName();
+        }
+        return list;
     }
-    return list;
-}
 
-public void fillAttributesInTable() {
-    TableModel tableModel = table.getModel();
-    String[] attributes = getAllAttributes();
-    DefaultTableModel defaultTableModel = new DefaultTableModel(2, attributes.length);
-    table.setModel(defaultTableModel);
-    for (int i=0; i<attributes.length; i++) {
-        table.setValueAt(attributes[i], 0, i);
+    public String[] getAllAttributes() {
+        List<Attribute> attributes = d.getDatabase(Parser.currentDatabaseName).getTable(Parser.currentTableName).getStructure();
+        String[] list = new String[attributes.size()];
+        for (int i = 0; i < attributes.size(); i++) {
+            list[i] = attributes.get(i).getName();
+        }
+        return list;
     }
-}
 
-public void sendUse() {
-    try {
-        ClientConnection.send("USE " + Parser.currentDatabaseName + ";");
-    } catch (IOException ex) {
-        throw new RuntimeException(ex);
+    public void fillAttributesInTable() {
+        TableModel tableModel = table.getModel();
+        String[] attributes = getAllAttributes();
+        DefaultTableModel defaultTableModel = new DefaultTableModel(2, attributes.length);
+        table.setModel(defaultTableModel);
+        for (int i = 0; i < attributes.length; i++) {
+            table.setValueAt(attributes[i], 0, i);
+        }
     }
-}
+
+    public void sendUse() {
+        try {
+            ClientConnection.send("USE " + Parser.currentDatabaseName + ";");
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 
 }
