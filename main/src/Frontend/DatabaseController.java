@@ -1,4 +1,5 @@
 package Frontend;
+
 import Backend.Parser;
 
 import javax.swing.*;
@@ -37,14 +38,14 @@ public class DatabaseController {
             @Override
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
-                if (e.getKeyCode()==116) {
+                if (e.getKeyCode() == 116) {
                     // elkuldes a szervernek
                     try {
                         String command = databaseFrame.getPanelCenter().getInputArea().getSelectedText();
-                        if (command==null) {
+                        if (command == null) {
                             command = databaseFrame.getPanelCenter().getInputArea().getText();
                         }
-                        String[] commands = command.split( ";\n" );
+                        String[] commands = command.split(";\n");
                         for (String s : commands) {
                             ClientConnection.send(s);
                             // varom a valaszt
@@ -68,7 +69,7 @@ public class DatabaseController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JPanel cards = databaseFrame.getPanelCenter().getCards();
-                CardLayout cl = (CardLayout)(cards.getLayout());
+                CardLayout cl = (CardLayout) (cards.getLayout());
                 cl.show(cards, databaseFrame.getPanelCenter().getPanelCommandString());
             }
         });
@@ -76,7 +77,7 @@ public class DatabaseController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JPanel cards = databaseFrame.getPanelCenter().getCards();
-                CardLayout cl = (CardLayout)(cards.getLayout());
+                CardLayout cl = (CardLayout) (cards.getLayout());
                 cl.show(cards, databaseFrame.getPanelCenter().getPanelInsDelQuery());
             }
         });
