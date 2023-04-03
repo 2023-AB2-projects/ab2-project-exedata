@@ -80,10 +80,19 @@ public class InsertDeleteQuery extends JPanel {
             centerDown = new JPanel();
 
             centerUp.setLayout(new GridLayout(2, 2));
-            centerUp.add(new JLabel("Select your database:"));
+            JLabel label1 = new JLabel("Select your database:");
+            JLabel label2 = new JLabel("Select your table:");
+            label1.setBorder(new MatteBorder(2, 2, 2, 2, Color.black));
+            label2.setBorder(new MatteBorder(2, 2, 2, 2, Color.black));
+            label1.setFont(new Font("Courier New", Font.BOLD, 20));
+            label2.setFont(new Font("Courier New", Font.BOLD, 20));
+
+            centerUp.add(label1);
+            centerUp.setBackground(new Color(153, 153, 0));
+            centerUp.setBorder(new MatteBorder(2, 2, 2, 2, Color.black));
             databaseComboBox = new JComboBox(allDatabases);
             centerUp.add(databaseComboBox);
-            centerUp.add(new JLabel("Select your table:"));
+            centerUp.add(label2);
             tableComboBox = new JComboBox(allTables);
             centerUp.add(tableComboBox);
 
@@ -92,6 +101,7 @@ public class InsertDeleteQuery extends JPanel {
             //centerDown
             //=====================================================================================================
             centerDown.add(table);
+            centerDown.setBackground(new Color(102, 178,255));
             center.add(centerDown, BorderLayout.SOUTH);
 
             this.add(header, BorderLayout.NORTH);
