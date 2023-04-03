@@ -10,8 +10,8 @@ import Backend.Databases.IndexFile;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
+import Backend.SocketServer.ErrorClient;
 
-import static Backend.SocketServer.Server.errorClient;
 import static Backend.Commands.FormatCommand.formatWords;
 
 public class CreateIndex implements Command {
@@ -30,7 +30,7 @@ public class CreateIndex implements Command {
         databases = LoadJSON.load("databases.json");
         if (databases == null) {
             System.out.println("Databases doesn't exists!");
-            errorClient.send("Databases doesn't exists!");
+            ErrorClient.send("Databases doesn't exists!");
             return;
         }
         String[] commandWords = command.split(" ");
@@ -43,14 +43,14 @@ public class CreateIndex implements Command {
                     SaveJSON.save(databases, "databases.json");
                 } else
                     System.out.println("Syntax error!");
-                errorClient.send("Syntax error!");
+                ErrorClient.send("Syntax error!");
             } else {
                 System.out.println("Table doesn't exists!");
-                errorClient.send("Table doesn't exists!");
+                ErrorClient.send("Table doesn't exists!");
             }
         } else {
             System.out.println("Database doesn't exists!");
-            errorClient.send("Databases doesn't exists!");
+            ErrorClient.send("Databases doesn't exists!");
         }
     }
 
@@ -66,7 +66,7 @@ public class CreateIndex implements Command {
                 indexAttributes.add(column);
             } else {
                 System.out.println("Column doesn't exists!");
-                errorClient.send("Column doesn't exists!");
+                ErrorClient.send("Column doesn't exists!");
                 return false;
             }
         }

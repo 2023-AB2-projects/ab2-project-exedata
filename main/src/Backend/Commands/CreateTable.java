@@ -8,10 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Backend.Databases.*;
+import Backend.SocketServer.ErrorClient;
 import MongoDBManagement.MongoDB;
 
-import static Backend.SocketServer.Server.errorClient;
-import static Backend.Commands.CreateIndex.createEmptyIndexFile;
 import static Backend.Commands.FormatCommand.formatWords;
 
 public class CreateTable implements Command {
@@ -65,7 +64,7 @@ public class CreateTable implements Command {
         databases = LoadJSON.load("databases.json");
         if (databases == null) {
             System.out.println("Doesn't exists JSONFile!");
-            errorClient.send("Doesn't exists JSONFile!");
+            ErrorClient.send("Doesn't exists JSONFile!");
             return;
         }
 
@@ -76,12 +75,12 @@ public class CreateTable implements Command {
 
         if (syntaxError) {
             System.out.println("Syntax Error!");
-            errorClient.send("Syntax Error!");
+            ErrorClient.send("Syntax Error!");
             return;
         }
         if (databases == null) {
             System.out.println("Doesn't exists JSONFile!");
-            errorClient.send("Doesn't exists JSONFile!");
+            ErrorClient.send("Doesn't exists JSONFile!");
         } else {
             if (databases.checkDatabaseExists(databaseName)) {
                 if (!databases.getDatabase(databaseName).checkTableExists(table.getName())) {
@@ -93,11 +92,11 @@ public class CreateTable implements Command {
                     mongoDB.disconnectFromLocalhost();
                 } else {
                     System.out.println("Table is exists!");
-                    errorClient.send("Table is exists!");
+                    ErrorClient.send("Table is exists!");
                 }
             } else {
                 System.out.println("Doesn't exists this database!");
-                errorClient.send("Doesn't exists this database!");
+                ErrorClient.send("Doesn't exists this database!");
             }
         }
     }
@@ -107,7 +106,7 @@ public class CreateTable implements Command {
         //primaryKey
         List<String> attributeName = table.getPrimaryKey();
         table.addIndexFile(new IndexFile(currentTableName, currentTableName + ".ind", attributeName));
-        createEmptyIndexFile(currentTableName + ".ind");
+        //createEmptyIndexFile(currentTableName + ".ind");
     }
 
     private void fillJSONArrayByConstraint(String line) {
@@ -242,11 +241,11 @@ public class CreateTable implements Command {
                 return databases.getDatabase(databaseName).getTable(tableName).checkAttributeExists(attributeName);
             } else {
                 System.out.println("Table doesn't exists!");
-                errorClient.send("Table doesn't exists!");
+                ErrorClient.send("Table doesn't exists!");
             }
         } else {
             System.out.println("Database doesn't exists!!!");
-            errorClient.send("Database doesn't exists!!!");
+            ErrorClient.send("Database doesn't exists!!!");
         }
         return true;
     }

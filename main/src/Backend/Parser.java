@@ -3,11 +3,9 @@ package Backend;
 import Backend.Commands.*;
 import Backend.Databases.Databases;
 import Backend.SaveLoadJSON.LoadJSON;
+import Backend.SocketServer.ErrorClient;
 
-import java.io.IOException;
 import java.util.regex.Pattern;
-
-import static Backend.SocketServer.Server.errorClient;
 import static Backend.Commands.FormatCommand.formatCommand;
 
 public class Parser {
@@ -51,8 +49,8 @@ public class Parser {
         } else if (delete.matcher(command).find() || deleteAll.matcher(command).find() || deleteMultiplePK.matcher(command).find()) {
             return new Delete(command);
         }
+        ErrorClient.send("Wrong command!");
         System.out.println("Wrong command!");
-        errorClient.send("Wrong command!");
         return null;
     }
 
@@ -61,14 +59,14 @@ public class Parser {
         Databases databases = LoadJSON.load("databases.json");
         if (databases == null) {
             System.out.println("Doesn't exists JSON file!");
-            errorClient.send("Doesn't exists JSON file!");
+            ErrorClient.send("Doesn't exists JSON file!");
             return null;
         }
         if (databases.checkDatabaseExists(databaseName))
             return databaseName;
         else {
             System.out.println("Doesn't exists this database!");
-            errorClient.send("Doesn't exists this database!");
+            ErrorClient.send("Doesn't exists this database!");
             return null;
         }
     }

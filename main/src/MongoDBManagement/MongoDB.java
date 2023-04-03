@@ -1,4 +1,5 @@
 package MongoDBManagement;
+import Backend.SocketServer.ErrorClient;
 import com.mongodb.*;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -19,6 +20,7 @@ public class MongoDB {
             mongoClient = new MongoClient("localhost", 27017);
         } catch (Exception e) {
             System.out.println("Error with connection to localhost!");
+            ErrorClient.send("Error with connection to localhost!");
         }
     }
 

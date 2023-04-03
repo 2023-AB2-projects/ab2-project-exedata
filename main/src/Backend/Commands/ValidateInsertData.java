@@ -3,38 +3,38 @@ package Backend.Commands;
 import Backend.Databases.Databases;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
+import Backend.SocketServer.ErrorClient;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static Backend.SocketServer.Server.errorClient;
 
 public class ValidateInsertData {
     public static boolean checkInsertData(String tableName, String[] column, String[] values) {
         Databases databases = LoadJSON.load("databases.json");
         if (databases == null) {
             System.out.println("JSON file doesn't exists!");
-            errorClient.send("JSON file doesn't exists!");
+            ErrorClient.send("JSON file doesn't exists!");
             return false;
         }
         if (!databases.checkDatabaseExists(Parser.currentDatabaseName)) {
             System.out.println("Database doesn't exists this database!");
-            errorClient.send("Database doesn't exists this database!");
+            ErrorClient.send("Database doesn't exists this database!");
             return false;
         }
         if (!databases.getDatabase(Parser.currentDatabaseName).checkTableExists(tableName)) {
             System.out.println("Table doesn't exists!");
-            errorClient.send("Table doesn't exists!");
+            ErrorClient.send("Table doesn't exists!");
             return false;
         }
         if (!databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).checkInsertColumn(column)) {
             System.out.println("Syntax error!");
-            errorClient.send("Syntax error!");
+            ErrorClient.send("Syntax error!");
             return false;
         }
         for (int i=0;i<values.length;i++) {
             if (!checkType(values[i], databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getAttribute(column[i]).getType())) {
                 System.out.println("The " + values[i] + " type isn't correct!");
-                errorClient.send("The " + values[i] + " type isn't correct!");
+                ErrorClient.send("The " + values[i] + " type isn't correct!");
                 return false;
             }
         }

@@ -9,15 +9,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
-    public static ErrorClient errorClient;
     public Server(int port) throws IOException {
         ServerSocket serverSocket = new ServerSocket(12000);
         System.out.println("Server started successfully!");
-        errorClient=new ErrorClient();
         while (true) {
-            while (!errorClient.checkConnection()){
-                errorClient=new ErrorClient();
-            }
             try {
                 Socket clientSocket = serverSocket.accept();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));

@@ -1,10 +1,9 @@
 package Backend.Databases;
 
-import java.io.IOException;
+import Backend.SocketServer.ErrorClient;
+
 import java.util.Arrays;
 import java.util.List;
-
-import static Backend.SocketServer.Server.errorClient;
 
 public class Table {
     private String name;
@@ -31,7 +30,7 @@ public class Table {
         for (String i : column) {
             if (!checkAttributeExists(i)) {
                 System.out.println("This column doesn't exists: " + i);
-                errorClient.send("This column doesn't exists: " + i);
+                ErrorClient.send("This column doesn't exists: " + i);
             }
             if (primaryKey.contains(i)) {
                 numberOfPrimaryKey--;
@@ -39,13 +38,13 @@ public class Table {
         }
         if (numberOfPrimaryKey != 0) {
             System.out.println("Have a problem with primary keys!");
-            errorClient.send("Have a problem with primary keys!");
+            ErrorClient.send("Have a problem with primary keys!");
             return false;
         }
         for (Attribute i : structure) {
             if (i.getIsnull().equalsIgnoreCase("0") && !Arrays.stream(column).toList().contains(i)) {
                 System.out.println(i.getName() + " can not be null!");
-                errorClient.send(i.getName() + " can not be null!");
+                ErrorClient.send(i.getName() + " can not be null!");
                 return false;
             }
         }
