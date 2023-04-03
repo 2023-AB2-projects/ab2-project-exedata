@@ -11,7 +11,7 @@ public class DatabaseFrame extends JFrame {
     public DatabaseFrame() {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout());
-        this.setBounds(0, 0, 1000, 700);
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         panelTop = new PanelTop();
         panelCenter = new PanelCenter();
