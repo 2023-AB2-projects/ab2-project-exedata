@@ -3,12 +3,12 @@ package Backend.Commands;
 import Backend.Databases.*;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
+import Backend.SocketServer.ErrorClient;
 import MongoDBManagement.MongoDB;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static Backend.SocketServer.Server.errorClient;
 
 public class CreateDatabase implements Command {
     // create a database with name in json file
@@ -31,7 +31,7 @@ public class CreateDatabase implements Command {
         } else {
             if (databases.checkDatabaseExists(currentDatabaseName)) {
                 System.out.println("Database is exists!");
-                errorClient.send("Database is exists!");
+                ErrorClient.send("Database is exists!");
                 return;
             } else {
                 List<Table> tableList = new ArrayList<>();

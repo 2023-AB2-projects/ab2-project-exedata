@@ -4,6 +4,7 @@ import Backend.Databases.Attribute;
 import Backend.Databases.Databases;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
+import Backend.SocketServer.ErrorClient;
 import MongoDBManagement.MongoDB;
 import org.bson.Document;
 
@@ -13,9 +14,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static Backend.SocketServer.Server.errorClient;
-
 
 public class Insert implements Command {
     private final String command;
@@ -32,7 +30,7 @@ public class Insert implements Command {
 
         if (Parser.currentDatabaseName == null) {
             System.out.println("Please select your database first!");
-            errorClient.send("Please select your database first!");
+            ErrorClient.send("Please select your database first!");
         } else {
             if (matcher.matches()) {
                 String tableName = matcher.group(1);

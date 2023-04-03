@@ -1,8 +1,6 @@
 package Frontend;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -11,23 +9,28 @@ public class ErrorChannelThread extends Thread {
 
     public ErrorChannelThread(PanelDown panelDown) {
         this.panelDown = panelDown;
-        panelDown.getErrorLabel().setText("Hiba uzenet!");
+        panelDown.getErrorLabel().setText("Here the error massage!");
     }
 
     @Override
     public void run() {
-        ServerSocket serverSocket;
+        ServerSocket serverSocket = null;
+        Socket clientSocket;
+        BufferedReader reader;
         try {
             serverSocket = new ServerSocket(12001);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("Error with ErrorChannelThread!");
+            return;
         }
         System.out.println("Error socket started successfully!");
+
         String errorMassage;
         while (true) {
             try {
-                Socket clientSocket = serverSocket.accept();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                clientSocket = serverSocket.accept();
+                reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
                 while ((errorMassage = reader.readLine()) != null) {
                     System.out.println("I receive this error massage: " + errorMassage);
                     panelDown.getErrorLabel().setText(errorMassage);

@@ -4,9 +4,8 @@ import Backend.Databases.Databases;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
+import Backend.SocketServer.ErrorClient;
 import MongoDBManagement.MongoDB;
-
-import static Backend.SocketServer.Server.errorClient;
 
 public class DropTable implements Command {
     // drop table from json file
@@ -25,7 +24,7 @@ public class DropTable implements Command {
         Databases databases = LoadJSON.load("databases.json");
         if (databases == null) {
             System.out.println("JSONFile Doesn't exists!");
-            errorClient.send("JSONFile Doesn't exists!");
+            ErrorClient.send("JSONFile Doesn't exists!");
         } else {
             databases.getDatabase(Parser.currentDatabaseName).dropTable(currentTableName);
             SaveJSON.save(databases, "databases.json");
