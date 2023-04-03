@@ -14,6 +14,7 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.List;
 
 public class InsertDeleteQuery extends JPanel {
@@ -30,6 +31,7 @@ public class InsertDeleteQuery extends JPanel {
     private String[] allDatabases;
     private String[] allTables;
     private String[] allAttributes;
+    private ClientConnection clientConnectionInsertDelete;
     Databases d;
     public InsertDeleteQuery() {
         this.setLayout(new BorderLayout());
@@ -40,9 +42,11 @@ public class InsertDeleteQuery extends JPanel {
         if (databases == null) {
 
         } else {
+            clientConnectionInsertDelete = new ClientConnection();
             d = LoadJSON.load("databases.json");
             Parser.currentDatabaseName = databases.getDatabaseList().get(0).getName();
             Parser.currentTableName = databases.getDatabase(Parser.currentDatabaseName).getTables().get(0).getName();
+            sendUse();
 
             allDatabases = getAllDatabases();
             allTables = getAllTables();
@@ -97,6 +101,12 @@ public class InsertDeleteQuery extends JPanel {
                 public void actionPerformed(ActionEvent e) {
                     Parser.currentDatabaseName = (String) databaseComboBox.getSelectedItem();
                     Parser.currentTableName = d.getDatabase(Parser.currentDatabaseName).getTables().get(0).getName();
+                    sendUse();
+                    try {
+                        ClientConnection.send("USE " + Parser.currentDatabaseName);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
                     DefaultComboBoxModel<String> tableComboBoxModel = new DefaultComboBoxModel<>(getAllTables());
                     tableComboBox.setModel(tableComboBoxModel);
                     fillAttributesInTable();
@@ -108,6 +118,24 @@ public class InsertDeleteQuery extends JPanel {
                 public void actionPerformed(ActionEvent e) {
                     Parser.currentTableName = (String) tableComboBox.getSelectedItem();
                     fillAttributesInTable();
+                }
+            });
+
+            insertButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        ClientConnection.send("INSERT INTO disciplines (DiscID) VALUES (1001);");
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            });
+
+            deleteButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
                 }
             });
         }
@@ -147,6 +175,14 @@ public void fillAttributesInTable() {
     table.setModel(defaultTableModel);
     for (int i=0; i<attributes.length; i++) {
         table.setValueAt(attributes[i], 0, i);
+    }
+}
+
+public void sendUse() {
+    try {
+        ClientConnection.send("USE " + Parser.currentDatabaseName + ";");
+    } catch (IOException ex) {
+        throw new RuntimeException(ex);
     }
 }
 
