@@ -27,6 +27,7 @@ public class Parser {
     private static final Pattern use = Pattern.compile("^\\s*USE\\s+[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
 
     public static String currentDatabaseName;
+    public static String currentTableName;
 
     public static Command commandType(String command) {
         System.out.println(command);

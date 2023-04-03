@@ -182,6 +182,51 @@
               ]
             }
           ]
+        },
+        {
+          "name": "Marks",
+          "structure": [
+            {
+              "name": "ID",
+              "type": "INT",
+              "isnull": "1"
+            }
+          ],
+          "primaryKey": [],
+          "foreignKeys": [],
+          "uniqueKeys": [],
+          "indexFiles": [
+            {
+              "indexName": "Marks",
+              "fileName": "Marks.ind",
+              "indexAttributes": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "School",
+      "tables": [
+        {
+          "name": "Marks",
+          "structure": [
+            {
+              "name": "ID",
+              "type": "INT",
+              "isnull": "1"
+            }
+          ],
+          "primaryKey": [],
+          "foreignKeys": [],
+          "uniqueKeys": [],
+          "indexFiles": [
+            {
+              "indexName": "Marks",
+              "fileName": "Marks.ind",
+              "indexAttributes": []
+            }
+          ]
         }
       ]
     }

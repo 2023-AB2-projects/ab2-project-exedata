@@ -132,4 +132,6 @@ public class PanelCenter extends JPanel {
     public String getPanelInsDelQuery() {
         return panelInsDelQuery;
     }
+
+    public InsertDeleteQuery getInputAreaPanelInsDelQuery() { return inputAreaPanelInsDelQuery; }
 }
