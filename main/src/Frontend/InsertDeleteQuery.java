@@ -59,11 +59,11 @@ public class InsertDeleteQuery extends JPanel {
             fillAttributesInTable();
 
             insertButton = new JButton("Insert");
-            insertButton.setBackground(new Color(255, 62, 63));
+            insertButton.setBackground(new Color(0, 170, 0));
             insertButton.setForeground(Color.white);
             insertButton.setBorder(new MatteBorder(3, 3, 3, 3, Color.yellow));
             deleteButton = new JButton("Delete");
-            deleteButton.setBackground(new Color(0, 170, 0));
+            deleteButton.setBackground(new Color(255, 62, 63));
             deleteButton.setForeground(Color.white);
             deleteButton.setBorder(new MatteBorder(3, 3, 3, 3, Color.yellow));
 
