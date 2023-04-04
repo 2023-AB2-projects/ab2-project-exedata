@@ -9,7 +9,7 @@ public class ErrorChannelThread extends Thread {
 
     public ErrorChannelThread(PanelDown panelDown) {
         this.panelDown = panelDown;
-        panelDown.getErrorLabel().setText("Here the error massage!");
+        panelDown.getErrorLabel().setText("Here the error message!");
     }
 
     @Override

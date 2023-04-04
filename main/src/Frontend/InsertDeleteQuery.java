@@ -149,40 +149,58 @@ public class InsertDeleteQuery extends JPanel {
             deleteButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    String column = convertColumnToSendFormat(getAllAttributes());
-                    String contentOfRows = getContentOfTable();
                     //delete from marks where StudID = 50 and DiscID = 'OOP';
-
-//                    try {
-//                        ClientConnection.send("INSERT INTO " + Parser.currentTableName + " (" + column + ") VALUES (" + contentOfRows + ");");
-//                    } catch (IOException ex) {
-//                        throw new RuntimeException(ex);
-//                    }
+                    String condition = getDeleteCondition();
+//                    System.out.println(condition);
+                    try {
+                        ClientConnection.send("DELETE FROM " + Parser.currentTableName + " WHERE "+condition+";");
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
             });
         }
     }
 
+    public String getDeleteCondition() {
+        String[] conditon = new String[table.getColumnCount()];
+        int j = 0;
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            if (table.getValueAt(1, i) != null && !((String)table.getValueAt(1, i)).equals("")) {
+                conditon[j] = (String) table.getValueAt(0, i) + " = " + getDeleteAttribute(typeOfAttribute((String) table.getValueAt(0, i)), (String) table.getValueAt(1, i));
+                j++;
+            }
+        }
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < j; i++) {
+            result.append(" AND ").append(conditon[i]);
+        }
+        return result.substring(5);
+    }
 
+    public String getDeleteAttribute(String type, String value) {
+        return switch (type) {
+            case "INT", "FLOAT", "BIT" -> value;
+            default -> "'" + value + "'";
+        };
+    }
 
     public String getContentOfTable() {
-        String content = "";
+        StringBuilder content = new StringBuilder();
         for (int i = 0; i < table.getColumnCount(); i++) {
             if (table.getValueAt(1, i) != null)
-                content = content + ", " + (String) table.getValueAt(1, i);
+                content.append(", ").append((String) table.getValueAt(1, i));
         }
-        content=content.substring(2);
-        return content;
+        return content.substring(2);
     }
 
     public String convertColumnToSendFormat(String[] columns) {
-        String column="";
+        StringBuilder column = new StringBuilder();
         for (int i = 0; i < columns.length; i++) {
             if (table.getValueAt(1, i) != null)
-                column = column + ", " + columns[i];
+                column.append(", ").append(columns[i]);
         }
-        column=column.substring(2);
-        return column;
+        return column.substring(2);
     }
 
     public String[] getAllDatabases() {
@@ -210,6 +228,10 @@ public class InsertDeleteQuery extends JPanel {
             list[i] = attributes.get(i).getName();
         }
         return list;
+    }
+
+    public String typeOfAttribute(String attributeName) {
+        return d.getDatabase(Parser.currentDatabaseName).getTable(Parser.currentTableName).getAttribute(attributeName).getType();
     }
 
     public void fillAttributesInTable() {
