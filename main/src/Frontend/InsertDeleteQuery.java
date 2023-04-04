@@ -101,7 +101,7 @@ public class InsertDeleteQuery extends JPanel {
             //centerDown
             //=====================================================================================================
             centerDown.add(table);
-            centerDown.setBackground(new Color(102, 178,255));
+            centerDown.setBackground(new Color(102, 178, 255));
             center.add(centerDown, BorderLayout.SOUTH);
 
             this.add(header, BorderLayout.NORTH);
@@ -135,8 +135,11 @@ public class InsertDeleteQuery extends JPanel {
             insertButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    String column = convertColumnToSendFormat(getAllAttributes());
+                    String contentOfRows = getContentOfTable();
+                    //System.out.println("INSERT INTO " + Parser.currentTableName + " (" + column + ") VALUES (" + contentOfRows + ");");
                     try {
-                        ClientConnection.send("INSERT INTO disciplines (DiscID) VALUES (1001);");
+                        ClientConnection.send("INSERT INTO " + Parser.currentTableName + " (" + column + ") VALUES (" + contentOfRows + ");");
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -146,12 +149,41 @@ public class InsertDeleteQuery extends JPanel {
             deleteButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    String column = convertColumnToSendFormat(getAllAttributes());
+                    String contentOfRows = getContentOfTable();
+                    //delete from marks where StudID = 50 and DiscID = 'OOP';
 
+//                    try {
+//                        ClientConnection.send("INSERT INTO " + Parser.currentTableName + " (" + column + ") VALUES (" + contentOfRows + ");");
+//                    } catch (IOException ex) {
+//                        throw new RuntimeException(ex);
+//                    }
                 }
             });
         }
     }
 
+
+
+    public String getContentOfTable() {
+        String content = "";
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            if (table.getValueAt(1, i) != null)
+                content = content + ", " + (String) table.getValueAt(1, i);
+        }
+        content=content.substring(2);
+        return content;
+    }
+
+    public String convertColumnToSendFormat(String[] columns) {
+        String column="";
+        for (int i = 0; i < columns.length; i++) {
+            if (table.getValueAt(1, i) != null)
+                column = column + ", " + columns[i];
+        }
+        column=column.substring(2);
+        return column;
+    }
 
     public String[] getAllDatabases() {
         List<Database> databases = d.getDatabaseList();
