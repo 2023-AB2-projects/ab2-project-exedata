@@ -10,6 +10,7 @@ import Backend.SaveLoadJSON.LoadJSON;
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -24,7 +25,7 @@ public class InsertDeleteQuery extends JPanel {
     private JComboBox databaseComboBox;
     private JComboBox tableComboBox;
     private JPanel centerDown;
-    private JTable table;
+    private ScrollableJTable table;
     // private DefaultTableModel defaultTableModel;
     private JButton insertButton;
     private JButton deleteButton;
@@ -52,11 +53,10 @@ public class InsertDeleteQuery extends JPanel {
             allDatabases = getAllDatabases();
             allTables = getAllTables();
 
-            table = new JTable();
+            table = new ScrollableJTable();
 
             table.setBorder(new MatteBorder(1, 1, 1, 1, Color.black));
             table.setBackground(new Color(171, 173, 182));
-            table.setPreferredScrollableViewportSize(new Dimension(500, 200));
 
             fillAttributesInTable();
 
@@ -101,6 +101,7 @@ public class InsertDeleteQuery extends JPanel {
 
             //centerDown
             //=====================================================================================================
+            centerDown.setLayout(new GridLayout(1,1));
             centerDown.add(table);
             centerDown.setBackground(new Color(102, 178, 255));
             center.add(centerDown, BorderLayout.SOUTH);
@@ -138,7 +139,6 @@ public class InsertDeleteQuery extends JPanel {
                 public void actionPerformed(ActionEvent e) {
                     String column = convertColumnToSendFormat(getAllAttributes());
                     String contentOfRows = getContentOfTable();
-                    //System.out.println("INSERT INTO " + Parser.currentTableName + " (" + column + ") VALUES (" + contentOfRows + ");");
                     try {
                         ClientConnection.send("INSERT INTO " + Parser.currentTableName + " (" + column + ") VALUES (" + contentOfRows + ");");
                     } catch (IOException ex) {
@@ -150,9 +150,7 @@ public class InsertDeleteQuery extends JPanel {
             deleteButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    //delete from marks where StudID = 50 and DiscID = 'OOP';
                     String condition = getDeleteCondition();
-//                    System.out.println(condition);
                     try {
                         ClientConnection.send("DELETE FROM " + Parser.currentTableName + " WHERE "+condition+";");
                     } catch (IOException ex) {
@@ -164,17 +162,17 @@ public class InsertDeleteQuery extends JPanel {
     }
 
     public String getDeleteCondition() {
-        String[] conditon = new String[table.getColumnCount()];
+        String[] condition = new String[table.getColumnCount()];
         int j = 0;
         for (int i = 0; i < table.getColumnCount(); i++) {
             if (table.getValueAt(1, i) != null && !((String)table.getValueAt(1, i)).equals("")) {
-                conditon[j] = (String) table.getValueAt(0, i) + " = " + getDeleteAttribute(typeOfAttribute((String) table.getValueAt(0, i)), (String) table.getValueAt(1, i));
+                condition[j] = (String) table.getValueAt(0, i) + " = " + getDeleteAttribute(typeOfAttribute((String) table.getValueAt(0, i)), (String) table.getValueAt(1, i));
                 j++;
             }
         }
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < j; i++) {
-            result.append(" AND ").append(conditon[i]);
+            result.append(" AND ").append(condition[i]);
         }
         return result.substring(5);
     }
@@ -238,11 +236,10 @@ public class InsertDeleteQuery extends JPanel {
     public void fillAttributesInTable() {
         TableModel tableModel = table.getModel();
         String[] attributes = getAllAttributes();
-        DefaultTableModel defaultTableModel = new DefaultTableModel(2, attributes.length);
+        DefaultTableModel defaultTableModel = new DefaultTableModel(200, attributes.length);
         table.setModel(defaultTableModel);
-        for (int i = 0; i < attributes.length; i++) {
-            table.setValueAt(attributes[i], 0, i);
-        }
+        table.setHeader(attributes);
+
     }
 
     public void sendUse() {
