@@ -6,7 +6,7 @@ import Backend.Databases.Databases;
 import Backend.Databases.Table;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
-import MongoDBManagement.MongoDB;
+import Backend.MongoDBManagement.MongoDB;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 

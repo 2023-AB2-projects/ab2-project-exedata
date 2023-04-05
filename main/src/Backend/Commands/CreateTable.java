@@ -9,7 +9,7 @@ import java.util.List;
 
 import Backend.Databases.*;
 import Backend.SocketServer.ErrorClient;
-import MongoDBManagement.MongoDB;
+import Backend.MongoDBManagement.MongoDB;
 
 import static Backend.Commands.FormatCommand.formatWords;
 

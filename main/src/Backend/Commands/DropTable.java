@@ -5,7 +5,7 @@ import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
 import Backend.SocketServer.ErrorClient;
-import MongoDBManagement.MongoDB;
+import Backend.MongoDBManagement.MongoDB;
 
 public class DropTable implements Command {
     // drop table from json file

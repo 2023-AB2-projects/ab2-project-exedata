@@ -1,5 +1,4 @@
-package MongoDBManagement;
-import org.bson.Document;
+package Backend.MongoDBManagement;
 
 public class MongoTest {
     public static void main(String[] args) {

@@ -4,7 +4,7 @@ import Backend.Databases.Databases;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
 import Backend.SocketServer.ErrorClient;
-import MongoDBManagement.MongoDB;
+import Backend.MongoDBManagement.MongoDB;
 
 public class DropDatabase implements Command {
     // Drop database from json file

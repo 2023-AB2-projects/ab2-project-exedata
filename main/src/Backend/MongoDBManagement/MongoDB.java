@@ -1,4 +1,4 @@
-package MongoDBManagement;
+package Backend.MongoDBManagement;
 import Backend.SocketServer.ErrorClient;
 import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
