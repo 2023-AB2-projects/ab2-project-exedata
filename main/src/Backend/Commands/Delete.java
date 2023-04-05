@@ -22,12 +22,13 @@ public class Delete implements Command {
 
     @Override
     public void performAction() throws ParserConfigurationException, TransformerException {
-        Pattern pattern = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s+WHERE\\s+([^ ]*)\\s*=\\s*([^ ]*)\\s*;?", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s+WHERE\\s+([^ ]*)\\s*=\\s*([^ ;]*)\\s*;?", Pattern.CASE_INSENSITIVE);
         Pattern patternAll = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s*;?", Pattern.CASE_INSENSITIVE);
-        Pattern patternMultiplePK = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s+WHERE\\s+([^ ]*\\s*=\\s*[^ ]*\\s+AND\\s+.*)\\s*;?", Pattern.CASE_INSENSITIVE);
+        Pattern patternMultiplePK = Pattern.compile("^\\s*DELETE\\s+FROM\\s+([A-Za-z0-9]+)\\s+WHERE\\s+([^ ]*\\s*=\\s*[^ ;]*\\s+AND\\s+.*)\\s*;?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(command);
         Matcher matcherAll = patternAll.matcher(command);
         Matcher matcherMultiplePK = patternMultiplePK.matcher(command);
+
 
         //Parser.currentDatabaseName = "University";
         if (Parser.currentDatabaseName == null) {
@@ -40,8 +41,8 @@ public class Delete implements Command {
                 String fieldName = matcher.group(2);
                 String value = matcher.group(3);
 
-                if (fieldName.charAt(0) == '"' || fieldName.charAt(0) == '\'') {
-                    fieldName = fieldName.substring(1, fieldName.length() - 1);
+                if (value.charAt(0) == '"' || value.charAt(0) == '\'') {
+                    value = value.substring(1, value.length() - 1);
                 }
 
                 primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName);

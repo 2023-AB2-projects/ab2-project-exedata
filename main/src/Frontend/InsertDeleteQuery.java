@@ -56,6 +56,7 @@ public class InsertDeleteQuery extends JPanel {
 
             table.setBorder(new MatteBorder(1, 1, 1, 1, Color.black));
             table.setBackground(new Color(171, 173, 182));
+            table.setPreferredScrollableViewportSize(new Dimension(500, 200));
 
             fillAttributesInTable();
 
