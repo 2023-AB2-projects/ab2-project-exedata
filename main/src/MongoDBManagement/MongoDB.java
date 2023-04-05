@@ -1,6 +1,7 @@
 package MongoDBManagement;
 import Backend.SocketServer.ErrorClient;
 import com.mongodb.*;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
@@ -93,5 +94,9 @@ public class MongoDB {
 
     public boolean existsID(String collectionName, Document document) {
         return (database.getCollection(collectionName).find(new Document("_id", document.get("_id"))).first()!=null);
+    }
+
+    public MongoCollection<Document> getDocuments(String collenctionName){
+        return database.getCollection(collenctionName);
     }
 }

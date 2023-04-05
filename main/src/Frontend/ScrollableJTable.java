@@ -55,4 +55,10 @@ public class ScrollableJTable extends JPanel {
     public void setBorder(MatteBorder matteBorder) {
         table.setBorder(matteBorder);
     }
+
+    public void fillARowWithData(int row, String[] value){
+        for(int i=0;i<value.length;i++){
+            setValueAt(value[i],row,i);
+        }
+    }
 }
