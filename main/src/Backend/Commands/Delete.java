@@ -29,8 +29,6 @@ public class Delete implements Command {
         Matcher matcherAll = patternAll.matcher(command);
         Matcher matcherMultiplePK = patternMultiplePK.matcher(command);
 
-
-        //Parser.currentDatabaseName = "University";
         if (Parser.currentDatabaseName == null) {
             System.out.println("Please select your database first!");
             ErrorClient.send("Please select your database first!");
@@ -68,8 +66,8 @@ public class Delete implements Command {
                 String tableName = matcherMultiplePK.group(1);
                 String keyString = matcherMultiplePK.group(2);
                 keyString = keyString.replace(" ", "");
+                keyString = keyString.replaceAll("(?i)and", "AND");
                 String[] keyValuePairs = keyString.split("AND");
-                keyValuePairs = keyString.split("and");
 
                 primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName);
                 String deleteValue = buildKey(primaryKeys, keyValuePairs);

@@ -7,6 +7,7 @@ import Backend.Databases.Table;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.MongoDBManagement.MongoDB;
+import Backend.SocketServer.ErrorClient;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 
@@ -150,37 +151,53 @@ public class InsertDeleteQuery extends JPanel {
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
+
+                    fillAttributesInTable();
                 }
             });
 
             deleteButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    String condition = getDeleteCondition();
-                    try {
-                        ClientConnection.send("DELETE FROM " + Parser.currentTableName + " WHERE " + condition + ";");
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
+                    String[] condition = getDeleteCondition(table.getSelectedRows());
+                    System.out.println(condition);
+                    for (String i : condition) {
+                        try {
+                            ClientConnection.send("DELETE FROM " + Parser.currentTableName + " WHERE " + i + ";");
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     }
+                    ErrorClient.send(table.getSelectedRows().length + " row deleted!");
+                    fillAttributesInTable();
                 }
             });
         }
     }
 
-    public String getDeleteCondition() {
-        String[] condition = new String[table.getColumnCount()];
-        int j = 0;
-        for (int i = 0; i < table.getColumnCount(); i++) {
-            if (table.getValueAt(1, i) != null && !((String) table.getValueAt(1, i)).equals("")) {
-                condition[j] = (String) table.getValueAt(0, i) + " = " + getDeleteAttribute(typeOfAttribute((String) table.getValueAt(0, i)), (String) table.getValueAt(1, i));
-                j++;
+    public String[] getDeleteCondition(int[] selectedRows) {
+        String[] result=new String[selectedRows.length];
+        int k=0;
+        for(int selectedRow : selectedRows){
+            String[] condition = new String[table.getColumnCount()];
+            int j = 0;
+            for (int i = 0; i < table.getColumnCount(); i++) {
+                if (table.getValueAt(selectedRow, i) != null && !((String) table.getValueAt(selectedRow, i)).equals("")) {
+                    condition[j] = table.getHeaderValue(i) + " = " + getDeleteAttribute(typeOfAttribute(table.getHeaderValue(i)), (String) table.getValueAt(selectedRow, i));
+                    j++;
+                }
             }
+            StringBuilder subResult = new StringBuilder();
+
+            for (int i = 0; i < j; i++) {
+                System.out.println(condition[i]);
+                subResult.append(" AND ").append(condition[i]);
+            }
+            System.out.println(subResult.length());
+            result[k]=subResult.substring(5);
+            k++;
         }
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < j; i++) {
-            result.append(" AND ").append(condition[i]);
-        }
-        return result.substring(5);
+        return result;
     }
 
     public String getDeleteAttribute(String type, String value) {
@@ -193,16 +210,19 @@ public class InsertDeleteQuery extends JPanel {
     public String getContentOfTable() {
         StringBuilder content = new StringBuilder();
         for (int i = 0; i < table.getColumnCount(); i++) {
-            if (table.getValueAt(1, i) != null)
-                content.append(", ").append((String) table.getValueAt(1, i));
+            System.out.println(table.getValueAt(numberOfRows, i));
+            if (table.getValueAt(numberOfRows, i) != null)
+                content.append(", ").append((String) table.getValueAt(numberOfRows, i));
         }
         return content.substring(2);
     }
 
     public String convertColumnToSendFormat(String[] columns) {
         StringBuilder column = new StringBuilder();
+        System.out.println("");
         for (int i = 0; i < columns.length; i++) {
-            if (table.getValueAt(1, i) != null)
+            System.out.println(table.getValueAt(numberOfRows, i));
+            if (table.getValueAt(numberOfRows, i) != null)
                 column.append(", ").append(columns[i]);
         }
         return column.substring(2);
@@ -240,7 +260,6 @@ public class InsertDeleteQuery extends JPanel {
     }
 
     public void fillAttributesInTable() {
-        TableModel tableModel = table.getModel();
         String[] attributes = getAllAttributes();
 
         MongoDB mongoDB = new MongoDB();
@@ -249,7 +268,8 @@ public class InsertDeleteQuery extends JPanel {
 
         numberOfRows=0;
 
-        setMappingArray(d.getDatabase(Parser.currentDatabaseName).getTable(Parser.currentTableName).getStructure(), d.getDatabase(Parser.currentDatabaseName).getTable(Parser.currentTableName).getPrimaryKey());
+        setMappingArray(d.getDatabase(Parser.currentDatabaseName).getTable(Parser.currentTableName).getStructure(),
+                d.getDatabase(Parser.currentDatabaseName).getTable(Parser.currentTableName).getPrimaryKey());
 
         DefaultTableModel defaultTableModel = new DefaultTableModel((int)documents.countDocuments()+1, attributes.length);
         table.setModel(defaultTableModel);
@@ -259,6 +279,7 @@ public class InsertDeleteQuery extends JPanel {
             table.fillARowWithData(numberOfRows,separetaByHasthag(i,attributes.length));
             numberOfRows++;
         }
+        mongoDB.disconnectFromLocalhost();
     }
 
     public void sendUse() {

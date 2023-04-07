@@ -56,9 +56,17 @@ public class ScrollableJTable extends JPanel {
         table.setBorder(matteBorder);
     }
 
-    public void fillARowWithData(int row, String[] value){
-        for(int i=0;i<value.length;i++){
-            setValueAt(value[i],row,i);
+    public void fillARowWithData(int row, String[] value) {
+        for (int i = 0; i < value.length; i++) {
+            setValueAt(value[i], row, i);
         }
+    }
+
+    public int[] getSelectedRows() {
+        return table.getSelectedRows();
+    }
+
+    public String getHeaderValue(int i) {
+        return (String) table.getColumnModel().getColumn(i).getHeaderValue();
     }
 }
