@@ -34,7 +34,7 @@ public class InsertDeleteQuery extends JPanel {
     private String[] allDatabases;
     private String[] allTables;
     private ClientConnection clientConnectionInsertDelete;
-    Databases d;
+    private Databases databases;
     private int numberOfRows;
 
     public InsertDeleteQuery() {
@@ -42,12 +42,11 @@ public class InsertDeleteQuery extends JPanel {
         header = new JPanel();
         center = new JPanel();
 
-        Databases databases = LoadJSON.load("databases.json");
+        databases = LoadJSON.load("databases.json");
         if (databases == null) {
 
         } else {
             clientConnectionInsertDelete = new ClientConnection(12002);
-            d = LoadJSON.load("databases.json");
             Parser.currentDatabaseName = databases.getDatabaseList().get(0).getName();
             Parser.currentTableName = databases.getDatabase(Parser.currentDatabaseName).getTables().get(0).getName();
             sendUse();
@@ -114,17 +113,19 @@ public class InsertDeleteQuery extends JPanel {
             databaseComboBox.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    Parser.currentDatabaseName = (String) databaseComboBox.getSelectedItem();
-                    Parser.currentTableName = d.getDatabase(Parser.currentDatabaseName).getTables().get(0).getName();
-                    sendUse();
-                    try {
-                        clientConnectionInsertDelete.send("USE " + Parser.currentDatabaseName);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
+                    if (databaseComboBox.getSelectedItem() != null) {
+                        Parser.currentDatabaseName = (String) databaseComboBox.getSelectedItem();
+                        Parser.currentTableName = databases.getDatabase(Parser.currentDatabaseName).getTables().get(0).getName();
+                        sendUse();
+                        try {
+                            clientConnectionInsertDelete.send("USE " + Parser.currentDatabaseName);
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        DefaultComboBoxModel<String> tableComboBoxModel = new DefaultComboBoxModel<>(getAllTables());
+                        tableComboBox.setModel(tableComboBoxModel);
+                        fillAttributesInTable();
                     }
-                    DefaultComboBoxModel<String> tableComboBoxModel = new DefaultComboBoxModel<>(getAllTables());
-                    tableComboBox.setModel(tableComboBoxModel);
-                    fillAttributesInTable();
                 }
             });
 
@@ -192,6 +193,22 @@ public class InsertDeleteQuery extends JPanel {
         return result;
     }
 
+    public void refresh() {
+        databases = LoadJSON.load("databases.json");
+        if (databases == null) {
+        } else {
+            Parser.currentDatabaseName = databases.getDatabaseList().get(0).getName();
+            Parser.currentTableName = databases.getDatabase(Parser.currentDatabaseName).getTables().get(0).getName();
+            sendUse();
+
+            allDatabases = getAllDatabases();
+            allTables = getAllTables();
+            databaseComboBox.setModel(new DefaultComboBoxModel<String>(allDatabases));
+            tableComboBox.setModel(new DefaultComboBoxModel<String>(allTables));
+            fillAttributesInTable();
+        }
+    }
+
     public String getDeleteAttribute(String type, String value) {
         return switch (type) {
             case "INT", "FLOAT", "BIT" -> value;
@@ -218,16 +235,16 @@ public class InsertDeleteQuery extends JPanel {
     }
 
     public String[] getAllDatabases() {
-        List<Database> databases = d.getDatabaseList();
-        String[] list = new String[databases.size()];
-        for (int i = 0; i < databases.size(); i++) {
-            list[i] = databases.get(i).getName();
+        List<Database> databaseList = databases.getDatabaseList();
+        String[] list = new String[databaseList.size()];
+        for (int i = 0; i < databaseList.size(); i++) {
+            list[i] = databaseList.get(i).getName();
         }
         return list;
     }
 
     public String[] getAllTables() {
-        List<Table> tables = d.getDatabase(Parser.currentDatabaseName).getTables();
+        List<Table> tables = databases.getDatabase(Parser.currentDatabaseName).getTables();
         String[] list = new String[tables.size()];
         for (int i = 0; i < tables.size(); i++) {
             list[i] = tables.get(i).getName();
@@ -236,7 +253,7 @@ public class InsertDeleteQuery extends JPanel {
     }
 
     public String[] getAllAttributes() {
-        List<Attribute> attributes = d.getDatabase(Parser.currentDatabaseName).getTable(Parser.currentTableName).getStructure();
+        List<Attribute> attributes = databases.getDatabase(Parser.currentDatabaseName).getTable(Parser.currentTableName).getStructure();
         String[] list = new String[attributes.size()];
         for (int i = 0; i < attributes.size(); i++) {
             list[i] = attributes.get(i).getName();
@@ -245,7 +262,7 @@ public class InsertDeleteQuery extends JPanel {
     }
 
     public String typeOfAttribute(String attributeName) {
-        return d.getDatabase(Parser.currentDatabaseName).getTable(Parser.currentTableName).getAttribute(attributeName).getType();
+        return databases.getDatabase(Parser.currentDatabaseName).getTable(Parser.currentTableName).getAttribute(attributeName).getType();
     }
 
     public void fillAttributesInTable() {
@@ -254,8 +271,8 @@ public class InsertDeleteQuery extends JPanel {
         List<Document> documents = clientConnectionInsertDelete.getData(Parser.currentDatabaseName, Parser.currentTableName);
         numberOfRows = 0;
 
-        setMappingArray(d.getDatabase(Parser.currentDatabaseName).getTable(Parser.currentTableName).getStructure(),
-                d.getDatabase(Parser.currentDatabaseName).getTable(Parser.currentTableName).getPrimaryKey());
+        setMappingArray(databases.getDatabase(Parser.currentDatabaseName).getTable(Parser.currentTableName).getStructure(),
+                databases.getDatabase(Parser.currentDatabaseName).getTable(Parser.currentTableName).getPrimaryKey());
         DefaultTableModel defaultTableModel = new DefaultTableModel(documents.size() + 1, attributes.length);
         table.setModel(defaultTableModel);
         table.setHeader(attributes);

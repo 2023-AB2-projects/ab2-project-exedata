@@ -101,6 +101,10 @@ public class PanelCenter extends JPanel {
         this.add(commandLineResults);
     }
 
+    public InsertDeleteQuery getInsertDeleteQuery() {
+        return inputAreaPanelInsDelQuery;
+    }
+
     public JLabel getMessagesLabel() {
         return messagesLabel;
     }
@@ -133,5 +137,7 @@ public class PanelCenter extends JPanel {
         return panelInsDelQuery;
     }
 
-    public InsertDeleteQuery getInputAreaPanelInsDelQuery() { return inputAreaPanelInsDelQuery; }
+    public InsertDeleteQuery getInputAreaPanelInsDelQuery() {
+        return inputAreaPanelInsDelQuery;
+    }
 }

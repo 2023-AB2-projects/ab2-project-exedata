@@ -74,6 +74,7 @@ public class DatabaseController {
         databaseFrame.getPanelCenter().getButtonInsertDeleteQuery().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                databaseFrame.getPanelCenter().getInsertDeleteQuery().refresh();
                 JPanel cards = databaseFrame.getPanelCenter().getCards();
                 CardLayout cl = (CardLayout) (cards.getLayout());
                 cl.show(cards, databaseFrame.getPanelCenter().getPanelInsDelQuery());
