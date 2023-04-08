@@ -6,15 +6,12 @@ import Backend.Databases.Databases;
 import Backend.Databases.Table;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
-import Backend.MongoDBManagement.MongoDB;
 import Backend.SocketServer.ErrorClient;
-import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,12 +29,10 @@ public class InsertDeleteQuery extends JPanel {
     private JComboBox tableComboBox;
     private JPanel centerDown;
     private ScrollableJTable table;
-    // private DefaultTableModel defaultTableModel;
     private JButton insertButton;
     private JButton deleteButton;
     private String[] allDatabases;
     private String[] allTables;
-    private String[] allAttributes;
     private ClientConnection clientConnectionInsertDelete;
     Databases d;
     private int numberOfRows;
@@ -51,7 +46,7 @@ public class InsertDeleteQuery extends JPanel {
         if (databases == null) {
 
         } else {
-            clientConnectionInsertDelete = new ClientConnection();
+            clientConnectionInsertDelete = new ClientConnection(12002);
             d = LoadJSON.load("databases.json");
             Parser.currentDatabaseName = databases.getDatabaseList().get(0).getName();
             Parser.currentTableName = databases.getDatabase(Parser.currentDatabaseName).getTables().get(0).getName();
@@ -123,7 +118,7 @@ public class InsertDeleteQuery extends JPanel {
                     Parser.currentTableName = d.getDatabase(Parser.currentDatabaseName).getTables().get(0).getName();
                     sendUse();
                     try {
-                        ClientConnection.send("USE " + Parser.currentDatabaseName);
+                        clientConnectionInsertDelete.send("USE " + Parser.currentDatabaseName);
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -147,7 +142,7 @@ public class InsertDeleteQuery extends JPanel {
                     String column = convertColumnToSendFormat(getAllAttributes());
                     String contentOfRows = getContentOfTable();
                     try {
-                        ClientConnection.send("INSERT INTO " + Parser.currentTableName + " (" + column + ") VALUES (" + contentOfRows + ");");
+                        clientConnectionInsertDelete.send("INSERT INTO " + Parser.currentTableName + " (" + column + ") VALUES (" + contentOfRows + ");");
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -160,10 +155,9 @@ public class InsertDeleteQuery extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     String[] condition = getDeleteCondition(table.getSelectedRows());
-                    System.out.println(condition);
                     for (String i : condition) {
                         try {
-                            ClientConnection.send("DELETE FROM " + Parser.currentTableName + " WHERE " + i + ";");
+                            clientConnectionInsertDelete.send("DELETE FROM " + Parser.currentTableName + " WHERE " + i + ";");
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -176,9 +170,9 @@ public class InsertDeleteQuery extends JPanel {
     }
 
     public String[] getDeleteCondition(int[] selectedRows) {
-        String[] result=new String[selectedRows.length];
-        int k=0;
-        for(int selectedRow : selectedRows){
+        String[] result = new String[selectedRows.length];
+        int k = 0;
+        for (int selectedRow : selectedRows) {
             String[] condition = new String[table.getColumnCount()];
             int j = 0;
             for (int i = 0; i < table.getColumnCount(); i++) {
@@ -190,11 +184,9 @@ public class InsertDeleteQuery extends JPanel {
             StringBuilder subResult = new StringBuilder();
 
             for (int i = 0; i < j; i++) {
-                System.out.println(condition[i]);
                 subResult.append(" AND ").append(condition[i]);
             }
-            System.out.println(subResult.length());
-            result[k]=subResult.substring(5);
+            result[k] = subResult.substring(5);
             k++;
         }
         return result;
@@ -210,7 +202,6 @@ public class InsertDeleteQuery extends JPanel {
     public String getContentOfTable() {
         StringBuilder content = new StringBuilder();
         for (int i = 0; i < table.getColumnCount(); i++) {
-            System.out.println(table.getValueAt(numberOfRows, i));
             if (table.getValueAt(numberOfRows, i) != null)
                 content.append(", ").append((String) table.getValueAt(numberOfRows, i));
         }
@@ -219,9 +210,7 @@ public class InsertDeleteQuery extends JPanel {
 
     public String convertColumnToSendFormat(String[] columns) {
         StringBuilder column = new StringBuilder();
-        System.out.println("");
         for (int i = 0; i < columns.length; i++) {
-            System.out.println(table.getValueAt(numberOfRows, i));
             if (table.getValueAt(numberOfRows, i) != null)
                 column.append(", ").append(columns[i]);
         }
@@ -262,29 +251,24 @@ public class InsertDeleteQuery extends JPanel {
     public void fillAttributesInTable() {
         String[] attributes = getAllAttributes();
 
-        MongoDB mongoDB = new MongoDB();
-        mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
-        MongoCollection<Document> documents = mongoDB.getDocuments(Parser.currentTableName);
-
-        numberOfRows=0;
+        List<Document> documents = clientConnectionInsertDelete.getData(Parser.currentDatabaseName, Parser.currentTableName);
+        numberOfRows = 0;
 
         setMappingArray(d.getDatabase(Parser.currentDatabaseName).getTable(Parser.currentTableName).getStructure(),
                 d.getDatabase(Parser.currentDatabaseName).getTable(Parser.currentTableName).getPrimaryKey());
-
-        DefaultTableModel defaultTableModel = new DefaultTableModel((int)documents.countDocuments()+1, attributes.length);
+        DefaultTableModel defaultTableModel = new DefaultTableModel(documents.size() + 1, attributes.length);
         table.setModel(defaultTableModel);
         table.setHeader(attributes);
 
-        for (Document i: documents.find()) {
-            table.fillARowWithData(numberOfRows,separetaByHasthag(i,attributes.length));
+        for (Document i : documents) {
+            table.fillARowWithData(numberOfRows, separetaByHasthag(i, attributes.length));
             numberOfRows++;
         }
-        mongoDB.disconnectFromLocalhost();
     }
 
     public void sendUse() {
         try {
-            ClientConnection.send("USE " + Parser.currentDatabaseName + ";");
+            clientConnectionInsertDelete.send("USE " + Parser.currentDatabaseName + ";");
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }

@@ -1,7 +1,5 @@
 package Frontend;
 
-import Backend.Parser;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -16,7 +14,7 @@ public class DatabaseController {
 
     public DatabaseController() {
         databaseFrame = new DatabaseFrame();
-        clientConnection = new ClientConnection();
+        clientConnection = new ClientConnection(12000);
         clientConnection.connect(12000);
         databaseFrame.getPanelTop().getConnect().addActionListener(new ActionListener() {
             @Override
@@ -47,7 +45,7 @@ public class DatabaseController {
                         }
                         String[] commands = command.split(";\n");
                         for (String s : commands) {
-                            ClientConnection.send(s);
+                            clientConnection.send(s);
                             // varom a valaszt
                         }
 

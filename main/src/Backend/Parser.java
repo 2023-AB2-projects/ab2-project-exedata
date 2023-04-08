@@ -28,7 +28,7 @@ public class Parser {
     public static String currentTableName;
 
     public static Command commandType(String command) {
-        System.out.println(command);
+        //System.out.println(command);
         if (use.matcher(command).find()) {
             currentDatabaseName = returnTheDatabaseName(formatCommand(command));
             return null;
