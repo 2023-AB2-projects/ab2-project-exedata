@@ -44,7 +44,6 @@ public class InsertDeleteQuery extends JPanel {
 
         databases = LoadJSON.load("databases.json");
         if (databases == null) {
-
         } else {
             clientConnectionInsertDelete = new ClientConnection(12002);
             Parser.currentDatabaseName = databases.getDatabaseList().get(0).getName();
