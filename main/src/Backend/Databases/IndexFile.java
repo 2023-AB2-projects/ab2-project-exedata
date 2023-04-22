@@ -10,7 +10,7 @@ public class IndexFile {
     public IndexFile(String indexName, List<String> indexAttributes, String isUnique) {
         this.indexName = indexName;
         this.indexAttributes = indexAttributes;
-        this.isUnique = isUnique;I
+        this.isUnique = isUnique;
     }
 
     public IndexFile() {
