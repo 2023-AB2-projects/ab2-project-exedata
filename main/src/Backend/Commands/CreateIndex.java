@@ -4,12 +4,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import Backend.Databases.Databases;
 import Backend.Databases.IndexFile;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
-import Backend.SaveLoadJSON.SaveJSON;
 import Backend.SocketServer.ErrorClient;
 
 import static Backend.Commands.FormatCommand.formatWords;
@@ -27,32 +28,38 @@ public class CreateIndex implements Command {
     public void performAction() {
         //CREATE INDEX index_name
         //ON table_name (column1, column2, ...);
+        Parser.currentDatabaseName = "University";
         databases = LoadJSON.load("databases.json");
         if (databases == null) {
-            System.out.println("Databases doesn't exists!");
             ErrorClient.send("Databases doesn't exists!");
             return;
         }
-        String[] commandWords = command.split(" ");
-        String currentTableName = commandWords[4];
-        String indexName = commandWords[2];
-        if (databases.getDatabase(Parser.currentDatabaseName) != null) {
-            if (databases.getDatabase(Parser.currentDatabaseName).checkTableExists(currentTableName)) {
-                if (createIndex(commandWords, indexName, currentTableName)) {
-                    //createEmptyIndexFile(indexName + ".ind");
-                    SaveJSON.save(databases, "databases.json");
-                } else {
-                    System.out.println("Syntax error!");
-                    ErrorClient.send("Syntax error!");
-                }
-            } else {
-                System.out.println("Table doesn't exists!");
-                ErrorClient.send("Table doesn't exists!");
-            }
+        Pattern pattern = Pattern.compile("^\\s*CREATE\\s+INDEX\\s+([A-Za-z0-9]+)\\s+ON\\s+([A-Za-z0-9]+)\\s+\\((.*)\\);?", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(command);
+        if (matcher.matches()) {
+            String indexName = matcher.group(1);
+            String tableName = matcher.group(2);
+            String[] attributeNames = matcher.group(3).replaceAll(" ", "").split(",");
+            System.out.println(attributeNames[0]);
         } else {
-            System.out.println("Database doesn't exists!");
-            ErrorClient.send("Databases doesn't exists!");
+            ErrorClient.send("Wrong command!");
         }
+//        if (databases.getDatabase(Parser.currentDatabaseName) != null) {
+//            if (databases.getDatabase(Parser.currentDatabaseName).checkTableExists(tableName)) {
+//                if (createIndex(commandWords, indexName, tableName)) {
+//                    createEmptyIndexFile(indexName + ".ind");
+//                    SaveJSON.save(databases, "databases.json");
+//                } else {
+//                    ErrorClient.send("Syntax error!");
+//                }
+//            } else {
+//                ErrorClient.send("Table doesn't exists!");
+//            }
+//        } else {
+//            ErrorClient.send("Databases doesn't exists!");
+//        }
+        //String attributes = commandWords[5].substring(1);
+        //createIndexFileInMongoDB();
     }
 
     private boolean createIndex(String[] commandWords, String IndexName, String currentTableName) {
@@ -66,9 +73,8 @@ public class CreateIndex implements Command {
             if (databases.getDatabase(Parser.currentDatabaseName).getTable(currentTableName).checkAttributeExists(column)) {
                 indexAttributes.add(column);
                 if (databases.getDatabase(Parser.currentDatabaseName).getTable(currentTableName).isUnique(column))
-                    isUnique = "1";
+                    isUnique="1";
             } else {
-                System.out.println("Column doesn't exists!");
                 ErrorClient.send("Column doesn't exists!");
                 return false;
             }
@@ -84,5 +90,9 @@ public class CreateIndex implements Command {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void createIndexFileInMongoDB() {
+
     }
 }
