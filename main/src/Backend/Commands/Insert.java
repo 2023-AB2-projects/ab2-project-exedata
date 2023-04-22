@@ -52,7 +52,6 @@ public class Insert implements Command {
                     mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
                     mongoDB.insertOne(tableName, document);
                     mongoDB.disconnectFromLocalhost();
-                    ErrorClient.send("Inserted!");
                 }
             }
         }

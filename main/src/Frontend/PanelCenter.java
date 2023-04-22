@@ -20,8 +20,10 @@ public class PanelCenter extends JPanel {
     private JButton buttonInsertDeleteQuery;
     private final String panelCommandString = "PANELCOMMAND";
     private final String panelInsDelQuery = "PANELINSDELQUERY";
+    private final PanelDown panelDown;
 
-    public PanelCenter() {
+    public PanelCenter(PanelDown panelDown) {
+        this.panelDown=panelDown;
         this.setLayout(new GridLayout(1, 2));
 
         // left side of PanelCenter
@@ -60,7 +62,7 @@ public class PanelCenter extends JPanel {
         //================================================================================================
         cards = new JPanel();
         inputAreaPanelCommandLine = new JPanel();
-        inputAreaPanelInsDelQuery = new InsertDeleteQuery();
+        inputAreaPanelInsDelQuery = new InsertDeleteQuery(this.panelDown);
 
         inputAreaPanelCommandLine.setLayout(new GridLayout(1, 1));
         inputAreaPanelCommandLine.add(inputArea);

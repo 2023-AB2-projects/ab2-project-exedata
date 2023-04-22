@@ -77,7 +77,6 @@ public class Delete implements Command {
                 } else {
                     mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
                     mongoDB.deleteOne(tableName, "_id", deleteValue);
-                    ErrorClient.send("Deleted!");
                 }
             }
             mongoDB.disconnectFromLocalhost();
