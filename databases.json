@@ -1,1 +1,204 @@
-{"databaseList":[{"name":"University","tables":[{"name":"disciplines","structure":[{"name":"DiscID","type":"VARCHAR","isnull":"1"},{"name":"DName","type":"VARCHAR","isnull":"1"},{"name":"CreditNr","type":"INT","isnull":"1"}],"primaryKey":["DiscID"],"foreignKeys":[],"uniqueKeys":[],"indexFiles":[{"indexName":"disciplines","indexAttributes":["DiscID"],"isUnique":"1"}]},{"name":"specialization","structure":[{"name":"SpecID","type":"VARCHAR","isnull":"1"},{"name":"SpecName","type":"VARCHAR","isnull":"1"},{"name":"Language","type":"VARCHAR","isnull":"1"}],"primaryKey":["SpecID"],"foreignKeys":[],"uniqueKeys":[],"indexFiles":[{"indexName":"specialization","indexAttributes":["SpecID"],"isUnique":"1"}]},{"name":"groups","structure":[{"name":"GroupId","type":"INT","isnull":"1"},{"name":"SpecID","type":"VARCHAR","isnull":"1"}],"primaryKey":["GroupId"],"foreignKeys":[],"uniqueKeys":[],"indexFiles":[{"indexName":"groups","indexAttributes":["GroupId"],"isUnique":"1"}]},{"name":"students","structure":[{"name":"StudID","type":"INT","isnull":"1"},{"name":"GroupId","type":"INT","isnull":"1"},{"name":"StudName","type":"VARCHAR","isnull":"1"},{"name":"Email","type":"VARCHAR","isnull":"1"}],"primaryKey":["StudID"],"foreignKeys":[],"uniqueKeys":[],"indexFiles":[{"indexName":"students","indexAttributes":["StudID"],"isUnique":"1"}]},{"name":"marks","structure":[{"name":"StudID","type":"INT","isnull":"1"},{"name":"DiscID","type":"VARCHAR","isnull":"1"},{"name":"Mark","type":"INT","isnull":"1"}],"primaryKey":["StudID","DiscID"],"foreignKeys":[],"uniqueKeys":[],"indexFiles":[{"indexName":"marks","indexAttributes":["StudID","DiscID"],"isUnique":"1"}]}]}]}
+{
+  "databaseList": [
+    {
+      "name": "University",
+      "tables": [
+        {
+          "name": "disciplines",
+          "structure": [
+            {
+              "name": "DiscID",
+              "type": "VARCHAR",
+              "isnull": "1"
+            },
+            {
+              "name": "DName",
+              "type": "VARCHAR",
+              "isnull": "1"
+            },
+            {
+              "name": "CreditNr",
+              "type": "INT",
+              "isnull": "1"
+            }
+          ],
+          "primaryKey": [
+            "DiscID"
+          ],
+          "foreignKeys": [],
+          "uniqueKeys": [],
+          "indexFiles": [
+            {
+              "indexName": "disciplines",
+              "indexAttributes": [
+                "DiscID"
+              ],
+              "isUnique": "1"
+            },
+            {
+              "indexName": "DisciplinesInd",
+              "indexAttributes": [
+                "CreditNr"
+              ],
+              "isUnique": "0"
+            }
+          ]
+        },
+        {
+          "name": "specialization",
+          "structure": [
+            {
+              "name": "SpecID",
+              "type": "VARCHAR",
+              "isnull": "1"
+            },
+            {
+              "name": "SpecName",
+              "type": "VARCHAR",
+              "isnull": "1"
+            },
+            {
+              "name": "Language",
+              "type": "VARCHAR",
+              "isnull": "1"
+            }
+          ],
+          "primaryKey": [
+            "SpecID"
+          ],
+          "foreignKeys": [],
+          "uniqueKeys": [],
+          "indexFiles": [
+            {
+              "indexName": "specialization",
+              "indexAttributes": [
+                "SpecID"
+              ],
+              "isUnique": "1"
+            }
+          ]
+        },
+        {
+          "name": "groups",
+          "structure": [
+            {
+              "name": "GroupId",
+              "type": "INT",
+              "isnull": "1"
+            },
+            {
+              "name": "SpecID",
+              "type": "VARCHAR",
+              "isnull": "1"
+            }
+          ],
+          "primaryKey": [
+            "GroupId"
+          ],
+          "foreignKeys": [],
+          "uniqueKeys": [],
+          "indexFiles": [
+            {
+              "indexName": "groups",
+              "indexAttributes": [
+                "GroupId"
+              ],
+              "isUnique": "1"
+            }
+          ]
+        },
+        {
+          "name": "students",
+          "structure": [
+            {
+              "name": "StudID",
+              "type": "INT",
+              "isnull": "1"
+            },
+            {
+              "name": "GroupId",
+              "type": "INT",
+              "isnull": "1"
+            },
+            {
+              "name": "StudName",
+              "type": "VARCHAR",
+              "isnull": "1"
+            },
+            {
+              "name": "Email",
+              "type": "VARCHAR",
+              "isnull": "1"
+            }
+          ],
+          "primaryKey": [
+            "StudID"
+          ],
+          "foreignKeys": [],
+          "uniqueKeys": [
+            "StudName"
+          ],
+          "indexFiles": [
+            {
+              "indexName": "students",
+              "indexAttributes": [
+                "StudID"
+              ],
+              "isUnique": "1"
+            },
+            {
+              "indexName": "studInd",
+              "indexAttributes": [
+                "StudName"
+              ],
+              "isUnique": "1"
+            },
+            {
+              "indexName": "DisciplinesInd",
+              "indexAttributes": [
+                "StudName"
+              ],
+              "isUnique": "1"
+            }
+          ]
+        },
+        {
+          "name": "marks",
+          "structure": [
+            {
+              "name": "StudID",
+              "type": "INT",
+              "isnull": "1"
+            },
+            {
+              "name": "DiscID",
+              "type": "VARCHAR",
+              "isnull": "1"
+            },
+            {
+              "name": "Mark",
+              "type": "INT",
+              "isnull": "1"
+            }
+          ],
+          "primaryKey": [
+            "StudID",
+            "DiscID"
+          ],
+          "foreignKeys": [],
+          "uniqueKeys": [],
+          "indexFiles": [
+            {
+              "indexName": "marks",
+              "indexAttributes": [
+                "StudID",
+                "DiscID"
+              ],
+              "isUnique": "1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
