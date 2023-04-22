@@ -140,14 +140,17 @@ public class InsertDeleteQuery extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     String column = convertColumnToSendFormat(getAllAttributes());
-                    String contentOfRows = getContentOfTable();
-                    try {
-                        clientConnectionInsertDelete.send("INSERT INTO " + Parser.currentTableName + " (" + column + ") VALUES (" + contentOfRows + ");");
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
+                    if (column != null) {
+                        String contentOfRows = getContentOfTable();
+                        try {
+                            clientConnectionInsertDelete.send("INSERT INTO " + Parser.currentTableName + " (" + column + ") VALUES (" + contentOfRows + ");");
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        fillAttributesInTable();
+                    }else{
+                        ErrorClient.send("No data??????????????????????????????");
                     }
-
-                    fillAttributesInTable();
                 }
             });
 
@@ -230,6 +233,8 @@ public class InsertDeleteQuery extends JPanel {
             if (table.getValueAt(numberOfRows, i) != null)
                 column.append(", ").append(columns[i]);
         }
+        if (column.length() == 0)
+            return null;
         return column.substring(2);
     }
 
