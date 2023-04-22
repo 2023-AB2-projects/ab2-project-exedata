@@ -41,7 +41,7 @@ public class Parser {
         } else if (dropTable.matcher(command).find()) {
             return new DropTable(formatCommand(command));
         } else if (createIndex.matcher(command).find()) {
-            return new CreateIndex(formatCommand(command));
+            return new CreateIndex(command);
         } else if (dropIndex.matcher(command).find()) {
             return new DropIndex(formatCommand(command));
         } else if (insert.matcher(command).find()) {
