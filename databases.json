@@ -32,7 +32,15 @@
               "indexName": "disciplines",
               "indexAttributes": [
                 "DiscID"
-              ]
+              ],
+              "isUnique": "1"
+            },
+            {
+              "indexName": "DisciplinesInd",
+              "indexAttributes": [
+                "CreditNr"
+              ],
+              "isUnique": "0"
             }
           ]
         },
@@ -65,7 +73,8 @@
               "indexName": "specialization",
               "indexAttributes": [
                 "SpecID"
-              ]
+              ],
+              "isUnique": "1"
             }
           ]
         },
@@ -93,7 +102,8 @@
               "indexName": "groups",
               "indexAttributes": [
                 "GroupId"
-              ]
+              ],
+              "isUnique": "1"
             }
           ]
         },
@@ -133,7 +143,22 @@
               "indexName": "students",
               "indexAttributes": [
                 "StudID"
-              ]
+              ],
+              "isUnique": "1"
+            },
+            {
+              "indexName": "studInd",
+              "indexAttributes": [
+                "StudName"
+              ],
+              "isUnique": "1"
+            },
+            {
+              "indexName": "DisciplinesInd",
+              "indexAttributes": [
+                "StudName"
+              ],
+              "isUnique": "1"
             }
           ]
         },
@@ -168,7 +193,8 @@
               "indexAttributes": [
                 "StudID",
                 "DiscID"
-              ]
+              ],
+              "isUnique": "1"
             }
           ]
         }

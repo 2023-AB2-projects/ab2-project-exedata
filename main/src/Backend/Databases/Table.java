@@ -1,9 +1,11 @@
 package Backend.Databases;
 
+import Backend.Parser;
 import Backend.SocketServer.ErrorClient;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class Table {
     private String name;
@@ -23,6 +25,15 @@ public class Table {
     }
 
     public Table() {
+    }
+
+    public boolean existIndexName(String indexName) {
+        for (IndexFile i : indexFiles) {
+            if (i.getIndexName().equals(indexName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isUnique(String attributeName){
