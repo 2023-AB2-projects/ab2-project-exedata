@@ -105,7 +105,7 @@ public class CreateTable implements Command {
         //indexFiles
         //primaryKey
         List<String> attributeName = table.getPrimaryKey();
-        table.addIndexFile(new IndexFile(currentTableName, attributeName));
+        table.addIndexFile(new IndexFile(currentTableName, attributeName, "1"));
         //createEmptyIndexFile(currentTableName + ".ind");
     }
 

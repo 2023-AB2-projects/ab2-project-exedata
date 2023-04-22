@@ -33,7 +33,7 @@ public class ErrorChannelThread extends Thread {
 
                 while ((errorMassage = reader.readLine()) != null) {
                     System.out.println("I receive this error massage: " + errorMassage);
-                    panelDown.getErrorLabel().setText(errorMassage);
+                    panelDown.getErrorLabel().setText(panelDown.getErrorLabel().getText() + "\n " + errorMassage);
                 }
             } catch (Exception e) {
             }

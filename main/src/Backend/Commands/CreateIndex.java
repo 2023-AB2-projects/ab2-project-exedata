@@ -39,11 +39,12 @@ public class CreateIndex implements Command {
         if (databases.getDatabase(Parser.currentDatabaseName) != null) {
             if (databases.getDatabase(Parser.currentDatabaseName).checkTableExists(currentTableName)) {
                 if (createIndex(commandWords, indexName, currentTableName)) {
-                    createEmptyIndexFile(indexName + ".ind");
+                    //createEmptyIndexFile(indexName + ".ind");
                     SaveJSON.save(databases, "databases.json");
-                } else
+                } else {
                     System.out.println("Syntax error!");
-                ErrorClient.send("Syntax error!");
+                    ErrorClient.send("Syntax error!");
+                }
             } else {
                 System.out.println("Table doesn't exists!");
                 ErrorClient.send("Table doesn't exists!");
@@ -59,18 +60,20 @@ public class CreateIndex implements Command {
         String indexFileName = IndexName + ".ind";
         String column;
         List<String> indexAttributes = new ArrayList<>();
-
+        String isUnique = "0";
         for (int i = 5; i < commandWords.length; i++) {
             column = formatWords(commandWords[i]);
             if (databases.getDatabase(Parser.currentDatabaseName).getTable(currentTableName).checkAttributeExists(column)) {
                 indexAttributes.add(column);
+                if (databases.getDatabase(Parser.currentDatabaseName).getTable(currentTableName).isUnique(column))
+                    isUnique = "1";
             } else {
                 System.out.println("Column doesn't exists!");
                 ErrorClient.send("Column doesn't exists!");
                 return false;
             }
         }
-        databases.getDatabase(Parser.currentDatabaseName).getTable(currentTableName).addIndexFile(new IndexFile(IndexName, indexAttributes));
+        databases.getDatabase(Parser.currentDatabaseName).getTable(currentTableName).addIndexFile(new IndexFile(IndexName, indexAttributes, isUnique));
         return true;
     }
 

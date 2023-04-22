@@ -25,6 +25,10 @@ public class Table {
     public Table() {
     }
 
+    public boolean isUnique(String attributeName){
+        return uniqueKeys.contains(attributeName);
+    }
+
     public boolean checkInsertColumn(String[] column) {
         int numberOfPrimaryKey = primaryKey.size();
         for (String i : column) {

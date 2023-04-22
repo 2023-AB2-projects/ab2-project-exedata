@@ -5,13 +5,23 @@ import java.util.List;
 public class IndexFile {
     private String indexName;
     private List<String> indexAttributes;
+    private String isUnique;
 
-    public IndexFile(String indexName, List<String> indexAttributes) {
+    public IndexFile(String indexName, List<String> indexAttributes, String isUnique) {
         this.indexName = indexName;
         this.indexAttributes = indexAttributes;
+        this.isUnique = isUnique;I
     }
 
     public IndexFile() {
+    }
+
+    public String getIsUnique() {
+        return isUnique;
+    }
+
+    public void setIsUnique(String isUnique) {
+        this.isUnique = isUnique;
     }
 
     public String getIndexName() {
