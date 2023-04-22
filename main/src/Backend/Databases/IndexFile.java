@@ -4,24 +4,14 @@ import java.util.List;
 
 public class IndexFile {
     private String indexName;
-    private String fileName;
     private List<String> indexAttributes;
 
-    public IndexFile(String indexName, String fileName, List<String> indexAttributes) {
+    public IndexFile(String indexName, List<String> indexAttributes) {
         this.indexName = indexName;
-        this.fileName=fileName;
         this.indexAttributes = indexAttributes;
     }
 
     public IndexFile() {
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
     }
 
     public String getIndexName() {

@@ -70,7 +70,7 @@ public class CreateIndex implements Command {
                 return false;
             }
         }
-        databases.getDatabase(Parser.currentDatabaseName).getTable(currentTableName).addIndexFile(new IndexFile(IndexName, indexFileName, indexAttributes));
+        databases.getDatabase(Parser.currentDatabaseName).getTable(currentTableName).addIndexFile(new IndexFile(IndexName, indexAttributes));
         return true;
     }
 

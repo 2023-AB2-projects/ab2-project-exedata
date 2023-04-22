@@ -149,7 +149,7 @@ public class InsertDeleteQuery extends JPanel {
                         }
                         fillAttributesInTable();
                     }else{
-                        ErrorClient.send("No data??????????????????????????????");
+                        ErrorClient.send("No data input");
                     }
                 }
             });
