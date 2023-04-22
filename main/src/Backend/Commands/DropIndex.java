@@ -32,6 +32,7 @@ public class DropIndex implements Command {
             if (databases.getDatabase(Parser.currentDatabaseName).checkTableExists(currentTableName)) {
                 databases.getDatabase(currentDatabaseName).getTable(currentTableName).dropIndex(indexName);
                 SaveJSON.save(databases, "databases.json");
+                ErrorClient.send("Index is deleted!");
             } else {
                 System.out.println("Table doesn't exists!");
                 ErrorClient.send("Table doesn't exists!");

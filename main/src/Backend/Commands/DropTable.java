@@ -32,6 +32,7 @@ public class DropTable implements Command {
             mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
             mongoDB.dropCollection(currentTableName);
             mongoDB.disconnectFromLocalhost();
+            ErrorClient.send("Table is deleted!");
         }
     }
 }

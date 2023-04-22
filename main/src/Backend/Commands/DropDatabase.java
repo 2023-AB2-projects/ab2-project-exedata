@@ -31,5 +31,6 @@ public class DropDatabase implements Command {
         MongoDB mongoDB = new MongoDB();
         mongoDB.dropDatabase(currentDatabaseName);
         mongoDB.disconnectFromLocalhost();
+        ErrorClient.send("Database is deleted!");
     }
 }
