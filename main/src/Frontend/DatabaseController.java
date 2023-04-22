@@ -44,6 +44,8 @@ public class DatabaseController {
                             command = databaseFrame.getPanelCenter().getInputArea().getText();
                         }
                         String[] commands = command.split(";\n");
+                        //set error message chanel is empty
+                        databaseFrame.getPanelDown().getErrorLabel().setText("");
                         for (String s : commands) {
                             clientConnection.send(s);
                             // varom a valaszt
