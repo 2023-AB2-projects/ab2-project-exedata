@@ -85,7 +85,7 @@ public class DatabaseController {
 
                     int caretPosition = jTextPane.getCaretPosition();
                     int startIndex, endIndex;
-                    if (e.getKeyCode() == 17) {
+                    if (e.getKeyCode() == 9) {
                         int i = 0;
                         while (i < doc.getLength()) {
                             try {
