@@ -2,7 +2,6 @@ package Backend.MongoDBManagement;
 
 import Backend.Backend;
 import Backend.SocketServer.ErrorClient;
-import Backend.SocketServer.Server;
 import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -68,7 +67,8 @@ public class MongoDB {
             System.out.println("Document inserted to " + collectionName + "!");
             Backend.goodInsert = true;
         } else {
-            System.out.println("Insert error to " + collectionName + ", _id already exists!");
+            System.out.println("Insert error to " + collectionName + ", " + document.get("_id") + " primary key already exists!");
+            ErrorClient.send("Insert error to " + collectionName + ", " + document.get("_id") + " primary key already exists!");
         }
     }
 
@@ -79,7 +79,8 @@ public class MongoDB {
                 System.out.println("Document inserted to " + collectionName + "!" + " (data: " + i + ")");
                 Backend.goodInsert = true;
             } else {
-                System.out.println("Insert error to " + collectionName + ", _id already exists!" + " (data: " + i + ")");
+                System.out.println("Insert error to " + collectionName + ", primary key already exists!" + " (data: " + i + ")");
+                ErrorClient.send("Insert error to " + collectionName + ", primary key already exists!" + " (data: " + i + ")");
             }
         }
     }
@@ -105,7 +106,7 @@ public class MongoDB {
         return (database.getCollection(collectionName).find(new Document("_id", document.get("_id"))).first() != null);
     }
 
-    public MongoCollection<Document> getDocuments(String collenctionName) {
-        return database.getCollection(collenctionName);
+    public MongoCollection<Document> getDocuments(String collectionName) {
+        return database.getCollection(collectionName);
     }
 }
