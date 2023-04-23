@@ -23,9 +23,6 @@ public class CreateIndex implements Command {
     private final String command;
     private Databases databases;
 
-    private List<String> primaryKeyList;
-    private List<Attribute> attributeList;
-
     public CreateIndex(String command) {
         this.command = command;
     }
@@ -70,7 +67,7 @@ public class CreateIndex implements Command {
             }
 
             // insert index file to MongoDB
-           createIndexFileInMongoDB(indexName, tableName, attributeNames);
+            createIndexFileInMongoDB(indexName, tableName, attributeNames);
         } else {
             ErrorClient.send("Wrong command!");
         }
@@ -110,8 +107,8 @@ public class CreateIndex implements Command {
         MongoDB mongoDB = new MongoDB();
         mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
         mongoDB.createCollection(indexName);
-        attributeList = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getStructure();
-        primaryKeyList = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey();
+        List<Attribute> attributeList = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getStructure();
+        List<String> primaryKeyList = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey();
 
         // get primary key and not primary key coordinates from given attributes
         MongoCollection<Document> collection = mongoDB.getDocuments(tableName);
@@ -123,7 +120,7 @@ public class CreateIndex implements Command {
                 StringBuilder keyIndexFile = new StringBuilder();
 
                 // build string
-                for (int i=0; i<attributeNames.length; i++) {
+                for (int i = 0; i < attributeNames.length; i++) {
                     String value = Common.getValueByAttributeName(document, attributeNames[i], primaryKeyList, attributeList);
                     keyIndexFile.append(value).append("#");
                 }
@@ -135,7 +132,6 @@ public class CreateIndex implements Command {
                 documentNew.append("_id", keyIndexFile.toString());
                 documentNew.append("Value", valueIndexFile);
                 mongoDB.insertOne(indexName, documentNew);
-
             }
         }
 
