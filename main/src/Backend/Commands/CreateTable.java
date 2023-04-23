@@ -90,7 +90,7 @@ public class CreateTable implements Command {
                     mongoDB.createDatabaseOrUse(databaseName);
                     mongoDB.createCollection(table.getName());
                     mongoDB.disconnectFromLocalhost();
-                    ErrorClient.send("Table created!");
+                    ErrorClient.send("Table " + currentTableName + " created!");
                 } else {
                     System.out.println("Table is exists!");
                     ErrorClient.send("Table is exists!");

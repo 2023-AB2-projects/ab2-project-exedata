@@ -1,5 +1,8 @@
 package Backend.MongoDBManagement;
+
+import Backend.Backend;
 import Backend.SocketServer.ErrorClient;
+import Backend.SocketServer.Server;
 import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -12,10 +15,12 @@ public class MongoDB {
 
     private MongoClient mongoClient;
     private MongoDatabase database;
+
     public MongoDB() {
         mongoClient = null;
         connectToLocalhost();
     }
+
     public void connectToLocalhost() {
         try {
             mongoClient = new MongoClient("localhost", 27017);
@@ -61,16 +66,18 @@ public class MongoDB {
         if (!existsID(collectionName, document)) {
             database.getCollection(collectionName).insertOne(document);
             System.out.println("Document inserted to " + collectionName + "!");
+            Backend.goodInsert = true;
         } else {
             System.out.println("Insert error to " + collectionName + ", _id already exists!");
         }
     }
 
     public void insertMany(String collectionName, List<Document> documents) {
-        for(int i=0; i<documents.size(); i++) {
+        for (int i = 0; i < documents.size(); i++) {
             if (!existsID(collectionName, documents.get(i))) {
                 database.getCollection(collectionName).insertOne(documents.get(i));
                 System.out.println("Document inserted to " + collectionName + "!" + " (data: " + i + ")");
+                Backend.goodInsert = true;
             } else {
                 System.out.println("Insert error to " + collectionName + ", _id already exists!" + " (data: " + i + ")");
             }
@@ -80,11 +87,13 @@ public class MongoDB {
     public void deleteOne(String collectionName, String fieldName, String value) {
         database.getCollection(collectionName).deleteOne(Filters.eq(fieldName, value));
         System.out.println("Document deleted from " + collectionName + "!");
+        Backend.goodDelete = true;
     }
 
     public void deleteMany(String collectionName, String fieldName, String value) {
         database.getCollection(collectionName).deleteMany(Filters.eq(fieldName, value));
         System.out.println("All documents delete from " + collectionName + "!");
+        Backend.goodDelete = true;
     }
 
     public void deleteAll(String collectionName) {
@@ -93,10 +102,10 @@ public class MongoDB {
     }
 
     public boolean existsID(String collectionName, Document document) {
-        return (database.getCollection(collectionName).find(new Document("_id", document.get("_id"))).first()!=null);
+        return (database.getCollection(collectionName).find(new Document("_id", document.get("_id"))).first() != null);
     }
 
-    public MongoCollection<Document> getDocuments(String collenctionName){
+    public MongoCollection<Document> getDocuments(String collenctionName) {
         return database.getCollection(collenctionName);
     }
 }

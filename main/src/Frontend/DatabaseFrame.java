@@ -14,8 +14,9 @@ public class DatabaseFrame extends JFrame {
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         panelTop = new PanelTop();
-        panelCenter = new PanelCenter();
         panelDown = new PanelDown();
+        panelCenter = new PanelCenter(panelDown);
+
 
         this.add(panelTop, BorderLayout.NORTH);
         this.add(panelCenter, BorderLayout.CENTER);

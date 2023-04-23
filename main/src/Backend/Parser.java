@@ -4,6 +4,7 @@ import Backend.Commands.*;
 import Backend.Databases.Databases;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SocketServer.ErrorClient;
+import Backend.SocketServer.Server;
 
 import java.util.regex.Pattern;
 import static Backend.Commands.FormatCommand.formatCommand;
@@ -29,7 +30,10 @@ public class Parser {
 
     public static Command commandType(String command) {
         //System.out.println(command);
-        if (use.matcher(command).find()) {
+        if(command.equals("END")){
+            Backend.end = -1;
+            return null;
+        } else if (use.matcher(command).find()) {
             currentDatabaseName = returnTheDatabaseName(formatCommand(command));
             return null;
         } else if (createDatabase.matcher(command).find()) {

@@ -36,16 +36,18 @@ public class InsertDeleteQuery extends JPanel {
     private ClientConnection clientConnectionInsertDelete;
     private Databases databases;
     private int numberOfRows;
+    private final PanelDown panelDown;
 
-    public InsertDeleteQuery() {
+    public InsertDeleteQuery(PanelDown panelDown) {
+        this.panelDown = panelDown;
         this.setLayout(new BorderLayout());
         header = new JPanel();
         center = new JPanel();
+        clientConnectionInsertDelete = new ClientConnection(12002);
 
         databases = LoadJSON.load("databases.json");
-        if (databases == null) {
+        if (databases == null || databases.getDatabaseList().size() == 0) {
         } else {
-            clientConnectionInsertDelete = new ClientConnection(12002);
             Parser.currentDatabaseName = databases.getDatabaseList().get(0).getName();
             Parser.currentTableName = databases.getDatabase(Parser.currentDatabaseName).getTables().get(0).getName();
             sendUse();
@@ -143,12 +145,14 @@ public class InsertDeleteQuery extends JPanel {
                     if (column != null) {
                         String contentOfRows = getContentOfTable();
                         try {
+                            panelDown.getErrorLabel().setText("");
                             clientConnectionInsertDelete.send("INSERT INTO " + Parser.currentTableName + " (" + column + ") VALUES (" + contentOfRows + ");");
+                            clientConnectionInsertDelete.send("END");
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
                         fillAttributesInTable();
-                    }else{
+                    } else {
                         ErrorClient.send("No data input");
                     }
                 }
@@ -160,12 +164,17 @@ public class InsertDeleteQuery extends JPanel {
                     String[] condition = getDeleteCondition(table.getSelectedRows());
                     for (String i : condition) {
                         try {
+                            panelDown.getErrorLabel().setText("");
                             clientConnectionInsertDelete.send("DELETE FROM " + Parser.currentTableName + " WHERE " + i + ";");
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
                     }
-                    ErrorClient.send(table.getSelectedRows().length + " row deleted!");
+                    try {
+                        clientConnectionInsertDelete.send("END");
+                    } catch (Exception exception) {
+                        System.out.println(exception);
+                    }
                     fillAttributesInTable();
                 }
             });
@@ -197,7 +206,11 @@ public class InsertDeleteQuery extends JPanel {
 
     public void refresh() {
         databases = LoadJSON.load("databases.json");
-        if (databases == null) {
+        if (databases == null || databases.getDatabaseList().size() == 0) {
+//            if(databaseComboBox!=null && tableComboBox!=null) {
+//                databaseComboBox.setModel(new DefaultComboBoxModel<String>());
+//                tableComboBox.setModel(new DefaultComboBoxModel<String>());
+//            }
         } else {
             Parser.currentDatabaseName = databases.getDatabaseList().get(0).getName();
             Parser.currentTableName = databases.getDatabase(Parser.currentDatabaseName).getTables().get(0).getName();

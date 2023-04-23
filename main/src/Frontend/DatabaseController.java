@@ -50,6 +50,7 @@ public class DatabaseController {
                             clientConnection.send(s);
                             // varom a valaszt
                         }
+                        clientConnection.send("END");
 
                     } catch (IOException ex) {
                         databaseFrame.getPanelCenter().getMessagesLabel().setText("Connection ERROR to server on 12000 port!");

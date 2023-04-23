@@ -42,6 +42,6 @@ public class CreateDatabase implements Command {
         MongoDB mongoDB = new MongoDB();
         mongoDB.createDatabaseOrUse(currentDatabaseName);
         mongoDB.disconnectFromLocalhost();
-        ErrorClient.send("Database created!");
+        ErrorClient.send("Database " + currentDatabaseName + " created!");
     }
 }

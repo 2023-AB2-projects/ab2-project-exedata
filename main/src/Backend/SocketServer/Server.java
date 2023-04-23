@@ -13,12 +13,14 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import static Backend.Backend.*;
+
 public class Server implements Runnable {
     private ServerSocket serverSocket;
     private Socket clientSocket;
     private BufferedReader reader;
     private PrintWriter writer;
-    private int port;
+    private final int port;
 
     public Server(int port) {
         this.port = port;
@@ -28,7 +30,7 @@ public class Server implements Runnable {
     public void run() {
         try {
             serverSocket = new ServerSocket(port);
-            System.out.println("Server started successfully!");
+            System.out.println("Server which use " + port + " port started successfully!");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -42,6 +44,9 @@ public class Server implements Runnable {
                     System.out.println(command);
                     if (!command.startsWith("!GET")) {
                         Command a = Parser.commandType(command);
+
+                        setNumberOfInsertedRows(command);
+                        setNumberOfDeletedRows(command);
                         if (a != null) {
                             a.performAction();
                         }
@@ -51,6 +56,40 @@ public class Server implements Runnable {
                 }
             } catch (Exception e) {
                 System.out.println(e);
+            }
+        }
+    }
+
+    private void setNumberOfInsertedRows(String command){
+        if(goodInsert){
+            if (numberOfInsertedRows == -1) {
+                numberOfInsertedRows = 1;
+            } else {
+                numberOfInsertedRows++;
+            }
+            goodInsert = false;
+        }
+        if (!command.split(" ")[0].equalsIgnoreCase("Insert")) {
+            if(numberOfInsertedRows!=-1){
+                ErrorClient.send(numberOfInsertedRows +  " rows inserted!");
+                numberOfInsertedRows = -1;
+            }
+        }
+    }
+
+    private void setNumberOfDeletedRows(String command){
+        if(goodDelete){
+            if (numberOfDeletedRows == -1) {
+                numberOfDeletedRows = 1;
+            } else {
+                numberOfDeletedRows++;
+            }
+            goodDelete = false;
+        }
+        if (!command.split(" ")[0].equalsIgnoreCase("Delete")) {
+            if(numberOfDeletedRows!=-1){
+                ErrorClient.send(numberOfDeletedRows +  " rows deleted!");
+                numberOfDeletedRows = -1;
             }
         }
     }

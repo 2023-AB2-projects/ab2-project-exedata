@@ -27,6 +27,15 @@ public class Table {
     public Table() {
     }
 
+    public String getIndexFileName(String[] attributeNames){
+        for(IndexFile i : indexFiles){
+            if (i.getIndexAttributes().size()==attributeNames.length && i.equalsIndexAttributes(attributeNames)){
+                return i.getIndexName();
+            }
+        }
+        return null;
+    }
+
     public boolean existIndexName(String indexName) {
         for (IndexFile i : indexFiles) {
             if (i.getIndexName().equals(indexName)) {
