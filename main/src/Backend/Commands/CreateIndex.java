@@ -106,7 +106,6 @@ public class CreateIndex implements Command {
 
     private void createIndexFileInMongoDB(String indexName, String tableName, String[] attributeNames) {
         // Create index file (collection) in MongoDB
-
         // Connection
         MongoDB mongoDB = new MongoDB();
         mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
