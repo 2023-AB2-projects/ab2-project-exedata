@@ -37,7 +37,7 @@ public class Insert implements Command {
                 String[] fieldName = matcher.group(2).replaceAll("\\s+", "").split(",");
                 String[] value = matcher.group(3).replaceAll("\\s+", "").split(",");
 
-                if(ValidateInsertData.checkInsertData(tableName,fieldName,value)) {
+                if (ValidateInsertData.checkInsertData(tableName, fieldName, value)) {
                     MongoDB mongoDB = new MongoDB();
                     primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName);
                     String primaryKeysString = allPrimaryKeyValueDividedByHash(fieldName, value, primaryKeys);
@@ -80,37 +80,37 @@ public class Insert implements Command {
 
     public String allPrimaryKeyValueDividedByHash(String[] fieldName, String[] value, List<String> primaryKeys) {
         String primaryKeysString = "";
-        for (int i=0; i<fieldName.length; i++) {
-            for (int j=0; j<primaryKeys.size(); j++) {
+        for (int i = 0; i < fieldName.length; i++) {
+            for (String primaryKey : primaryKeys) {
                 if (value[i].charAt(0) == '\"' || value[i].charAt(0) == '\'') {
-                    value[i] = value[i].substring(1, value[i].length()-1);
+                    value[i] = value[i].substring(1, value[i].length() - 1);
                 }
-                if (Objects.equals(primaryKeys.get(j), fieldName[i])) {
+                if (Objects.equals(primaryKey, fieldName[i])) {
                     primaryKeysString = primaryKeysString.concat(value[i] + "#");
                 }
             }
         }
-        primaryKeysString = primaryKeysString.substring(0, primaryKeysString.length()-1);
+        primaryKeysString = primaryKeysString.substring(0, primaryKeysString.length() - 1);
         return primaryKeysString;
     }
 
     public String allAttributeValueExceptPKDividedByHash(String[] fieldName, String[] value) {
         String insertValue = "";
-        for(int i=0; i<fieldName.length; i++) {
+        for (int i = 0; i < fieldName.length; i++) {
             if (value[i].charAt(0) == '\"' || value[i].charAt(0) == '\'') {
-                value[i] = value[i].substring(1, value[i].length()-1);
+                value[i] = value[i].substring(1, value[i].length() - 1);
             }
             if (!isPrimaryKey(fieldName[i])) {
                 insertValue = insertValue.concat(value[i] + "#");
             }
         }
-        insertValue = insertValue.substring(0, insertValue.length()-1);
+        insertValue = insertValue.substring(0, insertValue.length() - 1);
         return insertValue;
     }
 
     public String[] listToStringArray(List<Attribute> attributeList) {
         String[] fieldName = new String[attributeList.size()];
-        for (int i=0; i<attributeList.size(); i++) {
+        for (int i = 0; i < attributeList.size(); i++) {
             fieldName[i] = attributeList.get(i).getName();
         }
         return fieldName;
@@ -119,9 +119,9 @@ public class Insert implements Command {
     private String[] addNullValues(String[] fieldNameFilled, String[] fieldName, String[] value) {
         String[] newValue = new String[fieldNameFilled.length];
         boolean ok;
-        for(int i=0; i<fieldNameFilled.length; i++) {
+        for (int i = 0; i < fieldNameFilled.length; i++) {
             ok = false;
-            for (int j=0; j<fieldName.length; j++) {
+            for (int j = 0; j < fieldName.length; j++) {
                 if (fieldNameFilled[i].equals(fieldName[j])) {
                     ok = true;
                     newValue[i] = value[j];

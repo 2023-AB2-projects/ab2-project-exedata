@@ -156,7 +156,7 @@ public class CreateTable implements Command {
                     } else if (words[startIndex + 2].toUpperCase().equals(keyWords[3])) {
                         //SpecID varchar REFERENCES specialization (SpecID)
                         String foreignTableName = commandToRightFormat(i, startIndex, words[i], words[i - 1], 4);
-                        String foreignAttributeName = foreignTableName.split(" ")[1];
+                        String foreignAttributeName = formatWords(foreignTableName.split(" ")[1]);
                         foreignTableName = foreignTableName.split(" ")[0];
                         if (table.checkAttributeExists(words[startIndex])
                                 && existsAttributeForeignInTable(foreignTableName, foreignAttributeName)) {
@@ -165,7 +165,6 @@ public class CreateTable implements Command {
                     }
                 } else if (numberOfKeyWords == 2) {
                     //PRIMARY KEY (StudID,DiscID)
-                    System.out.println("alma");
                     if (words[startIndex].toUpperCase().equals(keyWords[0])
                             && words[startIndex + 1].toUpperCase().equals(keyWords[1])) {
                         words2 = formatWords(words[i]).split(",");
