@@ -1,6 +1,8 @@
 package Backend.Commands;
 
 import Backend.Databases.Databases;
+import Backend.Databases.ForeignKey;
+import Backend.Databases.IndexFile;
 import Backend.MongoDBManagement.MongoDB;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
@@ -48,8 +50,33 @@ public class ValidateInsertData {
                 ErrorClient.send("The " + column[i] + ": " + values[i] + " already exists!");
                 return false;
             }
+            if (!checkForeignKeyConstraint(values[i], column[i], tableName, databases)) {
+                System.out.println("The " + column[i] + ": " + values[i] + " doesn't exists in reference table!");
+                ErrorClient.send("The " + column[i] + ": " + values[i] + " doesn't exists in reference table!");
+                return false;
+            }
         }
         return true;
+    }
+
+    private static boolean checkForeignKeyConstraint(String value, String attributeName, String tableName, Databases databases) {
+        ForeignKey foreignKey = null;
+        for (ForeignKey i : databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getForeignKeys()) {
+            if (i.getName().equals(attributeName)) {
+                foreignKey = i;
+                break;
+            }
+        }
+        if (foreignKey == null) {
+            return true;
+        }
+        String indexFileName = databases.getDatabase(Parser.currentDatabaseName).getTable(foreignKey.getRefTable()).getIndexFileName(new String[]{foreignKey.getRefAttribute()});
+        if (indexFileName == null) {
+            //doesn't exist indexFile
+            return checkExistsValueInTableIfDoesNotHaveIndexFile(foreignKey.getRefTable(), foreignKey.getRefTable(), value, databases);
+        } else {
+            return checkExistsValueInTableIfDoesHaveIndexFile(indexFileName, value);
+        }
     }
 
     private static boolean checkUniqueConstraint(String value, String attributeName, String tableName, Databases databases) {
@@ -57,26 +84,37 @@ public class ValidateInsertData {
             return true;
         }
         String indexFileName = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getIndexFileName(new String[]{attributeName});
-        MongoDB mongoDB = new MongoDB();
-        mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
         if (indexFileName == null) {
             //doesn't exist indexFile
-            MongoCollection<Document> documents = mongoDB.getDocuments(tableName);
-            for (Document i : documents.find()) {
-                if (Objects.equals(getValueByAttributeName(i, attributeName,
-                        databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey(),
-                        databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getStructure()), value))
-                    return false;
-            }
-            mongoDB.disconnectFromLocalhost();
+            return !checkExistsValueInTableIfDoesNotHaveIndexFile(tableName, attributeName, value, databases);
         } else {
-            Document document = new Document("_id", value);
-            if (mongoDB.existsID(indexFileName, document)) {
-                return false;
-            }
-            mongoDB.disconnectFromLocalhost();
+            return !checkExistsValueInTableIfDoesHaveIndexFile(indexFileName, value);
         }
-        return true;
+    }
+
+    public static boolean checkExistsValueInTableIfDoesHaveIndexFile(String indexFileName, String value) {
+        MongoDB mongoDB = new MongoDB();
+        mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
+        Document document = new Document("_id", value);
+        if (mongoDB.existsID(indexFileName, document)) {
+            return true;
+        }
+        mongoDB.disconnectFromLocalhost();
+        return false;
+    }
+
+    public static boolean checkExistsValueInTableIfDoesNotHaveIndexFile(String tableName, String attributeName, String value, Databases databases) {
+        MongoDB mongoDB = new MongoDB();
+        mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
+        MongoCollection<Document> documents = mongoDB.getDocuments(tableName);
+        for (Document i : documents.find()) {
+            if (Objects.equals(getValueByAttributeName(i, attributeName,
+                    databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey(),
+                    databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getStructure()), value))
+                return true;
+        }
+        mongoDB.disconnectFromLocalhost();
+        return false;
     }
 
     public static boolean checkType(String value, String recommendedType) {
