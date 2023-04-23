@@ -49,6 +49,10 @@ public class Table {
         return uniqueKeys.contains(attributeName);
     }
 
+    public boolean isPrimaryKey(String attributeName){
+        return primaryKey.contains(attributeName);
+    }
+
     public boolean checkInsertColumn(String[] column) {
         int numberOfPrimaryKey = primaryKey.size();
         for (String i : column) {

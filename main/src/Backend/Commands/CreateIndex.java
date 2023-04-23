@@ -113,28 +113,46 @@ public class CreateIndex implements Command {
         // get primary key and not primary key coordinates from given attributes
         MongoCollection<Document> collection = mongoDB.getDocuments(tableName);
 
-        // add documents to indexFile (unique)
-        try (MongoCursor<Document> cursor = collection.find().iterator()) {
-            while (cursor.hasNext()) {
-                Document document = cursor.next();
-                StringBuilder keyIndexFile = new StringBuilder();
+        if (isUnique(tableName, attributeNames)) {
+            // add documents to indexFile (unique)
+            try (MongoCursor<Document> cursor = collection.find().iterator()) {
+                while (cursor.hasNext()) {
+                    Document document = cursor.next();
+                    StringBuilder keyIndexFile = new StringBuilder();
 
-                // build string
-                for (int i = 0; i < attributeNames.length; i++) {
-                    String value = Common.getValueByAttributeName(document, attributeNames[i], primaryKeyList, attributeList);
-                    keyIndexFile.append(value).append("#");
+                    // build string
+                    for (int i = 0; i < attributeNames.length; i++) {
+                        String value = Common.getValueByAttributeName(document, attributeNames[i], primaryKeyList, attributeList);
+                        keyIndexFile.append(value).append("#");
+                    }
+
+                    keyIndexFile = new StringBuilder(keyIndexFile.substring(0, keyIndexFile.length() - 1));
+                    String valueIndexFile = (String) document.get("_id");
+
+                    Document documentNew = new Document();
+                    documentNew.append("_id", keyIndexFile.toString());
+                    documentNew.append("Value", valueIndexFile);
+                    mongoDB.insertOne(indexName, documentNew);
                 }
-
-                keyIndexFile = new StringBuilder(keyIndexFile.substring(0, keyIndexFile.length() - 1));
-                String valueIndexFile = (String) document.get("_id");
-
-                Document documentNew = new Document();
-                documentNew.append("_id", keyIndexFile.toString());
-                documentNew.append("Value", valueIndexFile);
-                mongoDB.insertOne(indexName, documentNew);
             }
         }
 
 
+    }
+
+    private boolean isUnique(String tableName, String[] attributeNames) {
+        Table table = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName);
+        int count = 0;
+        for (String attribute : attributeNames) {
+            if (table.isUnique(attribute)) {
+                return true;
+            } else if (table.isPrimaryKey(attribute)){
+                count++;
+            }
+        }
+        if (table.getPrimaryKey().size() == count) {
+            return true;
+        }
+        return false;
     }
 }
