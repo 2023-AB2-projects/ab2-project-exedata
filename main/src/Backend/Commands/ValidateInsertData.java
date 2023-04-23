@@ -1,9 +1,12 @@
 package Backend.Commands;
 
 import Backend.Databases.Databases;
+import Backend.MongoDBManagement.MongoDB;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SocketServer.ErrorClient;
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,14 +34,40 @@ public class ValidateInsertData {
             ErrorClient.send("Syntax error!");
             return false;
         }
-        for (int i=0;i<values.length;i++) {
+        for (int i = 0; i < values.length; i++) {
             if (!checkType(values[i], databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getAttribute(column[i]).getType())) {
                 System.out.println("The " + values[i] + " type isn't correct!");
                 ErrorClient.send("The " + values[i] + " type isn't correct!");
                 return false;
             }
+            if (!checkUniqueConstraint(values[i], column[i], tableName, databases)) {
+                System.out.println("The " + values[i] + " isn't unique!");
+                ErrorClient.send("The " + values[i] + " isn't unique!");
+                return false;
+            }
         }
         return true;
+    }
+
+    private static boolean checkUniqueConstraint(String value, String attributeName, String tableName, Databases databases) {
+        if (!databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).isUnique(attributeName)){
+            return true;
+        }
+        String indexFileName = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getIndexFileName(new String[]{attributeName});
+        if(indexFileName==null){
+            //doesn't exist indexFile
+//            MongoDB mongoDB = new MongoDB();
+//            mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
+//            MongoCollection<Document> documents = mongoDB.getDocuments(tableName);
+//            for (Document i : documents.find()) {
+//                if(valami()==value)
+//                    return false;
+//            }
+//            mongoDB.disconnectFromLocalhost();
+        }else{
+
+        }
+        return false;
     }
 
     public static boolean checkType(String value, String recommendedType) {

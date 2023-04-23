@@ -16,6 +16,14 @@ public class IndexFile {
     public IndexFile() {
     }
 
+    public boolean equalsIndexAttributes(String[] attributeNames){
+        for(String i : attributeNames){
+            if(!indexAttributes.contains(i))
+                return false;
+        }
+        return true;
+    }
+
     public String getIsUnique() {
         return isUnique;
     }

@@ -39,15 +39,15 @@ public class InsertDeleteQuery extends JPanel {
     private final PanelDown panelDown;
 
     public InsertDeleteQuery(PanelDown panelDown) {
-        this.panelDown=panelDown;
+        this.panelDown = panelDown;
         this.setLayout(new BorderLayout());
         header = new JPanel();
         center = new JPanel();
+        clientConnectionInsertDelete = new ClientConnection(12002);
 
         databases = LoadJSON.load("databases.json");
-        if (databases == null) {
+        if (databases == null || databases.getDatabaseList().size() == 0) {
         } else {
-            clientConnectionInsertDelete = new ClientConnection(12002);
             Parser.currentDatabaseName = databases.getDatabaseList().get(0).getName();
             Parser.currentTableName = databases.getDatabase(Parser.currentDatabaseName).getTables().get(0).getName();
             sendUse();
@@ -152,7 +152,7 @@ public class InsertDeleteQuery extends JPanel {
                             throw new RuntimeException(ex);
                         }
                         fillAttributesInTable();
-                    }else{
+                    } else {
                         ErrorClient.send("No data input");
                     }
                 }
@@ -170,9 +170,9 @@ public class InsertDeleteQuery extends JPanel {
                             throw new RuntimeException(ex);
                         }
                     }
-                    try{
+                    try {
                         clientConnectionInsertDelete.send("END");
-                    }catch (Exception exception){
+                    } catch (Exception exception) {
                         System.out.println(exception);
                     }
                     fillAttributesInTable();
@@ -206,7 +206,11 @@ public class InsertDeleteQuery extends JPanel {
 
     public void refresh() {
         databases = LoadJSON.load("databases.json");
-        if (databases == null) {
+        if (databases == null || databases.getDatabaseList().size() == 0) {
+//            if(databaseComboBox!=null && tableComboBox!=null) {
+//                databaseComboBox.setModel(new DefaultComboBoxModel<String>());
+//                tableComboBox.setModel(new DefaultComboBoxModel<String>());
+//            }
         } else {
             Parser.currentDatabaseName = databases.getDatabaseList().get(0).getName();
             Parser.currentTableName = databases.getDatabase(Parser.currentDatabaseName).getTables().get(0).getName();
