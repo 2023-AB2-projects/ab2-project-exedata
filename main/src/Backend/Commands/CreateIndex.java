@@ -135,6 +135,7 @@ public class CreateIndex implements Command {
                 documentNew.append("_id", keyIndexFile.toString());
                 documentNew.append("Value", valueIndexFile);
                 mongoDB.insertOne(indexName, documentNew);
+
             }
         }
 
