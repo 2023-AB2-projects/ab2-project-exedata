@@ -65,7 +65,8 @@ public class PanelCenter extends JPanel {
         inputAreaPanelInsDelQuery = new InsertDeleteQuery(this.panelDown);
 
         inputAreaPanelCommandLine.setLayout(new GridLayout(1, 1));
-        inputAreaPanelCommandLine.add(inputArea);
+        JScrollPane scrollPane = new JScrollPane(inputArea);
+        inputAreaPanelCommandLine.add(scrollPane);
 
         cards.setLayout(new CardLayout());
 
