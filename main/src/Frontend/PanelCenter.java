@@ -13,7 +13,7 @@ public class PanelCenter extends JPanel {
     private JPanel cards;
     private JPanel inputAreaPanelCommandLine;
     private InsertDeleteQuery inputAreaPanelInsDelQuery;
-    private final JTextArea inputArea; // command input (ex. CREATE TABLE)
+    private final JTextPane inputArea; // command input (ex. CREATE TABLE)
     private JPanel commandLineInput;
     private JPanel commandLineHeader;
     private JButton buttonCommandLine;
@@ -28,7 +28,7 @@ public class PanelCenter extends JPanel {
 
         // left side of PanelCenter
         commandLineInput = new JPanel();
-        inputArea = new JTextArea();
+        inputArea = new JTextPane();
         inputArea.setBackground(new Color(171, 173, 182));
         inputArea.setForeground(Color.black);
         inputArea.setFont(new Font("Courier New", Font.BOLD, 15));
@@ -112,7 +112,7 @@ public class PanelCenter extends JPanel {
         return messagesLabel;
     }
 
-    public JTextArea getInputArea() {
+    public JTextPane getInputArea() {
         return inputArea;
     }
 
