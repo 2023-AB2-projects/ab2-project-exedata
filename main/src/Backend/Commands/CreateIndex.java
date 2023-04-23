@@ -3,6 +3,8 @@ package Backend.Commands;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,6 +20,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 
+import static com.fasterxml.jackson.databind.type.LogicalType.Map;
+
 public class CreateIndex implements Command {
 
     private final String command;
@@ -31,7 +35,6 @@ public class CreateIndex implements Command {
     public void performAction() {
         //CREATE INDEX index_name
         //ON table_name (column1, column2, ...);
-        Parser.currentDatabaseName = "University";
         databases = LoadJSON.load("databases.json");
         if (databases == null) {
             ErrorClient.send("Databases doesn't exists!");
@@ -50,7 +53,7 @@ public class CreateIndex implements Command {
                 if (databases.getDatabase(Parser.currentDatabaseName) != null) {
                     if (databases.getDatabase(Parser.currentDatabaseName).checkTableExists(tableName)) {
                         if (createIndex(indexName, tableName, attributeNames)) {
-                            createEmptyIndexFile(indexName + ".ind");
+                            //createEmptyIndexFile(indexName + ".ind");
                             SaveJSON.save(databases, "databases.json");
                         } else {
                             ErrorClient.send("Syntax error!");
@@ -62,8 +65,7 @@ public class CreateIndex implements Command {
                     ErrorClient.send("Databases doesn't exists!");
                 }
             } else {
-                System.out.println("IndexName already exists!");
-                // ErrorClient.send("IndexName already exists!");
+                ErrorClient.send("IndexName already exists!");
             }
 
             // insert index file to MongoDB
@@ -103,16 +105,19 @@ public class CreateIndex implements Command {
     }
 
     private void createIndexFileInMongoDB(String indexName, String tableName, String[] attributeNames) {
-        // create index file (collection) in mongodb
+        // Create index file (collection) in MongoDB
+
+        // Connection
         MongoDB mongoDB = new MongoDB();
         mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
         mongoDB.createCollection(indexName);
         List<Attribute> attributeList = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getStructure();
         List<String> primaryKeyList = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey();
 
-        // get primary key and not primary key coordinates from given attributes
+        // Get all documents from a table
         MongoCollection<Document> collection = mongoDB.getDocuments(tableName);
 
+        // check that index attributes will be unique or not
         if (isUnique(tableName, attributeNames)) {
             // add documents to indexFile (unique)
             try (MongoCursor<Document> cursor = collection.find().iterator()) {
@@ -120,7 +125,7 @@ public class CreateIndex implements Command {
                     Document document = cursor.next();
                     StringBuilder keyIndexFile = new StringBuilder();
 
-                    // build string
+                    // build string (new key)
                     for (int i = 0; i < attributeNames.length; i++) {
                         String value = Common.getValueByAttributeName(document, attributeNames[i], primaryKeyList, attributeList);
                         keyIndexFile.append(value).append("#");
@@ -135,9 +140,39 @@ public class CreateIndex implements Command {
                     mongoDB.insertOne(indexName, documentNew);
                 }
             }
+        } else {
+            // add documents to indexFile (not unique)
+            HashMap<String, String> map = new HashMap<>();
+            try (MongoCursor<Document> cursor = collection.find().iterator()) {
+                while (cursor.hasNext()) {
+                    Document document = cursor.next();
+                    StringBuilder keyIndexFile = new StringBuilder();
+
+                    // build string (new key)
+                    for (int i = 0; i < attributeNames.length; i++) {
+                        String value = Common.getValueByAttributeName(document, attributeNames[i], primaryKeyList, attributeList);
+                        keyIndexFile.append(value).append("#");
+                    }
+
+                    keyIndexFile = new StringBuilder(keyIndexFile.substring(0, keyIndexFile.length() - 1));
+                    String valueIndexFile = (String) document.get("_id");
+
+                    if (!map.containsKey(keyIndexFile.toString())) {
+                        map.put(keyIndexFile.toString(), valueIndexFile);
+                    } else {
+                        map.put(keyIndexFile.toString(), map.get(keyIndexFile.toString()) + "#" + valueIndexFile);
+                    }
+                }
+            }
+
+            for (String key : map.keySet()) {
+                String value = map.get(key);
+                Document documentNew = new Document();
+                documentNew.append("_id", key);
+                documentNew.append("Value", value);
+                mongoDB.insertOne(indexName, documentNew);
+            }
         }
-
-
     }
 
     private boolean isUnique(String tableName, String[] attributeNames) {
@@ -146,7 +181,7 @@ public class CreateIndex implements Command {
         for (String attribute : attributeNames) {
             if (table.isUnique(attribute)) {
                 return true;
-            } else if (table.isPrimaryKey(attribute)){
+            } else if (table.isPrimaryKey(attribute)) {
                 count++;
             }
         }
