@@ -8,8 +8,11 @@ import Backend.SocketServer.ErrorClient;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static Backend.Common.getValueByAttributeName;
 
 public class ValidateInsertData {
     public static boolean checkInsertData(String tableName, String[] column, String[] values) {
@@ -41,8 +44,8 @@ public class ValidateInsertData {
                 return false;
             }
             if (!checkUniqueConstraint(values[i], column[i], tableName, databases)) {
-                System.out.println("The " + values[i] + " isn't unique!");
-                ErrorClient.send("The " + values[i] + " isn't unique!");
+                System.out.println("The " + column[i] + ": " + values[i] + " already exists!");
+                ErrorClient.send("The " + column[i] + ": " + values[i] + " already exists!");
                 return false;
             }
         }
@@ -50,24 +53,30 @@ public class ValidateInsertData {
     }
 
     private static boolean checkUniqueConstraint(String value, String attributeName, String tableName, Databases databases) {
-        if (!databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).isUnique(attributeName)){
+        if (!databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).isUnique(attributeName)) {
             return true;
         }
         String indexFileName = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getIndexFileName(new String[]{attributeName});
-        if(indexFileName==null){
+        MongoDB mongoDB = new MongoDB();
+        mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
+        if (indexFileName == null) {
             //doesn't exist indexFile
-//            MongoDB mongoDB = new MongoDB();
-//            mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
-//            MongoCollection<Document> documents = mongoDB.getDocuments(tableName);
-//            for (Document i : documents.find()) {
-//                if(valami()==value)
-//                    return false;
-//            }
-//            mongoDB.disconnectFromLocalhost();
-        }else{
-
+            MongoCollection<Document> documents = mongoDB.getDocuments(tableName);
+            for (Document i : documents.find()) {
+                if (Objects.equals(getValueByAttributeName(i, attributeName,
+                        databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey(),
+                        databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getStructure()), value))
+                    return false;
+            }
+            mongoDB.disconnectFromLocalhost();
+        } else {
+            Document document = new Document("_id", value);
+            if (mongoDB.existsID(indexFileName, document)) {
+                return false;
+            }
+            mongoDB.disconnectFromLocalhost();
         }
-        return false;
+        return true;
     }
 
     public static boolean checkType(String value, String recommendedType) {

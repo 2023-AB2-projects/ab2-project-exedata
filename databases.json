@@ -26,7 +26,9 @@
             "DiscID"
           ],
           "foreignKeys": [],
-          "uniqueKeys": [],
+          "uniqueKeys": [
+            "CreditNr"
+          ],
           "indexFiles": [
             {
               "indexName": "disciplines",
@@ -136,25 +138,6 @@
                 "StudID"
               ],
               "isUnique": "1"
-            },
-            {
-              "indexName": "StudentIndex",
-              "indexAttributes": [
-                "StudName",
-                "StudID",
-                "GroupId"
-              ],
-              "isUnique": "0"
-            },
-            {
-              "indexName": "DisciplinesInd",
-              "indexAttributes": [
-                "StudName",
-                "StudID",
-                "GroupId",
-                "Email"
-              ],
-              "isUnique": "0"
             }
           ]
         },
