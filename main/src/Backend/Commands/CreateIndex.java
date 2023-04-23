@@ -7,20 +7,16 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import Backend.Databases.Attribute;
-import Backend.Databases.Databases;
-import Backend.Databases.IndexFile;
+import Backend.Common;
+import Backend.Databases.*;
 import Backend.MongoDBManagement.MongoDB;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
 import Backend.SocketServer.ErrorClient;
-import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
-
-import static Backend.Commands.FormatCommand.formatWords;
 
 public class CreateIndex implements Command {
 
@@ -117,47 +113,19 @@ public class CreateIndex implements Command {
         attributeList = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getStructure();
         primaryKeyList = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey();
 
-        int[] attributeNamesInIndex = new int[attributeList.size()];
-
-        MongoCollection<Document> collection = mongoDB.getDocuments(tableName);
-
         // get primary key and not primary key coordinates from given attributes
-        int[] primaryKeyCoordinate = new int[attributeList.size()];
-        int[] notPrimaryKeyCoordinate = new int[attributeList.size()];
-
-        for (int i=0; i<primaryKeyCoordinate.length; i++) {
-            primaryKeyCoordinate[i] = -1;
-            notPrimaryKeyCoordinate[i] = -1;
-        }
-
-        for (int i=0; i<attributeNames.length; i++) {
-            int coordinate = getPrimaryKeyCoordinate(attributeNames[i]);
-            if (coordinate>=0) {
-                primaryKeyCoordinate[i] = coordinate;
-            } else {
-                coordinate = getAttributeCoordinate(attributeNames[i]);
-                notPrimaryKeyCoordinate[i] = coordinate;
-            }
-        }
+        MongoCollection<Document> collection = mongoDB.getDocuments(tableName);
 
         // add documents to indexFile (unique)
         try (MongoCursor<Document> cursor = collection.find().iterator()) {
             while (cursor.hasNext()) {
                 Document document = cursor.next();
-                String[] primaryKeys = ((String) document.get("_id")).split("#");
-                String[] values = ((String) document.get("Value")).split("#");
                 StringBuilder keyIndexFile = new StringBuilder();
 
                 // build string
-                for (int j : primaryKeyCoordinate) {
-                    if (j != -1) {
-                        keyIndexFile.append(primaryKeys[j]).append("#");
-                    }
-                }
-                for (int j : notPrimaryKeyCoordinate) {
-                    if (j != -1) {
-                        keyIndexFile.append(values[j]).append("#");
-                    }
+                for (int i=0; i<attributeNames.length; i++) {
+                    String value = Common.getValueByAttributeName(document, attributeNames[i], primaryKeyList, attributeList);
+                    keyIndexFile.append(value).append("#");
                 }
 
                 keyIndexFile = new StringBuilder(keyIndexFile.substring(0, keyIndexFile.length() - 1));
@@ -171,36 +139,5 @@ public class CreateIndex implements Command {
         }
 
 
-    }
-
-    private boolean isPrimaryKey(String fieldName) {
-        for (String primaryKey : primaryKeyList) {
-            if (primaryKey.equals(fieldName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private int getPrimaryKeyCoordinate(String fieldName) {
-        for (int i=0; i<primaryKeyList.size(); i++) {
-            if (primaryKeyList.get(i).equals(fieldName)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    private int getAttributeCoordinate(String fieldName) {
-        int nr = 0;
-        for (int i=0; i<attributeList.size(); i++) {
-            if (!isPrimaryKey(attributeList.get(i).getName())) {
-                if (attributeList.get(i).getName().equals(fieldName)) {
-                    return nr;
-                }
-                nr++;
-            }
-        }
-        return -1;
     }
 }
