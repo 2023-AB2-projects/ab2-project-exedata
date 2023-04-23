@@ -23,6 +23,7 @@ public class Parser {
     private static final Pattern delete = Pattern.compile("^\\s*DELETE\\s+FROM\\s+[A-Za-z0-9]+\\s+WHERE\\s+[^ ]*\\s*=\\s*[^ ]*\\s*;?", Pattern.CASE_INSENSITIVE);
     private static final Pattern deleteAll = Pattern.compile("^\\s*DELETE\\s+FROM\\s+[A-Za-z0-9]+\\s*;?", Pattern.CASE_INSENSITIVE);
     private static final Pattern deleteMultiplePK = Pattern.compile("^\\s*DELETE\\s+FROM\\s+[A-Za-z0-9]+\\s+WHERE\\s+[^ ]*\\s*=\\s*[^ ]*\\s+AND\\s+.*\\s*;?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern select = Pattern.compile("^\\s*SELECT\\s.*", Pattern.CASE_INSENSITIVE);
     private static final Pattern use = Pattern.compile("^\\s*USE\\s+[A-Za-z0-9_]+;?", Pattern.CASE_INSENSITIVE);
 
     public static String currentDatabaseName;
@@ -52,6 +53,8 @@ public class Parser {
             return new Insert(command);
         } else if (delete.matcher(command).find() || deleteAll.matcher(command).find() || deleteMultiplePK.matcher(command).find()) {
             return new Delete(command);
+        } else if (select.matcher(command).find()) {
+            return new Select(command);
         }
         ErrorClient.send("Wrong command!");
         System.out.println("Wrong command!");
