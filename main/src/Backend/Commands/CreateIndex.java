@@ -4,7 +4,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,8 +18,6 @@ import Backend.SocketServer.ErrorClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
-
-import static com.fasterxml.jackson.databind.type.LogicalType.Map;
 
 public class CreateIndex implements Command {
 
@@ -76,9 +73,6 @@ public class CreateIndex implements Command {
     }
 
     private boolean createIndex(String IndexName, String tableName, String[] attributeNames) {
-        //table.addIndexFile(new IndexFile(currentTableName, currentTableName + ".ind", attributeName));
-        String indexFileName = IndexName + ".ind";
-        String column;
         List<String> indexAttributes = new ArrayList<>();
         String isUnique = "0";
         for (String attributeName : attributeNames) {
@@ -125,8 +119,8 @@ public class CreateIndex implements Command {
                     StringBuilder keyIndexFile = new StringBuilder();
 
                     // build string (new key)
-                    for (int i = 0; i < attributeNames.length; i++) {
-                        String value = Common.getValueByAttributeName(document, attributeNames[i], primaryKeyList, attributeList);
+                    for (String attributeName : attributeNames) {
+                        String value = Common.getValueByAttributeName(document, attributeName, primaryKeyList, attributeList);
                         keyIndexFile.append(value).append("#");
                     }
 
@@ -148,8 +142,8 @@ public class CreateIndex implements Command {
                     StringBuilder keyIndexFile = new StringBuilder();
 
                     // build string (new key)
-                    for (int i = 0; i < attributeNames.length; i++) {
-                        String value = Common.getValueByAttributeName(document, attributeNames[i], primaryKeyList, attributeList);
+                    for (String attributeName : attributeNames) {
+                        String value = Common.getValueByAttributeName(document, attributeName, primaryKeyList, attributeList);
                         keyIndexFile.append(value).append("#");
                     }
 
@@ -184,9 +178,6 @@ public class CreateIndex implements Command {
                 count++;
             }
         }
-        if (table.getPrimaryKey().size() == count) {
-            return true;
-        }
-        return false;
+        return table.getPrimaryKey().size() == count;
     }
 }
