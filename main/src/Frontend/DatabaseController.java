@@ -17,7 +17,7 @@ public class DatabaseController {
     private final DatabaseFrame databaseFrame;
     private final ClientConnection clientConnection;
 
-    String[] keyWords = {"ADD", "ALL", "ALTER", "ALTER", "TABLE", "AND", "ANY", "AS", "ASC",
+    private final String[] keyWords = {"USE", "ADD", "ALL", "ALTER", "ALTER", "TABLE", "AND", "ANY", "AS", "ASC",
             "BACKUP", "BETWEEN", "CASE", "CHECK", "COLUMN", "CONSTRAINT", "CREATE", "DATABASE",
             "INDEX", "REPLACE", "VIEW", "PROCEDURE", "UNIQUE",
             "DEFAULT", "DELETE", "DESC", "DISTINCT", "DROP",
@@ -26,8 +26,7 @@ public class DatabaseController {
             "LEFT", "LIKE", "LIMIT", "OR", "ORDER", "PRIMARY",
             "PROCEDURE", "RIGHT", "ROWNUM", "TOP",
             "SET", "TRUNCATE", "UNION", "ALL", "UNIQUE", "UPDATE", "VALUES", "WHERE", "ON",
-            "CHAR", "VARCHAR", "BIT", "BOOL", "BOOLEAN", "INT", "FLOAT", "DOUBLE", "DATE", "DATETIME", "REAL", "SMALLINT",
-
+            "CHAR", "VARCHAR", "BIT", "BOOL", "BOOLEAN", "INT", "FLOAT", "DOUBLE", "DATE", "DATETIME", "REAL", "SMALLINT"
     };
 
     public DatabaseController() {

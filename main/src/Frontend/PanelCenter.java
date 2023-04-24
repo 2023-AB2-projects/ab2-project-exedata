@@ -56,6 +56,7 @@ public class PanelCenter extends JPanel {
         commandLineInputButtonPanel.add(buttonCommandLine);
         commandLineInputButtonPanel.add(buttonInsertDeleteQuery);
         commandLineInputButtonPanel.add(buttonSelectQuery);
+
         commandLineInputButtonPanel.setFont(new Font("Courier New", Font.BOLD, 15));
         commandLineInputButtonPanel.setBorder(new MatteBorder(0, 0, 2, 0, Color.black));
 
