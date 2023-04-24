@@ -16,8 +16,8 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.List;
 
 public class TableBox extends JPanel {
-    private int boxX = 0;
-    private int boxY = 0;
+    private int boxX = 5;
+    private int boxY = 5;
     private int width = 150;
     private int height = 250;
     private Point currentPoint;
@@ -28,10 +28,10 @@ public class TableBox extends JPanel {
         this.setBounds(boxX, boxY, width, height);
         this.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK));
 
-        this.add(new JLabel("Attributumok"));
+        this.add(new JLabel("Attributes"));
 
         attributesPanel = new JPanel();
-        attributesPanel.setLayout(new GridLayout(0, 2));
+        attributesPanel.setLayout(new GridLayout(0, 1));
 
         this.add(attributesPanel);
 

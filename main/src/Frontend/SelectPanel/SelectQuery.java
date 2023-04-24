@@ -1,5 +1,6 @@
 package Frontend.SelectPanel;
 
+import Backend.Databases.Attribute;
 import Backend.Databases.Database;
 import Backend.Databases.Databases;
 import Backend.Databases.Table;
@@ -15,7 +16,6 @@ import java.util.List;
 public class SelectQuery extends JPanel {
     private ArrayList<TableBox> tableBoxes;
     private ArrayList<JCheckBox> checkBoxes;
-    private ArrayList<JLabel> checkLabels;
     private Databases databases;
     private JPanel centerUp;
     private JPanel center;
@@ -74,14 +74,22 @@ public class SelectQuery extends JPanel {
         // Center
         tableBoxes = new ArrayList<>();
         checkBoxes = new ArrayList<>();
-        checkLabels = new ArrayList<>();
 
+        // first moveable box
         tableBoxes.add(new TableBox());
-        checkBoxes.add(new JCheckBox());
-        checkLabels.add(new JLabel("Attr"));
+        checkBoxes.add(new JCheckBox("* (All Columns)"));
+        checkBoxes.add(new JCheckBox("Attribute 1"));
+        checkBoxes.add(new JCheckBox("Attribute 2"));
+        checkBoxes.add(new JCheckBox("Attribute 3"));
+        checkBoxes.add(new JCheckBox("Attribute 4"));
+        checkBoxes.add(new JCheckBox("Attribute 5"));
 
         tableBoxes.get(0).getAttributesPanel().add(checkBoxes.get(0));
-        tableBoxes.get(0).getAttributesPanel().add(checkLabels.get(0));
+        tableBoxes.get(0).getAttributesPanel().add(checkBoxes.get(1));
+        tableBoxes.get(0).getAttributesPanel().add(checkBoxes.get(2));
+        tableBoxes.get(0).getAttributesPanel().add(checkBoxes.get(3));
+        tableBoxes.get(0).getAttributesPanel().add(checkBoxes.get(4));
+        tableBoxes.get(0).getAttributesPanel().add(checkBoxes.get(5));
 
         center.setLayout(null);
         center.add(tableBoxes.get(0));
@@ -103,6 +111,15 @@ public class SelectQuery extends JPanel {
         String[] list = new String[tables.size()];
         for (int i = 0; i < tables.size(); i++) {
             list[i] = tables.get(i).getName();
+        }
+        return list;
+    }
+
+    public String[] getAllAttributes() {
+        List<Attribute> attributes = databases.getDatabase(Parser.currentDatabaseName).getTable(Parser.currentTableName).getStructure();
+        String[] list = new String[attributes.size()];
+        for (int i = 0; i < attributes.size(); i++) {
+            list[i] = attributes.get(i).getName();
         }
         return list;
     }
