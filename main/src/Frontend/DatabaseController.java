@@ -161,14 +161,12 @@ public class DatabaseController {
     }
 
     private void keyMouseAction(JTextPane jTextPane, StyledDocument doc, SimpleAttributeSet keyWordStyle, SimpleAttributeSet defaultStyle) {
-        int caretPosition = jTextPane.getCaretPosition() - 1;
+        int caretPosition = jTextPane.getCaretPosition();
         String word = null;
         int startIndex, endIndex;
         try {
-            System.out.println(caretPosition);
             startIndex = Utilities.getWordStart(jTextPane, caretPosition);
             endIndex = Utilities.getWordEnd(jTextPane, caretPosition);
-            System.out.println(startIndex + " " + endIndex);
             word = doc.getText(startIndex, endIndex - startIndex);
         } catch (BadLocationException ex) {
             throw new RuntimeException(ex);

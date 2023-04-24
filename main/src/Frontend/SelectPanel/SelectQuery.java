@@ -1,4 +1,4 @@
-package Frontend;
+package Frontend.SelectPanel;
 
 import javax.swing.*;
 import java.awt.*;
