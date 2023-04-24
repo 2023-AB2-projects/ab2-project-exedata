@@ -45,7 +45,6 @@ public class SelectQuery extends JPanel {
         gbc2.fill = GridBagConstraints.BOTH;
 
         // CenterUp
-
         databases = LoadJSON.load("databases.json");
         allDatabases = getAllDatabases();
         allTables = getAllTables();
@@ -73,7 +72,6 @@ public class SelectQuery extends JPanel {
         this.add(centerUp, gbc);
 
         // Center
-
         tableBoxes = new ArrayList<>();
         checkBoxes = new ArrayList<>();
         checkLabels = new ArrayList<>();
