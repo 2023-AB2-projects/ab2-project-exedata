@@ -158,6 +158,14 @@ public class DatabaseController {
                 cl.show(cards, databaseFrame.getPanelCenter().getPanelInsDelQuery());
             }
         });
+        databaseFrame.getPanelCenter().getButtonSelectQuery().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JPanel cards = databaseFrame.getPanelCenter().getCards();
+                CardLayout cl = (CardLayout) (cards.getLayout());
+                cl.show(cards, databaseFrame.getPanelCenter().getPanelSelectQuery());
+            }
+        });
         TimerThread timerThread = new TimerThread(databaseFrame.getPanelTop());
         timerThread.start();
         ErrorChannelThread errorChannelThread = new ErrorChannelThread(databaseFrame.getPanelDown());
