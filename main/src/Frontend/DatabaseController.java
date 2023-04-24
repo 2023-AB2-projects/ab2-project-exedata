@@ -69,7 +69,7 @@ public class DatabaseController {
                         if (command == null) {
                             command = databaseFrame.getPanelCenter().getInputArea().getText();
                         }
-                        String[] commands = command.split(";\n");
+                        String[] commands = command.split(";" + System.lineSeparator());
                         //set error message chanel is empty
                         databaseFrame.getPanelDown().getErrorLabel().setText("");
                         for (String s : commands) {
