@@ -41,7 +41,7 @@ public class Server implements Runnable {
                 writer = new PrintWriter(clientSocket.getOutputStream(), true);
                 String command;
                 while ((command = reader.readLine()) != null) {
-                    System.out.println(command);
+                    System.out.println("I receive this massage:" + command);
                     if (!command.startsWith("!GET")) {
                         Command a = Parser.commandType(command);
 
@@ -60,8 +60,8 @@ public class Server implements Runnable {
         }
     }
 
-    private void setNumberOfInsertedRows(String command){
-        if(goodInsert){
+    private void setNumberOfInsertedRows(String command) {
+        if (goodInsert) {
             if (numberOfInsertedRows == -1) {
                 numberOfInsertedRows = 1;
             } else {
@@ -70,15 +70,15 @@ public class Server implements Runnable {
             goodInsert = false;
         }
         if (!command.split(" ")[0].equalsIgnoreCase("Insert")) {
-            if(numberOfInsertedRows!=-1){
-                ErrorClient.send(numberOfInsertedRows +  " rows inserted!");
+            if (numberOfInsertedRows != -1) {
+                ErrorClient.send(numberOfInsertedRows + " rows inserted!");
                 numberOfInsertedRows = -1;
             }
         }
     }
 
-    private void setNumberOfDeletedRows(String command){
-        if(goodDelete){
+    private void setNumberOfDeletedRows(String command) {
+        if (goodDelete) {
             if (numberOfDeletedRows == -1) {
                 numberOfDeletedRows = 1;
             } else {
@@ -87,8 +87,8 @@ public class Server implements Runnable {
             goodDelete = false;
         }
         if (!command.split(" ")[0].equalsIgnoreCase("Delete")) {
-            if(numberOfDeletedRows!=-1){
-                ErrorClient.send(numberOfDeletedRows +  " rows deleted!");
+            if (numberOfDeletedRows != -1) {
+                ErrorClient.send(numberOfDeletedRows + " rows deleted!");
                 numberOfDeletedRows = -1;
             }
         }

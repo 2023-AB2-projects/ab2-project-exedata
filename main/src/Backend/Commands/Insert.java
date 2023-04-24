@@ -1,7 +1,10 @@
 package Backend.Commands;
 
+import Backend.Common;
 import Backend.Databases.Attribute;
 import Backend.Databases.Databases;
+import Backend.Databases.ForeignKey;
+import Backend.Databases.IndexFile;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SocketServer.ErrorClient;
@@ -10,6 +13,7 @@ import org.bson.Document;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -35,13 +39,14 @@ public class Insert implements Command {
             if (matcher.matches()) {
                 String tableName = matcher.group(1);
                 String[] fieldName = matcher.group(2).replaceAll("\\s+", "").split(",");
-                String[] value = matcher.group(3).replaceAll("\\s+", "").split(",");
+                String[] value = matcher.group(3).replaceAll("\\s+", "").replaceAll("'","").replaceAll("\"","").split(",");
 
                 if (ValidateInsertData.checkInsertData(tableName, fieldName, value)) {
+                    Databases databases = LoadJSON.load("databases.json");
                     MongoDB mongoDB = new MongoDB();
-                    primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName);
+                    primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName, databases);
                     String primaryKeysString = allPrimaryKeyValueDividedByHash(fieldName, value, primaryKeys);
-                    List<Attribute> attributeList = getAllAttribute(Parser.currentDatabaseName, tableName);
+                    List<Attribute> attributeList = getAllAttribute(Parser.currentDatabaseName, tableName, databases);
                     String[] fieldNameFilled = listToStringArray(attributeList);
                     String[] valueFilled = addNullValues(fieldNameFilled, fieldName, value);
                     String insertValueWithHash = allAttributeValueExceptPKDividedByHash(fieldNameFilled, valueFilled);
@@ -51,14 +56,53 @@ public class Insert implements Command {
                     document.append("Value", insertValueWithHash);
                     mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
                     mongoDB.insertOne(tableName, document);
+
+                    List<IndexFile> indexFileList = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getIndexFiles();
+                    for (IndexFile i : indexFileList) {
+                        insertUpdateIndexFile(fieldName, value, i, databases, mongoDB, tableName);
+                    }
+
                     mongoDB.disconnectFromLocalhost();
                 }
             }
         }
     }
 
-    public List<String> getPrimaryKeys(String dataBaseName, String tableName) {
-        Databases databases = LoadJSON.load("databases.json");
+    public void insertUpdateIndexFile(String[] fieldName, String[] value, IndexFile indexFile, Databases databases, MongoDB mongoDB, String tableName) {
+        if (indexFile.getIsUnique().equals("1")) {
+            //if unique
+            StringBuilder keyIndexFile = new StringBuilder();
+            List<String> indexAttributes = indexFile.getIndexAttributes();
+            List<String> primaryKeys = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey();
+            for (int i = 0; i < fieldName.length; i++) {
+                if (indexAttributes.contains(fieldName[i])) {
+                    keyIndexFile.append(value[i]).append("#");
+                }
+            }
+            keyIndexFile = new StringBuilder(keyIndexFile.substring(0, keyIndexFile.length() - 1));
+            String valueIndexFile = getPrimaryKeysValuesSeparateByHash(primaryKeys, fieldName, value);
+            Document document = new Document();
+            document.append("_id", keyIndexFile);
+            document.append("Value", valueIndexFile);
+            mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
+            mongoDB.insertOne(indexFile.getIndexName(), document);
+        } else {
+
+        }
+    }
+
+    private String getPrimaryKeysValuesSeparateByHash(List<String> primaryKeys, String[] fieldName, String[] value) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < fieldName.length; i++) {
+            if (primaryKeys.contains(fieldName[i])) {
+                result.append(value[i]).append("#");
+            }
+        }
+        result = new StringBuilder(result.substring(0, result.length() - 1));
+        return result.toString();
+    }
+
+    public List<String> getPrimaryKeys(String dataBaseName, String tableName, Databases databases) {
         assert databases != null;
         return databases.getDatabase(dataBaseName).getTable(tableName).getPrimaryKey();
     }
@@ -72,8 +116,7 @@ public class Insert implements Command {
         return false;
     }
 
-    public List<Attribute> getAllAttribute(String dataBaseName, String tableName) {
-        Databases databases = LoadJSON.load("databases.json");
+    public List<Attribute> getAllAttribute(String dataBaseName, String tableName, Databases databases) {
         assert databases != null;
         return databases.getDatabase(dataBaseName).getTable(tableName).getStructure();
     }

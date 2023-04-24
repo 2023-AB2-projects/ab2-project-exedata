@@ -2,7 +2,6 @@ package Backend.Commands;
 
 import Backend.Databases.Databases;
 import Backend.Databases.ForeignKey;
-import Backend.Databases.IndexFile;
 import Backend.MongoDBManagement.MongoDB;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
@@ -73,7 +72,8 @@ public class ValidateInsertData {
         String indexFileName = databases.getDatabase(Parser.currentDatabaseName).getTable(foreignKey.getRefTable()).getIndexFileName(new String[]{foreignKey.getRefAttribute()});
         if (indexFileName == null) {
             //doesn't exist indexFile
-            return checkExistsValueInTableIfDoesNotHaveIndexFile(foreignKey.getRefTable(), foreignKey.getRefTable(), value, databases);
+            System.out.println(value);
+            return checkExistsValueInTableIfDoesNotHaveIndexFile(foreignKey.getRefTable(), foreignKey.getRefAttribute(), value, databases);
         } else {
             return checkExistsValueInTableIfDoesHaveIndexFile(indexFileName, value);
         }
@@ -107,7 +107,13 @@ public class ValidateInsertData {
         MongoDB mongoDB = new MongoDB();
         mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
         MongoCollection<Document> documents = mongoDB.getDocuments(tableName);
+        System.out.println("alma");
+        System.out.println(attributeName);
         for (Document i : documents.find()) {
+            System.out.println(getValueByAttributeName(i, attributeName,
+                    databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey(),
+                    databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getStructure()));
+            System.out.println(value);
             if (Objects.equals(getValueByAttributeName(i, attributeName,
                     databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey(),
                     databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getStructure()), value))

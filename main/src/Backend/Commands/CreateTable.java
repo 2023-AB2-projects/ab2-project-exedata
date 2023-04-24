@@ -71,7 +71,7 @@ public class CreateTable implements Command {
         syntaxError = false;
         getItemFromStructure(beforeAndAfterTheFirstOpenBracket[1]);
         fillJSONArrayByConstraint(beforeAndAfterTheFirstOpenBracket[1]);
-        createPrimaryKeyDefaultIndex(currentTableName);
+        //createPrimaryKeyDefaultIndex(currentTableName);
 
         if (syntaxError) {
             System.out.println("Syntax Error!");
