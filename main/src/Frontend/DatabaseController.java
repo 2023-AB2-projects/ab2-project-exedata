@@ -1,10 +1,14 @@
 package Frontend;
 
+import Frontend.SelectPanel.TableBox;
+
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class DatabaseController {
     private final DatabaseFrame databaseFrame;
@@ -152,6 +156,31 @@ public class DatabaseController {
                 JPanel cards = databaseFrame.getPanelCenter().getCards();
                 CardLayout cl = (CardLayout) (cards.getLayout());
                 cl.show(cards, databaseFrame.getPanelCenter().getPanelSelectQuery());
+            }
+        });
+        databaseFrame.getPanelCenter().getSelectQuery().getTableComboBox().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ArrayList<TableBox> tableBoxes = databaseFrame.getPanelCenter().getSelectQuery().getTableBoxes();
+                JPanel center = databaseFrame.getPanelCenter().getSelectQuery().getCenter();
+                String newTableName = databaseFrame.getPanelCenter().getSelectQuery().getTableComboBox().getSelectedItem().toString();
+                databaseFrame.getPanelCenter().getSelectQuery().setCurrentTableName(newTableName);
+
+                TableBox tableBox = new TableBox(newTableName);
+                String[] allAttributes = databaseFrame.getPanelCenter().getSelectQuery().getAllAttributes();
+                ArrayList<JCheckBox> checkBoxes = tableBox.getCheckBoxes();
+
+                tableBoxes.add(tableBox);
+                int length = tableBoxes.size();
+
+                checkBoxes.add(new JCheckBox("* (All Columns)"));
+                tableBoxes.get(length - 1).getAttributesPanel().add(checkBoxes.get(0));
+                for (int i = 0; i < allAttributes.length; i++) {
+                    checkBoxes.add(new JCheckBox(allAttributes[i]));
+                    tableBoxes.get(length - 1).getAttributesPanel().add(checkBoxes.get(i + 1));
+                }
+
+                center.add(tableBoxes.get(length - 1));
             }
         });
         TimerThread timerThread = new TimerThread(databaseFrame.getPanelTop());
