@@ -7,7 +7,11 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
+import org.bson.types.ObjectId;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.set;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class MongoDB {
@@ -51,6 +55,11 @@ public class MongoDB {
                 System.out.println("Collection is already created!");
             }
         }
+    }
+
+    public void updateDocument(String id, String collectionName, String appendString){
+        Document update = new Document("$set", new Document("field1", new Document("$concat", Arrays.asList("$field1", appendString))));
+        database.getCollection(collectionName).updateOne(eq("_id", new ObjectId(id)), update);
     }
 
     public void dropCollection(String collectionName) {

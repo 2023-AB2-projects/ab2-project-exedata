@@ -1,9 +1,7 @@
 package Backend.Commands;
 
-import Backend.Common;
 import Backend.Databases.Attribute;
 import Backend.Databases.Databases;
-import Backend.Databases.ForeignKey;
 import Backend.Databases.IndexFile;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
@@ -13,7 +11,6 @@ import org.bson.Document;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -39,7 +36,7 @@ public class Insert implements Command {
             if (matcher.matches()) {
                 String tableName = matcher.group(1);
                 String[] fieldName = matcher.group(2).replaceAll("\\s+", "").split(",");
-                String[] value = matcher.group(3).replaceAll("\\s+", "").replaceAll("'","").replaceAll("\"","").split(",");
+                String[] value = matcher.group(3).replaceAll("\\s+", "").replaceAll("'", "").replaceAll("\"", "").split(",");
 
                 if (ValidateInsertData.checkInsertData(tableName, fieldName, value)) {
                     Databases databases = LoadJSON.load("databases.json");
@@ -87,7 +84,17 @@ public class Insert implements Command {
             mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
             mongoDB.insertOne(indexFile.getIndexName(), document);
         } else {
-
+            StringBuilder keyIndexFile = new StringBuilder();
+            List<String> indexAttributes = indexFile.getIndexAttributes();
+            List<String> primaryKeys = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey();
+            for (int i = 0; i < fieldName.length; i++) {
+                if (indexAttributes.contains(fieldName[i])) {
+                    keyIndexFile.append(value[i]).append("#");
+                }
+            }
+            String valueIndexFile = "#" + getPrimaryKeysValuesSeparateByHash(primaryKeys, fieldName, value);
+            System.out.println(valueIndexFile);
+            mongoDB.updateDocument(keyIndexFile.substring(0, keyIndexFile.length() - 1), indexFile.getIndexName(), valueIndexFile);
         }
     }
 
