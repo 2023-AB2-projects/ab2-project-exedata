@@ -1,16 +1,9 @@
 package Frontend;
 
-import Backend.Parser;
-
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.io.IOException;
 
 public class DatabaseController {
@@ -49,6 +42,22 @@ public class DatabaseController {
                 databaseFrame.getPanelTop().getDisconnect().setEnabled(false);
             }
         });
+        databaseFrame.getPanelCenter().getInputArea().addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                JTextPane jTextPane = databaseFrame.getPanelCenter().getInputArea();
+
+                SimpleAttributeSet keyWordStyle = new SimpleAttributeSet();
+                StyleConstants.setForeground(keyWordStyle, new Color(0, 90, 170));
+                SimpleAttributeSet defaultStyle = new SimpleAttributeSet();
+                StyleConstants.setForeground(defaultStyle, Color.black);
+
+                StyledDocument doc = jTextPane.getStyledDocument();
+
+                keyMouseAction(jTextPane, doc, keyWordStyle, defaultStyle);
+            }
+        });
         databaseFrame.getPanelCenter().getInputArea().addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -82,9 +91,8 @@ public class DatabaseController {
 
                     StyledDocument doc = jTextPane.getStyledDocument();
 
-                    int caretPosition = jTextPane.getCaretPosition();
-                    int startIndex, endIndex;
                     if (e.getKeyCode() == 9) {
+                        int startIndex, endIndex;
                         int i = 0;
                         while (i < doc.getLength()) {
                             try {
@@ -108,26 +116,7 @@ public class DatabaseController {
                             i = endIndex + 1;
                         }
                     } else {
-                        String word = null;
-                        try {
-                            startIndex = Utilities.getWordStart(jTextPane, caretPosition);
-                            endIndex = Utilities.getWordEnd(jTextPane, caretPosition);
-                            word = doc.getText(startIndex, endIndex - startIndex);
-                        } catch (BadLocationException ex) {
-                            throw new RuntimeException(ex);
-                        }
-
-                        boolean ok = false;
-                        for (String keyWord : keyWords) {
-                            if (keyWord.equalsIgnoreCase(word)) {
-                                ok = true;
-                                doc.setCharacterAttributes(startIndex, endIndex - startIndex, keyWordStyle, true);
-                                break;
-                            }
-                        }
-                        if (!ok) {
-                            doc.setCharacterAttributes(startIndex, endIndex - startIndex, defaultStyle, true);
-                        }
+                        keyMouseAction(jTextPane, doc, keyWordStyle, defaultStyle);
                     }
                 }
             }
@@ -169,5 +158,32 @@ public class DatabaseController {
         timerThread.start();
         ErrorChannelThread errorChannelThread = new ErrorChannelThread(databaseFrame.getPanelDown());
         errorChannelThread.start();
+    }
+
+    private void keyMouseAction(JTextPane jTextPane, StyledDocument doc, SimpleAttributeSet keyWordStyle, SimpleAttributeSet defaultStyle) {
+        int caretPosition = jTextPane.getCaretPosition() - 1;
+        String word = null;
+        int startIndex, endIndex;
+        try {
+            System.out.println(caretPosition);
+            startIndex = Utilities.getWordStart(jTextPane, caretPosition);
+            endIndex = Utilities.getWordEnd(jTextPane, caretPosition);
+            System.out.println(startIndex + " " + endIndex);
+            word = doc.getText(startIndex, endIndex - startIndex);
+        } catch (BadLocationException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        boolean ok = false;
+        for (String keyWord : keyWords) {
+            if (keyWord.equalsIgnoreCase(word)) {
+                ok = true;
+                doc.setCharacterAttributes(startIndex, endIndex - startIndex, keyWordStyle, true);
+                break;
+            }
+        }
+        if (!ok) {
+            doc.setCharacterAttributes(startIndex, endIndex - startIndex, defaultStyle, true);
+        }
     }
 }
