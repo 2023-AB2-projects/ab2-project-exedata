@@ -44,6 +44,10 @@ public class CreateIndex implements Command {
         String[] attributeNames;
         if (matcher.matches()) {
             indexName = matcher.group(1);
+            if (databases.getDatabase(Parser.currentDatabaseName).getTable(indexName)!=null) {
+                ErrorClient.send("Index file already exists!");
+                return;
+            }
             tableName = matcher.group(2);
             attributeNames = matcher.group(3).replaceAll(" ", "").split(",");
             if (!databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).existIndexName(indexName)) {
