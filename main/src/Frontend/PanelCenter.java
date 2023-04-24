@@ -1,5 +1,6 @@
 package Frontend;
 
+import Backend.Commands.Select;
 import Frontend.SelectPanel.SelectQuery;
 
 import javax.imageio.ImageIO;
@@ -116,6 +117,10 @@ public class PanelCenter extends JPanel {
 
     public InsertDeleteQuery getInsertDeleteQuery() {
         return inputAreaPanelInsDelQuery;
+    }
+
+    public SelectQuery getSelectQuery() {
+        return inputAreaPanelSelectQuery;
     }
 
     public JLabel getMessagesLabel() {

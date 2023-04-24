@@ -12,21 +12,28 @@ import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class SelectQuery extends JPanel {
-    private ArrayList<TableBox> tableBoxes;
-    private ArrayList<JCheckBox> checkBoxes;
-    private Databases databases;
+    private final ArrayList<TableBox> tableBoxes;
+    private final Databases databases;
     private JPanel centerUp;
-    private JPanel center;
+    private final JPanel center;
     private JPanel centerDown;
-    private JComboBox databaseComboBox;
-    private JComboBox tableComboBox;
+    private final JComboBox databaseComboBox;
+    private final JComboBox tableComboBox;
     private String[] allDatabases;
     private String[] allTables;
+    private String[] allAttributes;
     protected int width = this.getWidth();
     protected int height = this.getWidth();
+
+    private String currentDatabaseName;
+    private String currentTableName;
+
     public SelectQuery() {
+        this.currentDatabaseName = Parser.currentDatabaseName;
+        this.currentTableName = Parser.currentTableName;
         this.setLayout(new GridBagLayout());
 
         // Init constraints to GridBagLayout
@@ -48,6 +55,7 @@ public class SelectQuery extends JPanel {
         databases = LoadJSON.load("databases.json");
         allDatabases = getAllDatabases();
         allTables = getAllTables();
+        allAttributes = getAllAttributes();
         centerUp = new JPanel();
         center = new JPanel();
         centerDown = new JPanel();
@@ -72,27 +80,8 @@ public class SelectQuery extends JPanel {
         this.add(centerUp, gbc);
 
         // Center
-        tableBoxes = new ArrayList<>();
-        checkBoxes = new ArrayList<>();
-
-        // first moveable box
-        tableBoxes.add(new TableBox());
-        checkBoxes.add(new JCheckBox("* (All Columns)"));
-        checkBoxes.add(new JCheckBox("Attribute 1"));
-        checkBoxes.add(new JCheckBox("Attribute 2"));
-        checkBoxes.add(new JCheckBox("Attribute 3"));
-        checkBoxes.add(new JCheckBox("Attribute 4"));
-        checkBoxes.add(new JCheckBox("Attribute 5"));
-
-        tableBoxes.get(0).getAttributesPanel().add(checkBoxes.get(0));
-        tableBoxes.get(0).getAttributesPanel().add(checkBoxes.get(1));
-        tableBoxes.get(0).getAttributesPanel().add(checkBoxes.get(2));
-        tableBoxes.get(0).getAttributesPanel().add(checkBoxes.get(3));
-        tableBoxes.get(0).getAttributesPanel().add(checkBoxes.get(4));
-        tableBoxes.get(0).getAttributesPanel().add(checkBoxes.get(5));
-
         center.setLayout(null);
-        center.add(tableBoxes.get(0));
+        tableBoxes = new ArrayList<>();
         this.add(center, gbc2);
 
     }
@@ -107,7 +96,7 @@ public class SelectQuery extends JPanel {
     }
 
     public String[] getAllTables() {
-        List<Table> tables = databases.getDatabase(Parser.currentDatabaseName).getTables();
+        List<Table> tables = databases.getDatabase(currentDatabaseName).getTables();
         String[] list = new String[tables.size()];
         for (int i = 0; i < tables.size(); i++) {
             list[i] = tables.get(i).getName();
@@ -116,7 +105,7 @@ public class SelectQuery extends JPanel {
     }
 
     public String[] getAllAttributes() {
-        List<Attribute> attributes = databases.getDatabase(Parser.currentDatabaseName).getTable(Parser.currentTableName).getStructure();
+        List<Attribute> attributes = databases.getDatabase(currentDatabaseName).getTable(currentTableName).getStructure();
         String[] list = new String[attributes.size()];
         for (int i = 0; i < attributes.size(); i++) {
             list[i] = attributes.get(i).getName();
@@ -124,4 +113,35 @@ public class SelectQuery extends JPanel {
         return list;
     }
 
+    public JPanel getCenter() {
+        return center;
+    }
+
+    public ArrayList<TableBox> getTableBoxes() {
+        return tableBoxes;
+    }
+
+    public JComboBox getDatabaseComboBox() {
+        return databaseComboBox;
+    }
+
+    public JComboBox getTableComboBox() {
+        return tableComboBox;
+    }
+
+    public String getCurrentDatabaseName() {
+        return currentDatabaseName;
+    }
+
+    public String getCurrentTableName() {
+        return currentTableName;
+    }
+
+    public void setCurrentDatabaseName(String currentDatabaseName) {
+        this.currentDatabaseName = currentDatabaseName;
+    }
+
+    public void setCurrentTableName(String currentTableName) {
+        this.currentTableName = currentTableName;
+    }
 }
