@@ -15,7 +15,11 @@ import java.util.regex.Pattern;
 
 import static Backend.Common.getValueByAttributeName;
 
-public class ValidateInsertData {
+public class ValidateInsertDeleteData {
+
+    public static boolean checkDeleteData(){
+        return true;
+    }
     public static boolean checkInsertData(String tableName, String[] column, String[] values) {
         Databases databases = LoadJSON.load("databases.json");
         if (databases == null) {

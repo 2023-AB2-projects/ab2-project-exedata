@@ -38,7 +38,7 @@ public class Insert implements Command {
                 String[] fieldName = matcher.group(2).replaceAll("\\s+", "").split(",");
                 String[] value = matcher.group(3).replaceAll("\\s+", "").replaceAll("'", "").replaceAll("\"", "").split(",");
 
-                if (ValidateInsertData.checkInsertData(tableName, fieldName, value)) {
+                if (ValidateInsertDeleteData.checkInsertData(tableName, fieldName, value)) {
                     Databases databases = LoadJSON.load("databases.json");
                     MongoDB mongoDB = new MongoDB();
                     primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName, databases);
