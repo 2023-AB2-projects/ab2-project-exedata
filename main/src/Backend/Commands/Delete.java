@@ -90,7 +90,13 @@ public class Delete implements Command {
                     ErrorClient.send("Error with deletion! Please specify all the primary keys!");
                 } else {
                     mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
-                    mongoDB.deleteOne(tableName, "_id", deleteValue);
+                    if (checkDeleteData(tableName, deleteValue, databases, mongoDB)) {
+                        mongoDB.deleteOne(tableName, "_id", deleteValue);
+//                            updateIndexFiles
+                    } else {
+                        System.out.println("Error with foreign key constraint!");
+                        ErrorClient.send("Error with foreign key constraint!");
+                    }
                 }
             }
             mongoDB.disconnectFromLocalhost();
