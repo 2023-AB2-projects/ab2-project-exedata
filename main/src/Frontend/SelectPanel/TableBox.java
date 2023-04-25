@@ -1,6 +1,8 @@
 package Frontend.SelectPanel;
 
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.SoftBevelBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -31,7 +33,8 @@ public class TableBox extends JPanel {
         gbc.fill = GridBagConstraints.BOTH;
 
         this.setBounds(boxX, boxY, width, height);
-        this.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK));
+        this.setBorder(new SoftBevelBorder(SoftBevelBorder.RAISED, Color.LIGHT_GRAY, Color.GRAY));
+        this.setBackground(Color.LIGHT_GRAY);
         this.currentPoint = null;
 
         this.add(new JLabel(tableName));
