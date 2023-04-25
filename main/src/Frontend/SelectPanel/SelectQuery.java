@@ -26,9 +26,10 @@ public class SelectQuery extends JPanel {
     private String[] allAttributes;
     protected int width = this.getWidth();
     protected int height = this.getWidth();
-
     private String currentDatabaseName;
     private String currentTableName;
+    private JPanel panel1;
+    private JPanel panel2;
 
     public SelectQuery() {
         databases = LoadJSON.load("databases.json");
@@ -39,20 +40,11 @@ public class SelectQuery extends JPanel {
             this.currentTableName = Parser.currentTableName;
             this.setLayout(new GridBagLayout());
 
-            // Init constraints to GridBagLayout
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            gbc.weightx = 1;
-            gbc.weighty = 0.05;
-            gbc.fill = GridBagConstraints.BOTH;
-
-            GridBagConstraints gbc2 = new GridBagConstraints();
-            gbc2.gridx = 0;
-            gbc2.gridy = 1;
-            gbc2.weightx = 1;
-            gbc2.weighty = 0.95;
-            gbc2.fill = GridBagConstraints.BOTH;
+            this.setLayout(new GridLayout(2, 1));
+            panel1 = new JPanel();
+            panel2 = new JPanel();
+            panel1.setLayout(new GridLayout(2, 1));
+            panel2.setLayout(new GridLayout(1, 1));
 
             // CenterUp
             allDatabases = getAllDatabases();
@@ -79,12 +71,27 @@ public class SelectQuery extends JPanel {
             tableComboBox = new JComboBox(allTables);
             centerUp.add(tableComboBox);
 
-            this.add(centerUp, gbc);
+            panel1.add(centerUp);
 
             // Center
-            center.setLayout(null);
+            String[] columnNames = {"Column", "Alias", "Table", "Output", "Sort type", "Sort order", "Filter", "OR"};
+            String[][] data = {{"", "", "", "", "", "", "", ""}};
+            JTable table = new JTable(data, columnNames);
+
+            JScrollPane scrollPane = new JScrollPane(table);
+
+            center.setLayout(new GridLayout(1, 1));
+            center.add(scrollPane);
+
+            panel1.add(center);
+
+            // Center down
+            centerDown.setLayout(null);
             tableBoxes = new ArrayList<>();
-            this.add(center, gbc2);
+            panel2.add(centerDown);
+
+            this.add(panel1);
+            this.add(panel2);
         }
     }
 
@@ -117,6 +124,10 @@ public class SelectQuery extends JPanel {
 
     public JPanel getCenter() {
         return center;
+    }
+
+    public JPanel getCenterDown() {
+        return centerDown;
     }
 
     public ArrayList<TableBox> getTableBoxes() {

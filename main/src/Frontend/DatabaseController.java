@@ -165,7 +165,7 @@ public class DatabaseController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ArrayList<TableBox> tableBoxes = databaseFrame.getPanelCenter().getSelectQuery().getTableBoxes();
-                JPanel center = databaseFrame.getPanelCenter().getSelectQuery().getCenter();
+                JPanel centerDown = databaseFrame.getPanelCenter().getSelectQuery().getCenterDown();
                 String newTableName = databaseFrame.getPanelCenter().getSelectQuery().getTableComboBox().getSelectedItem().toString();
                 databaseFrame.getPanelCenter().getSelectQuery().setCurrentTableName(newTableName);
 
@@ -176,14 +176,13 @@ public class DatabaseController {
                 tableBoxes.add(tableBox);
                 int length = tableBoxes.size();
 
-                checkBoxes.add(new JCheckBox("* (All Columns)"));
                 tableBoxes.get(length - 1).getAttributesPanel().add(checkBoxes.get(0));
                 for (int i = 0; i < allAttributes.length; i++) {
                     checkBoxes.add(new JCheckBox(allAttributes[i]));
                     tableBoxes.get(length - 1).getAttributesPanel().add(checkBoxes.get(i + 1));
                 }
 
-                center.add(tableBoxes.get(length - 1));
+                centerDown.add(tableBoxes.get(length - 1));
             }
         });
         TimerThread timerThread = new TimerThread(databaseFrame.getPanelTop());

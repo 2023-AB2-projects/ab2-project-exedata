@@ -4,9 +4,7 @@ import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 public class TableBox extends JPanel {
@@ -22,6 +20,8 @@ public class TableBox extends JPanel {
     public TableBox(String tableName) {
         this.tableName = tableName;
         this.checkBoxes = new ArrayList<>();
+        checkBoxes.add(new JCheckBox("* (All Columns)"));
+
         this.setLayout(new GridBagLayout());
 
         // Init constraints to GridBagLayout
@@ -59,6 +59,14 @@ public class TableBox extends JPanel {
             public void mousePressed(MouseEvent e) {
                 super.mouseClicked(e);
                 currentPoint = getMousePosition();
+            }
+        });
+        checkBoxes.get(0).addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (int i=1; i<checkBoxes.size(); i++) {
+                    checkBoxes.get(i).setSelected(false);
+                }
             }
         });
     }
