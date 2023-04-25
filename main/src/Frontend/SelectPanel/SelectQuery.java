@@ -9,6 +9,7 @@ import Backend.SaveLoadJSON.LoadJSON;
 
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,9 +75,22 @@ public class SelectQuery extends JPanel {
             panel1.add(centerUp);
 
             // Center
-            String[] columnNames = {"Column", "Alias", "Table", "Output", "Sort type", "Sort order", "Filter", "OR"};
-            String[][] data = {{"", "", "", "", "", "", "", ""}};
-            JTable table = new JTable(data, columnNames);
+            Object[] columnNames = {"Column", "Alias", "Table", "Output", "Sort type", "Sort order", "Filter", "OR"};
+            Object[][] data = {
+                    {"Column 1", "Alias 1", "Table 1", false, "Sort type 1", "Sort order 1", "Filter 1", "OR 1"},
+                    {"Column 2", "Alias 2", "Table 2", false, "Sort type 2", "Sort order 2", "Filter 2", "OR 2"},
+            };
+            DefaultTableModel model = new DefaultTableModel(data, columnNames) {
+                @Override
+                public Class<?> getColumnClass(int column) {
+                    if (column == 3) {
+                        return Boolean.class;
+                    }
+                    return super.getColumnClass(column);
+                }
+            };
+
+            JTable table = new JTable(model);
 
             JScrollPane scrollPane = new JScrollPane(table);
 
