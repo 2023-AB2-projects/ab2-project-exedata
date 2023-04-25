@@ -15,13 +15,13 @@ import java.util.List;
 import java.util.Objects;
 
 public class SelectQuery extends JPanel {
-    private final ArrayList<TableBox> tableBoxes;
+    private ArrayList<TableBox> tableBoxes;
     private final Databases databases;
     private JPanel centerUp;
-    private final JPanel center;
+    private JPanel center;
     private JPanel centerDown;
-    private final JComboBox databaseComboBox;
-    private final JComboBox tableComboBox;
+    private JComboBox databaseComboBox;
+    private JComboBox tableComboBox = new JComboBox();
     private String[] allDatabases;
     private String[] allTables;
     private String[] allAttributes;
@@ -32,58 +32,61 @@ public class SelectQuery extends JPanel {
     private String currentTableName;
 
     public SelectQuery() {
-        this.currentDatabaseName = Parser.currentDatabaseName;
-        this.currentTableName = Parser.currentTableName;
-        this.setLayout(new GridBagLayout());
-
-        // Init constraints to GridBagLayout
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 1;
-        gbc.weighty = 0.05;
-        gbc.fill = GridBagConstraints.BOTH;
-
-        GridBagConstraints gbc2 = new GridBagConstraints();
-        gbc2.gridx = 0;
-        gbc2.gridy = 1;
-        gbc2.weightx = 1;
-        gbc2.weighty = 0.95;
-        gbc2.fill = GridBagConstraints.BOTH;
-
-        // CenterUp
         databases = LoadJSON.load("databases.json");
-        allDatabases = getAllDatabases();
-        allTables = getAllTables();
-        allAttributes = getAllAttributes();
-        centerUp = new JPanel();
-        center = new JPanel();
-        centerDown = new JPanel();
+        if (databases == null || databases.getDatabaseList().size() == 0) {
 
-        centerUp.setLayout(new GridLayout(2, 2));
-        JLabel label1 = new JLabel("Select your database:");
-        JLabel label2 = new JLabel("Select your table:");
-        label1.setBorder(new MatteBorder(2, 2, 2, 2, Color.black));
-        label2.setBorder(new MatteBorder(2, 2, 2, 2, Color.black));
-        label1.setFont(new Font("Courier New", Font.BOLD, 20));
-        label2.setFont(new Font("Courier New", Font.BOLD, 20));
+        } else {
+            this.currentDatabaseName = Parser.currentDatabaseName;
+            this.currentTableName = Parser.currentTableName;
+            this.setLayout(new GridBagLayout());
 
-        centerUp.add(label1);
-        centerUp.setBackground(new Color(153, 153, 0));
-        centerUp.setBorder(new MatteBorder(2, 2, 2, 2, Color.black));
-        databaseComboBox = new JComboBox(allDatabases);
-        centerUp.add(databaseComboBox);
-        centerUp.add(label2);
-        tableComboBox = new JComboBox(allTables);
-        centerUp.add(tableComboBox);
+            // Init constraints to GridBagLayout
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.weightx = 1;
+            gbc.weighty = 0.05;
+            gbc.fill = GridBagConstraints.BOTH;
 
-        this.add(centerUp, gbc);
+            GridBagConstraints gbc2 = new GridBagConstraints();
+            gbc2.gridx = 0;
+            gbc2.gridy = 1;
+            gbc2.weightx = 1;
+            gbc2.weighty = 0.95;
+            gbc2.fill = GridBagConstraints.BOTH;
 
-        // Center
-        center.setLayout(null);
-        tableBoxes = new ArrayList<>();
-        this.add(center, gbc2);
+            // CenterUp
+            allDatabases = getAllDatabases();
+            allTables = getAllTables();
+            allAttributes = getAllAttributes();
+            centerUp = new JPanel();
+            center = new JPanel();
+            centerDown = new JPanel();
 
+            centerUp.setLayout(new GridLayout(2, 2));
+            JLabel label1 = new JLabel("Select your database:");
+            JLabel label2 = new JLabel("Select your table:");
+            label1.setBorder(new MatteBorder(2, 2, 2, 2, Color.black));
+            label2.setBorder(new MatteBorder(2, 2, 2, 2, Color.black));
+            label1.setFont(new Font("Courier New", Font.BOLD, 20));
+            label2.setFont(new Font("Courier New", Font.BOLD, 20));
+
+            centerUp.add(label1);
+            centerUp.setBackground(new Color(153, 153, 0));
+            centerUp.setBorder(new MatteBorder(2, 2, 2, 2, Color.black));
+            databaseComboBox = new JComboBox(allDatabases);
+            centerUp.add(databaseComboBox);
+            centerUp.add(label2);
+            tableComboBox = new JComboBox(allTables);
+            centerUp.add(tableComboBox);
+
+            this.add(centerUp, gbc);
+
+            // Center
+            center.setLayout(null);
+            tableBoxes = new ArrayList<>();
+            this.add(center, gbc2);
+        }
     }
 
     public String[] getAllDatabases() {
