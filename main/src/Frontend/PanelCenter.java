@@ -28,6 +28,8 @@ public class PanelCenter extends JPanel {
     private final String panelSelectQuery = "PANELSELECTQUERY";
     private final PanelDown panelDown;
 
+    private JLabel inputLabel;
+
     public PanelCenter(PanelDown panelDown) {
         this.panelDown = panelDown;
         this.setLayout(new GridLayout(1, 2));
@@ -46,10 +48,10 @@ public class PanelCenter extends JPanel {
         commandLineHeader.setLayout(new GridLayout(1, 2));
 
         //commandLineInputLabel
-        JLabel commandLineInputLabel = new JLabel("Command line:");
+        inputLabel = new JLabel("Command line:");
         commandLineInput.setLayout(new BorderLayout());
-        commandLineInputLabel.setFont(new Font("Courier New", Font.BOLD, 15));
-        commandLineInputLabel.setBorder(new MatteBorder(0, 0, 2, 0, Color.black));
+        inputLabel.setFont(new Font("Courier New", Font.BOLD, 15));
+        inputLabel.setBorder(new MatteBorder(0, 0, 2, 0, Color.black));
 
         //commandLineInputButtons
         JPanel commandLineInputButtonPanel = new JPanel();
@@ -64,7 +66,7 @@ public class PanelCenter extends JPanel {
         commandLineInputButtonPanel.setBorder(new MatteBorder(0, 0, 2, 0, Color.black));
 
         //fill header with label and buttons
-        commandLineHeader.add(commandLineInputLabel);
+        commandLineHeader.add(inputLabel);
         commandLineHeader.add(commandLineInputButtonPanel);
 
         //init 3 JPanel to card
@@ -165,5 +167,9 @@ public class PanelCenter extends JPanel {
 
     public InsertDeleteQuery getInputAreaPanelInsDelQuery() {
         return inputAreaPanelInsDelQuery;
+    }
+
+    public JLabel getInputLabel() {
+        return inputLabel;
     }
 }

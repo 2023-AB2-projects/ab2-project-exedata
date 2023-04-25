@@ -12,7 +12,6 @@ import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class SelectQuery extends JPanel {
     private ArrayList<TableBox> tableBoxes;
