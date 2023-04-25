@@ -66,11 +66,11 @@ public class Insert implements Command {
     }
 
     public void insertUpdateIndexFile(String[] fieldName, String[] value, IndexFile indexFile, Databases databases, MongoDB mongoDB, String tableName) {
+        StringBuilder keyIndexFile = new StringBuilder();
+        List<String> indexAttributes = indexFile.getIndexAttributes();
+        List<String> primaryKeys = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey();
         if (indexFile.getIsUnique().equals("1")) {
             //if unique
-            StringBuilder keyIndexFile = new StringBuilder();
-            List<String> indexAttributes = indexFile.getIndexAttributes();
-            List<String> primaryKeys = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey();
             for (int i = 0; i < fieldName.length; i++) {
                 if (indexAttributes.contains(fieldName[i])) {
                     keyIndexFile.append(value[i]).append("#");
@@ -79,21 +79,17 @@ public class Insert implements Command {
             keyIndexFile = new StringBuilder(keyIndexFile.substring(0, keyIndexFile.length() - 1));
             String valueIndexFile = getPrimaryKeysValuesSeparateByHash(primaryKeys, fieldName, value);
             Document document = new Document();
-            document.append("_id", keyIndexFile);
+            document.append("_id", keyIndexFile.toString());
             document.append("Value", valueIndexFile);
             mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
             mongoDB.insertOne(indexFile.getIndexName(), document);
         } else {
-            StringBuilder keyIndexFile = new StringBuilder();
-            List<String> indexAttributes = indexFile.getIndexAttributes();
-            List<String> primaryKeys = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey();
             for (int i = 0; i < fieldName.length; i++) {
                 if (indexAttributes.contains(fieldName[i])) {
                     keyIndexFile.append(value[i]).append("#");
                 }
             }
             String valueIndexFile = "#" + getPrimaryKeysValuesSeparateByHash(primaryKeys, fieldName, value);
-            System.out.println(valueIndexFile);
             mongoDB.updateDocument(keyIndexFile.substring(0, keyIndexFile.length() - 1), indexFile.getIndexName(), valueIndexFile);
         }
     }

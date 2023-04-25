@@ -6,11 +6,16 @@ import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.ne;
 import static com.mongodb.client.model.Updates.set;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -57,9 +62,24 @@ public class MongoDB {
         }
     }
 
-    public void updateDocument(String id, String collectionName, String appendString){
-        Document update = new Document("$set", new Document("field1", new Document("$concat", Arrays.asList("$field1", appendString))));
-        database.getCollection(collectionName).updateOne(eq("_id", new ObjectId(id)), update);
+    public void updateDocument(String id, String collectionName, String appendString) {
+        Document query = new Document("_id", id);
+        List<Document> results = database.getCollection(collectionName).find(query).into(new ArrayList<>());
+        Document document = new Document();
+        for (Document result : results) {
+            document.append("_id", result.get("_id"));
+            document.append("Value", result.get("Value") + appendString);
+            deleteOne(collectionName, "_id", (String) result.get("_id"));
+            Backend.goodDelete = false;
+            insertOne(collectionName, document);
+        }
+        if(results.size()==0){
+            System.out.println(id);
+            System.out.println(appendString);
+            document.append("_id", id);
+            document.append("Value", appendString.substring(1));
+            insertOne(collectionName, document);
+        }
     }
 
     public void dropCollection(String collectionName) {
@@ -112,7 +132,12 @@ public class MongoDB {
     }
 
     public boolean existsID(String collectionName, Document document) {
-        return (database.getCollection(collectionName).find(new Document("_id", document.get("_id"))).first() != null);
+        try{
+            return (database.getCollection(collectionName).find(new Document("_id", document.get("_id"))).first() != null);
+        }catch (Exception e){
+            return false;
+        }
+
     }
 
     public MongoCollection<Document> getDocuments(String collectionName) {

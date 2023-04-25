@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import Backend.Backend;
 import Backend.Common;
 import Backend.Databases.*;
 import Backend.MongoDBManagement.MongoDB;
@@ -135,6 +136,7 @@ public class CreateIndex implements Command {
                     documentNew.append("_id", keyIndexFile.toString());
                     documentNew.append("Value", valueIndexFile);
                     mongoDB.insertOne(indexName, documentNew);
+                    Backend.goodInsert = false;
                 }
             }
         } else {
@@ -168,6 +170,7 @@ public class CreateIndex implements Command {
                 documentNew.append("_id", key);
                 documentNew.append("Value", value);
                 mongoDB.insertOne(indexName, documentNew);
+                Backend.goodInsert = false;
             }
         }
     }
