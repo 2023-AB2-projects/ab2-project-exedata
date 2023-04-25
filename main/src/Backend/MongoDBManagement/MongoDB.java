@@ -126,11 +126,6 @@ public class MongoDB {
         Backend.goodDelete = true;
     }
 
-    public void deleteAll(String collectionName) {
-        database.getCollection(collectionName).drop();
-        database.createCollection(collectionName);
-    }
-
     public boolean existsID(String collectionName, Document document) {
         try{
             return (database.getCollection(collectionName).find(new Document("_id", document.get("_id"))).first() != null);

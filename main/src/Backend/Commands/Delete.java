@@ -5,6 +5,7 @@ import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SocketServer.ErrorClient;
 import Backend.MongoDBManagement.MongoDB;
+import org.bson.Document;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -75,7 +76,14 @@ public class Delete implements Command {
                 String tableName = matcherAll.group(1);
 
                 mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
-                mongoDB.deleteAll(tableName);
+//                mongoDB.deleteAll(tableName);
+                for(Document i : mongoDB.getDocuments(tableName).find()){
+                    if (checkDeleteData(tableName, i.getString("_id"), databases, mongoDB)) {
+                        mongoDB.deleteOne(tableName, "_id", i.getString("_id"));
+//                            updateIndexFiles
+                    }
+                }
+
             } else if (matcherMultiplePK.matches()) {
                 String tableName = matcherMultiplePK.group(1);
                 String keyString = matcherMultiplePK.group(2);
