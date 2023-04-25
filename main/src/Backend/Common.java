@@ -20,8 +20,6 @@ public class Common {
                                            List<String> primaryKeyList, List<Attribute> attributeList) {
         String[] primaryKeys = ((String) document.get("_id")).split("#");
         String[] values = ((String) document.get("Value")).split("#");
-        System.out.println(Arrays.toString(primaryKeys));
-        System.out.println(Arrays.toString(values));
         if (isPrimaryKey(fieldName, primaryKeyList)) {
             for (int i=0; i<primaryKeyList.size(); i++) {
                 if (primaryKeyList.get(i).equalsIgnoreCase(fieldName)) {

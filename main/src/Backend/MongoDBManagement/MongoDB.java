@@ -143,4 +143,8 @@ public class MongoDB {
     public MongoCollection<Document> getDocuments(String collectionName) {
         return database.getCollection(collectionName);
     }
+
+    public Document getDocument(String collectionName, String id) {
+        return database.getCollection(collectionName).find(new Document("_id",id)).first();
+    }
 }

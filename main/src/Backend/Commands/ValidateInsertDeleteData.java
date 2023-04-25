@@ -1,7 +1,9 @@
 package Backend.Commands;
 
+import Backend.Databases.Attribute;
 import Backend.Databases.Databases;
 import Backend.Databases.ForeignKey;
+import Backend.Databases.Table;
 import Backend.MongoDBManagement.MongoDB;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
@@ -9,6 +11,7 @@ import Backend.SocketServer.ErrorClient;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,9 +20,32 @@ import static Backend.Common.getValueByAttributeName;
 
 public class ValidateInsertDeleteData {
 
-    public static boolean checkDeleteData(){
+    public static boolean checkDeleteData(String tableName, String id, Databases databases, MongoDB mongoDB) {
+        Document document = mongoDB.getDocument(tableName, id);
+        List<String> primaryKeyList = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey();
+        List<Attribute> attributeList = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getStructure();
+        //delete from disciplines where DiscID = 'DB1';
+        String indexFileName;
+        String value;
+        for (Table i : databases.getDatabase(Parser.currentDatabaseName).getTables()) {
+            for (ForeignKey j : i.getForeignKeys()) {
+                if (j.getRefTable().equals(tableName)) {
+                    indexFileName = i.getIndexFileName(new String[]{j.getName()});
+                    value=getValueByAttributeName(document, j.getRefAttribute(), primaryKeyList, attributeList);
+                    if (indexFileName == null) {
+                        if(checkExistsValueInTableIfDoesNotHaveIndexFile(i.getName(), j.getName(), value, databases))
+                            return false;
+                    } else {
+                        if(checkExistsValueInTableIfDoesHaveIndexFile(indexFileName, value)){
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
         return true;
     }
+
     public static boolean checkInsertData(String tableName, String[] column, String[] values) {
         Databases databases = LoadJSON.load("databases.json");
         if (databases == null) {
@@ -111,13 +137,7 @@ public class ValidateInsertDeleteData {
         MongoDB mongoDB = new MongoDB();
         mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
         MongoCollection<Document> documents = mongoDB.getDocuments(tableName);
-        System.out.println("alma");
-        System.out.println(attributeName);
         for (Document i : documents.find()) {
-            System.out.println(getValueByAttributeName(i, attributeName,
-                    databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey(),
-                    databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getStructure()));
-            System.out.println(value);
             if (Objects.equals(getValueByAttributeName(i, attributeName,
                     databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey(),
                     databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getStructure()), value))

@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static Backend.Commands.ValidateInsertDeleteData.checkDeleteData;
+
 public class Delete implements Command {
     private final String command;
     List<String> primaryKeys;
@@ -28,6 +30,12 @@ public class Delete implements Command {
         Matcher matcher = pattern.matcher(command);
         Matcher matcherAll = patternAll.matcher(command);
         Matcher matcherMultiplePK = patternMultiplePK.matcher(command);
+        Databases databases = LoadJSON.load("databases.json");
+        if (databases == null || databases.getDatabaseList().size() == 0) {
+            System.out.println("Database doesn't exists!");
+            ErrorClient.send("Database doesn't exists!");
+            return;
+        }
 
         if (Parser.currentDatabaseName == null) {
             System.out.println("Please select your database first!");
@@ -43,14 +51,20 @@ public class Delete implements Command {
                     value = value.substring(1, value.length() - 1);
                 }
 
-                primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName);
+                primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName, databases);
                 mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
                 if (isPrimaryKey(fieldName)) {
                     if (primaryKeys.size() != 1) {
                         System.out.println("Error with deletion! Please specify all the primary keys!");
                         ErrorClient.send("Error with deletion! Please specify all the primary keys!");
                     } else {
-                        mongoDB.deleteOne(tableName, "_id", value);
+                        if (checkDeleteData(tableName, value, databases, mongoDB)) {
+                            mongoDB.deleteOne(tableName, "_id", value);
+//                            updateIndexFiles
+                        } else {
+                            System.out.println("Error with foreign key constraint!");
+                            ErrorClient.send("Error with foreign key constraint!");
+                        }
                     }
                 } else {
                     System.out.println("Document can only be deleted according to the PRIMARY KEY!");
@@ -69,7 +83,7 @@ public class Delete implements Command {
                 keyString = keyString.replaceAll("(?i)and", "AND");
                 String[] keyValuePairs = keyString.split("AND");
 
-                primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName);
+                primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName, databases);
                 String deleteValue = buildKey(primaryKeys, keyValuePairs);
                 if (deleteValue.equals("!!!!!")) {
                     System.out.println("Error with deletion! Please specify all the primary keys!");
@@ -85,8 +99,7 @@ public class Delete implements Command {
     }
 
 
-    public List<String> getPrimaryKeys(String dataBaseName, String tableName) {
-        Databases databases = LoadJSON.load("databases.json");
+    public List<String> getPrimaryKeys(String dataBaseName, String tableName, Databases databases) {
         assert databases != null;
         return databases.getDatabase(dataBaseName).getTable(tableName).getPrimaryKey();
     }
@@ -106,11 +119,12 @@ public class Delete implements Command {
         String[] value = new String[keyValuePair.length];
         String[] oneKeyOneValue;
         for (int i = 0; i < keyValuePair.length; i++) {
-            oneKeyOneValue = keyValuePair[i].split("=");;
+            oneKeyOneValue = keyValuePair[i].split("=");
+            ;
             key[i] = oneKeyOneValue[0];
             value[i] = oneKeyOneValue[1];
             if (value[i].charAt(0) == '\"' || value[i].charAt(0) == '\'') {
-                value[i] = value[i].substring(1, value[i].length()-1);
+                value[i] = value[i].substring(1, value[i].length() - 1);
             }
         }
         int nr = 0;
