@@ -9,6 +9,7 @@ import Backend.SaveLoadJSON.LoadJSON;
 
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +27,10 @@ public class SelectQuery extends JPanel {
     private String[] allAttributes;
     protected int width = this.getWidth();
     protected int height = this.getWidth();
-
     private String currentDatabaseName;
     private String currentTableName;
+    private JPanel panel1;
+    private JPanel panel2;
 
     public SelectQuery() {
         databases = LoadJSON.load("databases.json");
@@ -39,20 +41,11 @@ public class SelectQuery extends JPanel {
             this.currentTableName = Parser.currentTableName;
             this.setLayout(new GridBagLayout());
 
-            // Init constraints to GridBagLayout
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            gbc.weightx = 1;
-            gbc.weighty = 0.05;
-            gbc.fill = GridBagConstraints.BOTH;
-
-            GridBagConstraints gbc2 = new GridBagConstraints();
-            gbc2.gridx = 0;
-            gbc2.gridy = 1;
-            gbc2.weightx = 1;
-            gbc2.weighty = 0.95;
-            gbc2.fill = GridBagConstraints.BOTH;
+            this.setLayout(new GridLayout(2, 1));
+            panel1 = new JPanel();
+            panel2 = new JPanel();
+            panel1.setLayout(new GridLayout(2, 1));
+            panel2.setLayout(new GridLayout(1, 1));
 
             // CenterUp
             allDatabases = getAllDatabases();
@@ -79,12 +72,40 @@ public class SelectQuery extends JPanel {
             tableComboBox = new JComboBox(allTables);
             centerUp.add(tableComboBox);
 
-            this.add(centerUp, gbc);
+            panel1.add(centerUp);
 
             // Center
-            center.setLayout(null);
+            Object[] columnNames = {"Column", "Alias", "Table", "Output", "Sort type", "Sort order", "Filter", "OR"};
+            Object[][] data = {
+                    {"Column 1", "Alias 1", "Table 1", false, "Sort type 1", "Sort order 1", "Filter 1", "OR 1"},
+                    {"Column 2", "Alias 2", "Table 2", false, "Sort type 2", "Sort order 2", "Filter 2", "OR 2"},
+            };
+            DefaultTableModel model = new DefaultTableModel(data, columnNames) {
+                @Override
+                public Class<?> getColumnClass(int column) {
+                    if (column == 3) {
+                        return Boolean.class;
+                    }
+                    return super.getColumnClass(column);
+                }
+            };
+
+            JTable table = new JTable(model);
+
+            JScrollPane scrollPane = new JScrollPane(table);
+
+            center.setLayout(new GridLayout(1, 1));
+            center.add(scrollPane);
+
+            panel1.add(center);
+
+            // Center down
+            centerDown.setLayout(null);
             tableBoxes = new ArrayList<>();
-            this.add(center, gbc2);
+            panel2.add(centerDown);
+
+            this.add(panel1);
+            this.add(panel2);
         }
     }
 
@@ -117,6 +138,10 @@ public class SelectQuery extends JPanel {
 
     public JPanel getCenter() {
         return center;
+    }
+
+    public JPanel getCenterDown() {
+        return centerDown;
     }
 
     public ArrayList<TableBox> getTableBoxes() {
