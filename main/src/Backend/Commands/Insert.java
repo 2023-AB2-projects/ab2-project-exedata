@@ -11,10 +11,13 @@ import org.bson.Document;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static Backend.Commands.FormatCommand.getPrimaryKeysValuesSeparateByHash;
 
 public class Insert implements Command {
     private final String command;
@@ -77,7 +80,7 @@ public class Insert implements Command {
                 }
             }
             keyIndexFile = new StringBuilder(keyIndexFile.substring(0, keyIndexFile.length() - 1));
-            String valueIndexFile = getPrimaryKeysValuesSeparateByHash(primaryKeys, fieldName, value);
+            String valueIndexFile = getPrimaryKeysValuesSeparateByHash(primaryKeys, Arrays.stream(fieldName).toList(), Arrays.stream(value).toList());
             Document document = new Document();
             document.append("_id", keyIndexFile.toString());
             document.append("Value", valueIndexFile);
@@ -89,20 +92,9 @@ public class Insert implements Command {
                     keyIndexFile.append(value[i]).append("#");
                 }
             }
-            String valueIndexFile = "#" + getPrimaryKeysValuesSeparateByHash(primaryKeys, fieldName, value);
+            String valueIndexFile = "#" + getPrimaryKeysValuesSeparateByHash(primaryKeys, Arrays.stream(fieldName).toList(), Arrays.stream(value).toList());
             mongoDB.updateDocument(keyIndexFile.substring(0, keyIndexFile.length() - 1), indexFile.getIndexName(), valueIndexFile);
         }
-    }
-
-    private String getPrimaryKeysValuesSeparateByHash(List<String> primaryKeys, String[] fieldName, String[] value) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < fieldName.length; i++) {
-            if (primaryKeys.contains(fieldName[i])) {
-                result.append(value[i]).append("#");
-            }
-        }
-        result = new StringBuilder(result.substring(0, result.length() - 1));
-        return result.toString();
     }
 
     public List<String> getPrimaryKeys(String dataBaseName, String tableName, Databases databases) {

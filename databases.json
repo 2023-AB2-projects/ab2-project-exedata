@@ -27,7 +27,15 @@
           ],
           "foreignKeys": [],
           "uniqueKeys": [],
-          "indexFiles": []
+          "indexFiles": [
+            {
+              "indexName": "test",
+              "indexAttributes": [
+                "CreditNr"
+              ],
+              "isUnique": "0"
+            }
+          ]
         },
         {
           "name": "specialization",

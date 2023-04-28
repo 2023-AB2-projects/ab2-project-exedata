@@ -1,18 +1,23 @@
 package Backend.Commands;
 
 import Backend.Databases.Databases;
+import Backend.Databases.IndexFile;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SocketServer.ErrorClient;
 import Backend.MongoDBManagement.MongoDB;
 import org.bson.Document;
 
+import javax.print.Doc;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static Backend.Commands.FormatCommand.getPrimaryKeysValuesSeparateByHash;
 import static Backend.Commands.ValidateInsertDeleteData.checkDeleteData;
 
 public class Delete implements Command {
@@ -77,7 +82,7 @@ public class Delete implements Command {
 
                 mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
 //                mongoDB.deleteAll(tableName);
-                for(Document i : mongoDB.getDocuments(tableName).find()){
+                for (Document i : mongoDB.getDocuments(tableName).find()) {
                     if (checkDeleteData(tableName, i.getString("_id"), databases, mongoDB)) {
                         mongoDB.deleteOne(tableName, "_id", i.getString("_id"));
 //                            updateIndexFiles
@@ -90,7 +95,6 @@ public class Delete implements Command {
                 keyString = keyString.replace(" ", "");
                 keyString = keyString.replaceAll("(?i)and", "AND");
                 String[] keyValuePairs = keyString.split("AND");
-
                 primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName, databases);
                 String deleteValue = buildKey(primaryKeys, keyValuePairs);
                 if (deleteValue.equals("!!!!!")) {
@@ -100,7 +104,9 @@ public class Delete implements Command {
                     mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
                     if (checkDeleteData(tableName, deleteValue, databases, mongoDB)) {
                         mongoDB.deleteOne(tableName, "_id", deleteValue);
-//                            updateIndexFiles
+                        for (IndexFile i : databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getIndexFiles()) {
+                            deleteUpdateIndexFile(keyValuePairs, i, databases, mongoDB, tableName);
+                        }
                     } else {
                         System.out.println("Error with foreign key constraint!");
                         ErrorClient.send("Error with foreign key constraint!");
@@ -112,6 +118,57 @@ public class Delete implements Command {
 
     }
 
+    public void deleteUpdateIndexFile(String[] keyValuePairs, IndexFile indexFile, Databases databases, MongoDB mongoDB, String tableName) {
+        List<String> fieldName = new ArrayList<>();
+        List<String> value = new ArrayList<>();
+        for (String i : keyValuePairs) {
+            fieldName.add(i.split("=")[0]);
+            System.out.println(fieldName.get(fieldName.size()-1));
+            value.add(getValue(i.split("=")[1]));
+            System.out.println(value.get(value.size()-1));
+        }
+        StringBuilder keyIndexFile = new StringBuilder();
+        List<String> indexAttributes = indexFile.getIndexAttributes();
+        List<String> primaryKeys = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey();
+
+        for (int i = 0; i < fieldName.size(); i++) {
+            if (indexAttributes.contains(fieldName.get(i))) {
+                keyIndexFile.append(value.get(i)).append("#");
+            }
+        }
+        keyIndexFile = new StringBuilder(keyIndexFile.substring(0, keyIndexFile.length() - 1));
+
+        if (indexFile.getIsUnique().equals("1")) {
+            //if unique
+            mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
+            mongoDB.deleteOne(indexFile.getIndexName(), "_id", keyIndexFile.toString());
+        } else {
+            Document document = mongoDB.getDocument(indexFile.getIndexName(),keyIndexFile.toString());
+            List<String> valueIndexFile = new ArrayList<>(List.of(document.getString("Value").split("#")));
+            valueIndexFile.remove(getPrimaryKeysValuesSeparateByHash(primaryKeys,fieldName,value));
+            mongoDB.deleteOne(indexFile.getIndexName(), "_id", keyIndexFile.toString());
+            StringBuilder valueInsert= new StringBuilder();
+            for(String i:valueIndexFile){
+                valueInsert.append(i).append("#");
+            }
+//            valueInsert.append().append("#");
+            valueInsert = new StringBuilder(valueInsert.substring(0, valueInsert.length() - 1));
+            Document document1 =new Document();
+            document1.append("_id",keyIndexFile.toString());
+            document1.append("Value",valueInsert.toString());
+            mongoDB.insertOne(indexFile.getIndexName(), document1);
+            //mongoDB.updateDocument(keyIndexFile.substring(0, keyIndexFile.length() - 1), indexFile.getIndexName(), valueIndexFile);
+        }
+    }
+
+    private String getValue(String value) {
+        if(value.charAt(value.length()-1)==';')
+            value=value.substring(0,value.length()-1);
+        if (value.charAt(value.length() - 1) == '\'' || value.charAt(value.length() - 1) == '\"') {
+            return value.substring(1, value.length() - 1);
+        }
+        return value;
+    }
 
     public List<String> getPrimaryKeys(String dataBaseName, String tableName, Databases databases) {
         assert databases != null;

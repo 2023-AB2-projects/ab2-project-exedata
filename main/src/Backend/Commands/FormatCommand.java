@@ -84,4 +84,15 @@ public class FormatCommand {
         }
         return result;
     }
+
+    public static String getPrimaryKeysValuesSeparateByHash(List<String> primaryKeys, List<String> fieldName, List<String> value) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < fieldName.size(); i++) {
+            if (primaryKeys.contains(fieldName.get(i))) {
+                result.append(value.get(i)).append("#");
+            }
+        }
+        result = new StringBuilder(result.substring(0, result.length() - 1));
+        return result.toString();
+    }
 }
