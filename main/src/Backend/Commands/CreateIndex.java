@@ -57,6 +57,8 @@ public class CreateIndex implements Command {
                         if (createIndex(indexName, tableName, attributeNames)) {
                             //createEmptyIndexFile(indexName + ".ind");
                             SaveJSON.save(databases, "databases.json");
+                            createIndexFileInMongoDB(indexName, tableName, attributeNames);
+                            ErrorClient.send(indexName + " index is created!");
                         } else {
                             ErrorClient.send("Syntax error!");
                         }
@@ -71,7 +73,6 @@ public class CreateIndex implements Command {
             }
 
             // insert index file to MongoDB
-            createIndexFileInMongoDB(indexName, tableName, attributeNames);
         } else {
             ErrorClient.send("Wrong command!");
         }

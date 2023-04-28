@@ -1,6 +1,7 @@
 package Backend.Commands;
 
 import Backend.Databases.Databases;
+import Backend.MongoDBManagement.MongoDB;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
@@ -31,6 +32,10 @@ public class DropIndex implements Command {
         if (databases.getDatabase(Parser.currentDatabaseName) != null) {
             if (databases.getDatabase(Parser.currentDatabaseName).checkTableExists(currentTableName)) {
                 databases.getDatabase(currentDatabaseName).getTable(currentTableName).dropIndex(indexName);
+                MongoDB mongoDB =new MongoDB();
+                mongoDB.createDatabaseOrUse(currentDatabaseName);
+                mongoDB.dropCollection(indexName);
+                mongoDB.disconnectFromLocalhost();
                 SaveJSON.save(databases, "databases.json");
                 ErrorClient.send("The " + indexName + "index is deleted!");
             } else {
