@@ -20,6 +20,8 @@ public class SelectQuery extends JPanel {
     private JPanel centerUp;
     private JPanel center;
     private JPanel centerDown;
+    private JTextPane selectCommandText;
+    private JButton runButton;
     private JComboBox databaseComboBox;
     private JComboBox tableComboBox = new JComboBox();
     private String[] allDatabases;
@@ -45,7 +47,7 @@ public class SelectQuery extends JPanel {
             this.setLayout(new GridLayout(2, 1));
             panel1 = new JPanel();
             panel2 = new JPanel();
-            panel1.setLayout(new GridLayout(2, 1));
+            panel1.setLayout(new GridLayout(4, 1));
             panel2.setLayout(new GridLayout(1, 1));
 
             // CenterUp
@@ -101,9 +103,23 @@ public class SelectQuery extends JPanel {
 
             panel1.add(center);
 
+            // selectCommandPanel
+            selectCommandText = new JTextPane();
+            selectCommandText.setFont(new Font("Arial", Font.BOLD, 12));
+            panel1.add(selectCommandText);
+
+            // run button
+            runButton = new JButton("Generate query");
+            runButton.setFont(new Font("Arial", Font.BOLD, 20));
+            runButton.setBackground(Color.GREEN);
+            runButton.setForeground(Color.BLACK);
+            runButton.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.black));
+            panel1.add(runButton);
+
             // Center down
             centerDown.setLayout(null);
             tableBoxes = new ArrayList<>();
+
             panel2.add(centerDown);
 
             this.add(panel1);
@@ -144,6 +160,14 @@ public class SelectQuery extends JPanel {
 
     public JPanel getCenterDown() {
         return centerDown;
+    }
+
+    public JTextPane getSelectCommandText() {
+        return selectCommandText;
+    }
+
+    public JButton getRunButton() {
+        return runButton;
     }
 
     public ArrayList<TableBox> getTableBoxes() {

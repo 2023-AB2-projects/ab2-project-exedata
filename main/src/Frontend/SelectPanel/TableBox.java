@@ -11,7 +11,7 @@ public class TableBox extends JPanel {
     private int boxX = 5;
     private int boxY = 5;
     private final int width = 150;
-    private final int height = 250;
+    private final int height = 200;
     private Point currentPoint;
     private final JPanel attributesPanel;
     private String tableName;
@@ -20,7 +20,7 @@ public class TableBox extends JPanel {
     public TableBox(String tableName) {
         this.tableName = tableName;
         this.checkBoxes = new ArrayList<>();
-        checkBoxes.add(new JCheckBox("* (All Columns)"));
+        checkBoxes.add(new JCheckBox("*"));
 
         this.setLayout(new GridBagLayout());
 
@@ -69,6 +69,10 @@ public class TableBox extends JPanel {
                 }
             }
         });
+    }
+
+    public String getTableName() {
+        return tableName;
     }
 
     public JPanel getAttributesPanel() {

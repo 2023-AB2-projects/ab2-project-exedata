@@ -207,6 +207,25 @@ public class DatabaseController {
                 }
             }
         });
+        databaseFrame.getPanelCenter().getSelectQuery().getRunButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                StringBuilder selectCommand = new StringBuilder();
+                JTextPane jTextPane = databaseFrame.getPanelCenter().getSelectQuery().getSelectCommandText();
+                selectCommand.append("SELECT ");
+                ArrayList<TableBox> tableBoxes = databaseFrame.getPanelCenter().getSelectQuery().getTableBoxes();
+                for (int i=0; i<tableBoxes.size(); i++) {
+                    String tableName = tableBoxes.get(i).getTableName();
+                    ArrayList<JCheckBox> jCheckBox = tableBoxes.get(i).getCheckBoxes();
+                    for (int j=0; j<jCheckBox.size(); j++) {
+                        if (jCheckBox.get(j).isSelected()) {
+                            selectCommand.append(tableName).append(".").append(jCheckBox.get(j).getText()).append(",");
+                        }
+                    }
+                }
+                jTextPane.setText(String.valueOf(selectCommand).substring(0, selectCommand.length()-1));
+            }
+        });
         TimerThread timerThread = new TimerThread(databaseFrame.getPanelTop());
         timerThread.start();
         ErrorChannelThread errorChannelThread = new ErrorChannelThread(databaseFrame.getPanelDown());
