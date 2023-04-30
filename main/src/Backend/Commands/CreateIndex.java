@@ -160,7 +160,7 @@ public class CreateIndex implements Command {
                     if (!map.containsKey(keyIndexFile.toString())) {
                         map.put(keyIndexFile.toString(), valueIndexFile);
                     } else {
-                        map.put(keyIndexFile.toString(), map.get(keyIndexFile.toString()) + "#" + valueIndexFile);
+                        map.put(keyIndexFile.toString(), map.get(keyIndexFile.toString()) + "&" + valueIndexFile);
                     }
                 }
             }

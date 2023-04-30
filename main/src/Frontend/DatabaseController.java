@@ -3,6 +3,7 @@ package Frontend;
 import Frontend.SelectPanel.TableBox;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -164,6 +165,7 @@ public class DatabaseController {
         databaseFrame.getPanelCenter().getSelectQuery().getTableComboBox().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // center down
                 ArrayList<TableBox> tableBoxes = databaseFrame.getPanelCenter().getSelectQuery().getTableBoxes();
                 JPanel centerDown = databaseFrame.getPanelCenter().getSelectQuery().getCenterDown();
                 String newTableName = databaseFrame.getPanelCenter().getSelectQuery().getTableComboBox().getSelectedItem().toString();
@@ -183,6 +185,26 @@ public class DatabaseController {
                 }
 
                 centerDown.add(tableBoxes.get(length - 1));
+
+                // add actionListener to each attribute
+                for (int i=1; i<checkBoxes.size(); i++) {
+                    int finalI = i;
+                    checkBoxes.get(i).addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            if (checkBoxes.get(finalI).isSelected()) {
+                                checkBoxes.get(0).setSelected(false);
+                            }
+                        }
+                    });
+                }
+
+                // center
+                DefaultTableModel model = (DefaultTableModel) databaseFrame.getPanelCenter().getSelectQuery().getTable().getModel();
+                for (String attribute : allAttributes) {
+                    Object[] rowData = {attribute, "", newTableName, "", "", "", ""};
+                    model.addRow(rowData);
+                }
             }
         });
         TimerThread timerThread = new TimerThread(databaseFrame.getPanelTop());

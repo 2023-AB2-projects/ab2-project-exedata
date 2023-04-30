@@ -29,6 +29,7 @@ public class SelectQuery extends JPanel {
     protected int height = this.getWidth();
     private String currentDatabaseName;
     private String currentTableName;
+    private JTable table;
     private JPanel panel1;
     private JPanel panel2;
 
@@ -75,22 +76,23 @@ public class SelectQuery extends JPanel {
             panel1.add(centerUp);
 
             // Center
-            Object[] columnNames = {"Column", "Alias", "Table", "Output", "Sort type", "Sort order", "Filter", "OR"};
-            Object[][] data = {
-                    {"Column 1", "Alias 1", "Table 1", false, "Sort type 1", "Sort order 1", "Filter 1", "OR 1"},
-                    {"Column 2", "Alias 2", "Table 2", false, "Sort type 2", "Sort order 2", "Filter 2", "OR 2"},
-            };
+            Object[] columnNames = {"Column", "Alias", "Table", "Sort type", "Sort order", "Filter", "OR"};
+            Object[][] data = {};
             DefaultTableModel model = new DefaultTableModel(data, columnNames) {
+//                @Override
+//                public Class<?> getColumnClass(int column) {
+//                    if (column == 3) {
+//                        return Boolean.class;
+//                    }
+//                    return super.getColumnClass(column);
+//                }
                 @Override
-                public Class<?> getColumnClass(int column) {
-                    if (column == 3) {
-                        return Boolean.class;
-                    }
-                    return super.getColumnClass(column);
+                public boolean isCellEditable(int row, int column) {
+                    return column != 0 && column != 2;
                 }
             };
 
-            JTable table = new JTable(model);
+            table = new JTable(model);
 
             JScrollPane scrollPane = new JScrollPane(table);
 
@@ -170,5 +172,9 @@ public class SelectQuery extends JPanel {
 
     public void setCurrentTableName(String currentTableName) {
         this.currentTableName = currentTableName;
+    }
+
+    public JTable getTable() {
+        return table;
     }
 }
