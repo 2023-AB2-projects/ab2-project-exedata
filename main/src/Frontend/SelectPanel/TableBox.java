@@ -69,18 +69,18 @@ public class TableBox extends JPanel {
                         System.out.println(obj.getTableName());
                         if (obj.getTableName().equals(tableName)) {
                             iterator.remove(); // delete itself
-                            DefaultTableModel model = (DefaultTableModel) selectQuery.getTable().getModel();
-                            model.setRowCount(0);
-                            ArrayList<TableBox> tableBoxes = selectQuery.getTableBoxes();
-                            for (int i=0; i<tableBoxes.size(); i++) {
-                                ArrayList<JCheckBox> jCheckBoxes = tableBoxes.get(i).getCheckBoxes();
-                                String tableName = tableBoxes.get(i).getTableName();
-                                for (int j=1; j<jCheckBoxes.size(); j++) {
-                                    Object[] rowData = {jCheckBoxes.get(j).getText(), "", tableName, "", "", "", ""};
-                                    model.addRow(rowData);
-                                }
-                            }
                             break;
+                        }
+                    }
+                    DefaultTableModel model = (DefaultTableModel) selectQuery.getTable().getModel();
+                    model.setRowCount(0);
+                    ArrayList<TableBox> tableBoxes = selectQuery.getTableBoxes();
+                    for (int i=0; i<tableBoxes.size(); i++) {
+                        ArrayList<JCheckBox> jCheckBoxes = tableBoxes.get(i).getCheckBoxes();
+                        String tableName = tableBoxes.get(i).getTableName();
+                        for (int j=1; j<jCheckBoxes.size(); j++) {
+                            Object[] rowData = {jCheckBoxes.get(j).getText(), "", tableName, "", "", "", ""};
+                            model.addRow(rowData);
                         }
                     }
                 }
