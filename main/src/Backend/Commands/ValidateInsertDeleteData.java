@@ -102,7 +102,7 @@ public class ValidateInsertDeleteData {
         String indexFileName = databases.getDatabase(Parser.currentDatabaseName).getTable(foreignKey.getRefTable()).getIndexFileName(new String[]{foreignKey.getRefAttribute()});
         if (indexFileName == null) {
             //doesn't exist indexFile
-            System.out.println(value);
+            //System.out.println(value);
             return checkExistsValueInTableIfDoesNotHaveIndexFile(foreignKey.getRefTable(), foreignKey.getRefAttribute(), value, databases);
         } else {
             return checkExistsValueInTableIfDoesHaveIndexFile(indexFileName, value);
@@ -127,6 +127,7 @@ public class ValidateInsertDeleteData {
         mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
         Document document = new Document("_id", value);
         if (mongoDB.existsID(indexFileName, document)) {
+            mongoDB.disconnectFromLocalhost();
             return true;
         }
         mongoDB.disconnectFromLocalhost();
@@ -140,8 +141,10 @@ public class ValidateInsertDeleteData {
         for (Document i : documents.find()) {
             if (Objects.equals(getValueByAttributeName(i, attributeName,
                     databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey(),
-                    databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getStructure()), value))
+                    databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getStructure()), value)) {
+                mongoDB.disconnectFromLocalhost();
                 return true;
+            }
         }
         mongoDB.disconnectFromLocalhost();
         return false;

@@ -57,7 +57,7 @@ public class CreateIndex implements Command {
                         if (createIndex(indexName, tableName, attributeNames)) {
                             //createEmptyIndexFile(indexName + ".ind");
                             SaveJSON.save(databases, "databases.json");
-                            createIndexFileInMongoDB(indexName, tableName, attributeNames);
+                            createIndexFileInMongoDB(indexName, tableName, attributeNames, databases);
                             ErrorClient.send(indexName + " index is created!");
                         } else {
                             ErrorClient.send("Syntax error!");
@@ -95,16 +95,7 @@ public class CreateIndex implements Command {
         return true;
     }
 
-    protected static void createEmptyIndexFile(String indexFileName) {
-        try (FileWriter fileWriter = new FileWriter(indexFileName)) {
-            fileWriter.write("");
-            fileWriter.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void createIndexFileInMongoDB(String indexName, String tableName, String[] attributeNames) {
+    public static void  createIndexFileInMongoDB(String indexName, String tableName, String[] attributeNames, Databases databases) {
         // Create index file (collection) in MongoDB
         // Connection
         MongoDB mongoDB = new MongoDB();
@@ -117,7 +108,7 @@ public class CreateIndex implements Command {
         MongoCollection<Document> collection = mongoDB.getDocuments(tableName);
 
         // check that index attributes will be unique or not
-        if (isUnique(tableName, attributeNames)) {
+        if (isUnique(tableName, attributeNames, databases)) {
             // add documents to indexFile (unique)
             try (MongoCursor<Document> cursor = collection.find().iterator()) {
                 while (cursor.hasNext()) {
@@ -176,7 +167,7 @@ public class CreateIndex implements Command {
         }
     }
 
-    private boolean isUnique(String tableName, String[] attributeNames) {
+    private static boolean isUnique(String tableName, String[] attributeNames, Databases databases) {
         Table table = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName);
         int count = 0;
         for (String attribute : attributeNames) {
