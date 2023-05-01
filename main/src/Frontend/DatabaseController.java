@@ -1,5 +1,6 @@
 package Frontend;
 
+import Frontend.SelectPanel.SelectQuery;
 import Frontend.SelectPanel.TableBox;
 
 import javax.swing.*;
@@ -171,7 +172,7 @@ public class DatabaseController {
                 String newTableName = databaseFrame.getPanelCenter().getSelectQuery().getTableComboBox().getSelectedItem().toString();
                 databaseFrame.getPanelCenter().getSelectQuery().setCurrentTableName(newTableName);
 
-                TableBox tableBox = new TableBox(newTableName);
+                TableBox tableBox = new TableBox(databaseFrame.getPanelCenter().getSelectQuery(), newTableName);
                 String[] allAttributes = databaseFrame.getPanelCenter().getSelectQuery().getAllAttributes();
                 ArrayList<JCheckBox> checkBoxes = tableBox.getCheckBoxes();
 
@@ -205,6 +206,34 @@ public class DatabaseController {
                     Object[] rowData = {attribute, "", newTableName, "", "", "", ""};
                     model.addRow(rowData);
                 }
+            }
+        });
+        databaseFrame.getPanelCenter().getSelectQuery().getRunButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                StringBuilder selectCommand = new StringBuilder();
+                JTextPane jTextPane = databaseFrame.getPanelCenter().getSelectQuery().getSelectCommandText();
+                selectCommand.append("SELECT ");
+                ArrayList<TableBox> tableBoxes = databaseFrame.getPanelCenter().getSelectQuery().getTableBoxes();
+                StringBuilder usedTables = new StringBuilder();
+                for (int i=0; i<tableBoxes.size(); i++) {
+                    String tableName = tableBoxes.get(i).getTableName();
+                    ArrayList<JCheckBox> jCheckBox = tableBoxes.get(i).getCheckBoxes();
+                    boolean used = false;
+                    for (int j=0; j<jCheckBox.size(); j++) {
+                        if (jCheckBox.get(j).isSelected()) {
+                            used = true;
+                            selectCommand.append(tableName).append(".").append(jCheckBox.get(j).getText()).append(",");
+                        }
+                    }
+                    if (used) {
+                        usedTables.append(tableName).append(",");
+                    }
+                }
+                selectCommand = new StringBuilder(selectCommand.substring(0, selectCommand.length() - 1));
+                selectCommand.append("\n     FROM ");
+                selectCommand.append(usedTables);
+                jTextPane.setText(String.valueOf(selectCommand).substring(0, selectCommand.length()-1));
             }
         });
         TimerThread timerThread = new TimerThread(databaseFrame.getPanelTop());

@@ -1,26 +1,29 @@
 package Frontend.SelectPanel;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class TableBox extends JPanel {
+    private SelectQuery selectQuery;
     private int boxX = 5;
     private int boxY = 5;
     private final int width = 150;
-    private final int height = 250;
+    private final int height = 200;
     private Point currentPoint;
     private final JPanel attributesPanel;
     private String tableName;
     private final ArrayList<JCheckBox> checkBoxes;
 
-    public TableBox(String tableName) {
+    public TableBox(SelectQuery selectQuery, String tableName) {
+        this.selectQuery = selectQuery;
         this.tableName = tableName;
         this.checkBoxes = new ArrayList<>();
-        checkBoxes.add(new JCheckBox("* (All Columns)"));
+        checkBoxes.add(new JCheckBox("*"));
 
         this.setLayout(new GridBagLayout());
 
@@ -58,6 +61,29 @@ public class TableBox extends JPanel {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mouseClicked(e);
+                if (e.getButton() == MouseEvent.BUTTON3) {
+                    TableBox.super.setVisible(false);
+                    Iterator<TableBox> iterator = selectQuery.getTableBoxes().iterator();
+                    while (iterator.hasNext()) {
+                        TableBox obj = iterator.next();
+                        System.out.println(obj.getTableName());
+                        if (obj.getTableName().equals(tableName)) {
+                            iterator.remove(); // delete itself
+                            break;
+                        }
+                    }
+                    DefaultTableModel model = (DefaultTableModel) selectQuery.getTable().getModel();
+                    model.setRowCount(0);
+                    ArrayList<TableBox> tableBoxes = selectQuery.getTableBoxes();
+                    for (int i=0; i<tableBoxes.size(); i++) {
+                        ArrayList<JCheckBox> jCheckBoxes = tableBoxes.get(i).getCheckBoxes();
+                        String tableName = tableBoxes.get(i).getTableName();
+                        for (int j=1; j<jCheckBoxes.size(); j++) {
+                            Object[] rowData = {jCheckBoxes.get(j).getText(), "", tableName, "", "", "", ""};
+                            model.addRow(rowData);
+                        }
+                    }
+                }
                 currentPoint = getMousePosition();
             }
         });
@@ -69,6 +95,10 @@ public class TableBox extends JPanel {
                 }
             }
         });
+    }
+
+    public String getTableName() {
+        return tableName;
     }
 
     public JPanel getAttributesPanel() {
