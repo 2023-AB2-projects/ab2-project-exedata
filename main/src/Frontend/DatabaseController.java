@@ -260,7 +260,14 @@ public class DatabaseController {
                     if (!filterCondition.equals("")) {
                         // condition check (syntax) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         existsFilter = true;
-                        conditions.append("(").append(tableName).append(".").append(attribute).append(filterCondition).append("),");
+                        conditions.append("(").append(tableName).append(".").append(attribute).append(filterCondition);
+                        for (int j=6; j<table.getColumnCount(); j++) {
+                            String orCondition = (String) table.getValueAt(i, j);
+                            if (!orCondition.equals("")) {
+                                conditions.append(" OR ").append(tableName).append(".").append(attribute).append(orCondition);
+                            }
+                        }
+                        conditions.append(") AND ");
                     }
                     if (!sortType.equals("Unsorted")) {
                         if (!sortOrder.equals("Unsorted")) {
@@ -276,7 +283,7 @@ public class DatabaseController {
                 }
                 if (existsFilter) {
                     selectCommand.append("\nWHERE ");
-                    selectCommand.append(conditions.substring(0, conditions.length()-1));
+                    selectCommand.append(conditions.substring(0, conditions.length()-5));
                 }
                 if (existsSortType) {
                     selectCommand.append("\nORDER BY ");
@@ -289,7 +296,6 @@ public class DatabaseController {
                 }
 
                 jTextPane.setText(String.valueOf(selectCommand));
-
             }
         });
         TimerThread timerThread = new TimerThread(databaseFrame.getPanelTop());
