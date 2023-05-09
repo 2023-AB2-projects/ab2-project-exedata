@@ -310,6 +310,7 @@ public class DatabaseController {
                         } else {
                             joinSelectedTable = newTableName;
                             joinSelectedAttribute = rightJoinComboBox.getSelectedItem().toString();
+
                         }
                     }
                 });
