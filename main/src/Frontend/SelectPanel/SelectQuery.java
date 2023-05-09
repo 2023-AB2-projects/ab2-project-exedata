@@ -9,7 +9,9 @@ import Backend.SaveLoadJSON.LoadJSON;
 
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +80,7 @@ public class SelectQuery extends JPanel {
             panel1.add(centerUp);
 
             // Center
-            Object[] columnNames = {"Column", "Alias", "Table", "Sort type", "Sort order", "Filter", "OR"};
+            Object[] columnNames = {"Column", "Alias", "Table", "Sort Type", "Sort Order", "Filter", "OR"};
             Object[][] data = {};
             DefaultTableModel model = new DefaultTableModel(data, columnNames) {
 //                @Override
@@ -96,6 +98,24 @@ public class SelectQuery extends JPanel {
 
             table = new JTable(model);
 
+            // Sort Type
+            int columnIndex = table.getColumnModel().getColumnIndex("Sort Type");
+            TableColumn comboBoxColumn = table.getColumnModel().getColumn(columnIndex);
+
+            comboBoxColumn.setCellEditor(new DefaultCellEditor(new JComboBox(new Object[] {"Ascending", "Descending", "Unsorted"})));
+
+            // Sort Order
+            columnIndex = table.getColumnModel().getColumnIndex("Sort Order");
+            comboBoxColumn = table.getColumnModel().getColumn(columnIndex);
+
+            Object[] numbers = new Object[101];
+            numbers[0] = "Unsorted";
+            for (int i=1; i<=100; i++) {
+                numbers[i] = String.valueOf(i);
+            }
+            comboBoxColumn.setCellEditor(new DefaultCellEditor(new JComboBox(numbers)));
+
+            // JTable to JScrollPane
             JScrollPane scrollPane = new JScrollPane(table);
 
             center.setLayout(new GridLayout(1, 1));
@@ -106,7 +126,8 @@ public class SelectQuery extends JPanel {
             // selectCommandPanel
             selectCommandText = new JTextPane();
             selectCommandText.setFont(new Font("Arial", Font.BOLD, 12));
-            panel1.add(selectCommandText);
+            JScrollPane jScrollPane = new JScrollPane(selectCommandText);
+            panel1.add(jScrollPane);
 
             // run button
             runButton = new JButton("Generate query");

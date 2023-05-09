@@ -203,7 +203,7 @@ public class DatabaseController {
                 // center
                 DefaultTableModel model = (DefaultTableModel) databaseFrame.getPanelCenter().getSelectQuery().getTable().getModel();
                 for (String attribute : allAttributes) {
-                    Object[] rowData = {attribute, "", newTableName, "", "", "", ""};
+                    Object[] rowData = {attribute, "", newTableName, "Unsorted", "Unsorted", "", ""};
                     model.addRow(rowData);
                 }
             }
@@ -211,6 +211,8 @@ public class DatabaseController {
         databaseFrame.getPanelCenter().getSelectQuery().getRunButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                JTable table = databaseFrame.getPanelCenter().getSelectQuery().getTable();
+                // SELECT FROM
                 StringBuilder selectCommand = new StringBuilder();
                 JTextPane jTextPane = databaseFrame.getPanelCenter().getSelectQuery().getSelectCommandText();
                 selectCommand.append("SELECT ");
@@ -223,7 +225,14 @@ public class DatabaseController {
                     for (int j=0; j<jCheckBox.size(); j++) {
                         if (jCheckBox.get(j).isSelected()) {
                             used = true;
-                            selectCommand.append(tableName).append(".").append(jCheckBox.get(j).getText()).append(",");
+                            selectCommand.append(tableName).append(".").append(jCheckBox.get(j).getText());
+                            if (j!=0) {  // not *
+                                String alias = getAlias(table, tableName, jCheckBox.get(j).getText());
+                                if (!alias.equals("")) {
+                                    selectCommand.append(" AS ").append(alias);
+                                }
+                            }
+                            selectCommand.append(",");
                         }
                     }
                     if (used) {
@@ -231,9 +240,55 @@ public class DatabaseController {
                     }
                 }
                 selectCommand = new StringBuilder(selectCommand.substring(0, selectCommand.length() - 1));
-                selectCommand.append("\n     FROM ");
-                selectCommand.append(usedTables);
-                jTextPane.setText(String.valueOf(selectCommand).substring(0, selectCommand.length()-1));
+                selectCommand.append("\nFROM ");
+                if (usedTables.length()!=0) {
+                    selectCommand.append(usedTables.substring(0, usedTables.length()-1));
+                }
+
+                // WHERE AND ORDER BY
+                StringBuilder conditions = new StringBuilder();
+                StringBuilder orderByConditions = new StringBuilder();
+                String[] orderByConditionsArray = new String[101];
+                boolean existsFilter = false;
+                boolean existsSortType = false;
+                for (int i=0; i<table.getRowCount(); i++) {
+                    String attribute = (String) table.getValueAt(i, 0);
+                    String tableName = (String) table.getValueAt(i, 2);
+                    String filterCondition = (String) table.getValueAt(i, 5);
+                    String sortType = (String) table.getValueAt(i, 3);
+                    String sortOrder = (String) table.getValueAt(i, 4);
+                    if (!filterCondition.equals("")) {
+                        // condition check (syntax) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        existsFilter = true;
+                        conditions.append("(").append(tableName).append(".").append(attribute).append(filterCondition).append("),");
+                    }
+                    if (!sortType.equals("Unsorted")) {
+                        if (!sortOrder.equals("Unsorted")) {
+                            existsSortType = true;
+                            int index = Integer.parseInt(sortOrder);
+                            orderByConditionsArray[index] = tableName + "." + attribute;
+                            if (sortType.equals("Descending")) {
+                                orderByConditionsArray[index] += " DESC";
+                            }
+                            orderByConditionsArray[index] += ",";
+                        }
+                    }
+                }
+                if (existsFilter) {
+                    selectCommand.append("\nWHERE ");
+                    selectCommand.append(conditions.substring(0, conditions.length()-1));
+                }
+                if (existsSortType) {
+                    selectCommand.append("\nORDER BY ");
+                    for (int i=1; i<=100; i++) {
+                        if (orderByConditionsArray[i] != null) {
+                            orderByConditions.append(orderByConditionsArray[i]);
+                        }
+                    }
+                    selectCommand.append(orderByConditions.substring(0, orderByConditions.length()-1));
+                }
+
+                jTextPane.setText(String.valueOf(selectCommand));
             }
         });
         TimerThread timerThread = new TimerThread(databaseFrame.getPanelTop());
@@ -265,5 +320,14 @@ public class DatabaseController {
         if (!ok) {
             doc.setCharacterAttributes(startIndex, endIndex - startIndex, defaultStyle, true);
         }
+    }
+
+    private String getAlias(JTable table, String tableName, String attributeName) {
+        for (int i=0; i<table.getRowCount(); i++) {
+            if (table.getValueAt(i, 0).equals(attributeName) && table.getValueAt(i, 2).equals(tableName)) {
+                return table.getValueAt(i, 1).toString();
+            }
+        }
+        return "";
     }
 }

@@ -19,6 +19,8 @@ public class TableBox extends JPanel {
     private String tableName;
     private final ArrayList<JCheckBox> checkBoxes;
 
+    private JLabel labelTableName;
+
     public TableBox(SelectQuery selectQuery, String tableName) {
         this.selectQuery = selectQuery;
         this.tableName = tableName;
@@ -40,7 +42,8 @@ public class TableBox extends JPanel {
         this.setBackground(Color.LIGHT_GRAY);
         this.currentPoint = null;
 
-        this.add(new JLabel(tableName));
+        labelTableName = new JLabel(tableName);
+        this.add(labelTableName);
 
         attributesPanel = new JPanel();
         attributesPanel.setLayout(new GridLayout(0, 1));
@@ -66,7 +69,6 @@ public class TableBox extends JPanel {
                     Iterator<TableBox> iterator = selectQuery.getTableBoxes().iterator();
                     while (iterator.hasNext()) {
                         TableBox obj = iterator.next();
-                        System.out.println(obj.getTableName());
                         if (obj.getTableName().equals(tableName)) {
                             iterator.remove(); // delete itself
                             break;
