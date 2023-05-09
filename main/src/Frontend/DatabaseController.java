@@ -289,6 +289,7 @@ public class DatabaseController {
                 }
 
                 jTextPane.setText(String.valueOf(selectCommand));
+
             }
         });
         TimerThread timerThread = new TimerThread(databaseFrame.getPanelTop());
