@@ -44,6 +44,7 @@ public class Insert implements Command {
                 if (ValidateInsertDeleteData.checkInsertData(tableName, fieldName, value)) {
                     Databases databases = LoadJSON.load("databases.json");
                     MongoDB mongoDB = new MongoDB();
+                    assert databases != null;
                     primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName, databases);
                     String primaryKeysString = allPrimaryKeyValueDividedByHash(fieldName, value, primaryKeys);
                     List<Attribute> attributeList = getAllAttribute(Parser.currentDatabaseName, tableName, databases);
@@ -92,7 +93,7 @@ public class Insert implements Command {
                     keyIndexFile.append(value[i]).append("#");
                 }
             }
-            String valueIndexFile = "#" + getPrimaryKeysValuesSeparateByHash(primaryKeys, Arrays.stream(fieldName).toList(), Arrays.stream(value).toList());
+            String valueIndexFile = "&" + getPrimaryKeysValuesSeparateByHash(primaryKeys, Arrays.stream(fieldName).toList(), Arrays.stream(value).toList());
             mongoDB.updateDocument(keyIndexFile.substring(0, keyIndexFile.length() - 1), indexFile.getIndexName(), valueIndexFile);
         }
     }

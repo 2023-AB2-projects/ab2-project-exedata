@@ -1,6 +1,8 @@
 package Backend.Commands;
 
+import Backend.Backend;
 import Backend.Databases.Databases;
+import Backend.Databases.ForeignKey;
 import Backend.Databases.IndexFile;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
@@ -8,7 +10,6 @@ import Backend.SocketServer.ErrorClient;
 import Backend.MongoDBManagement.MongoDB;
 import org.bson.Document;
 
-import javax.print.Doc;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static Backend.Commands.CreateIndex.createIndexFileInMongoDB;
 import static Backend.Commands.FormatCommand.getPrimaryKeysValuesSeparateByHash;
 import static Backend.Commands.ValidateInsertDeleteData.checkDeleteData;
 
@@ -66,7 +68,11 @@ public class Delete implements Command {
                     } else {
                         if (checkDeleteData(tableName, value, databases, mongoDB)) {
                             mongoDB.deleteOne(tableName, "_id", value);
-//                            updateIndexFiles
+                            for (IndexFile i : databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getIndexFiles()) {
+                                String[] v = new String[1];
+                                v[0]=fieldName + '=' + value;
+                                deleteUpdateIndexFile(v, i, databases, mongoDB, tableName);
+                            }
                         } else {
                             System.out.println("Error with foreign key constraint!");
                             ErrorClient.send("Error with foreign key constraint!");
@@ -76,27 +82,29 @@ public class Delete implements Command {
                     System.out.println("Document can only be deleted according to the PRIMARY KEY!");
                     ErrorClient.send("Document can only be deleted according to the PRIMARY KEY!");
                 }
-
             } else if (matcherAll.matches()) {
                 String tableName = matcherAll.group(1);
-
                 mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
-//                mongoDB.deleteAll(tableName);
                 for (Document i : mongoDB.getDocuments(tableName).find()) {
                     if (checkDeleteData(tableName, i.getString("_id"), databases, mongoDB)) {
                         mongoDB.deleteOne(tableName, "_id", i.getString("_id"));
-//                            updateIndexFiles
                     }
                 }
-
+                for (IndexFile i : databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getIndexFiles()) {
+                    mongoDB.dropCollection(i.getIndexName());
+                    createIndexFileInMongoDB(i.getIndexName(), tableName, i.getIndexAttributes().toArray(new String[0]), databases);
+                }
             } else if (matcherMultiplePK.matches()) {
+                System.out.println("hej");
                 String tableName = matcherMultiplePK.group(1);
                 String keyString = matcherMultiplePK.group(2);
+                keyString = keyString.replaceAll("(?i)and ", "AND ");
                 keyString = keyString.replace(" ", "");
-                keyString = keyString.replaceAll("(?i)and", "AND");
                 String[] keyValuePairs = keyString.split("AND");
                 primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName, databases);
+                System.out.println("hej2");
                 String deleteValue = buildKey(primaryKeys, keyValuePairs);
+                System.out.println(deleteValue);
                 if (deleteValue.equals("!!!!!")) {
                     System.out.println("Error with deletion! Please specify all the primary keys!");
                     ErrorClient.send("Error with deletion! Please specify all the primary keys!");
@@ -104,6 +112,7 @@ public class Delete implements Command {
                     mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
                     if (checkDeleteData(tableName, deleteValue, databases, mongoDB)) {
                         mongoDB.deleteOne(tableName, "_id", deleteValue);
+                        System.out.println("almaaaa");
                         for (IndexFile i : databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getIndexFiles()) {
                             deleteUpdateIndexFile(keyValuePairs, i, databases, mongoDB, tableName);
                         }
@@ -123,9 +132,7 @@ public class Delete implements Command {
         List<String> value = new ArrayList<>();
         for (String i : keyValuePairs) {
             fieldName.add(i.split("=")[0]);
-            System.out.println(fieldName.get(fieldName.size()-1));
             value.add(getValue(i.split("=")[1]));
-            System.out.println(value.get(value.size()-1));
         }
         StringBuilder keyIndexFile = new StringBuilder();
         List<String> indexAttributes = indexFile.getIndexAttributes();
@@ -143,27 +150,30 @@ public class Delete implements Command {
             mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
             mongoDB.deleteOne(indexFile.getIndexName(), "_id", keyIndexFile.toString());
         } else {
-            Document document = mongoDB.getDocument(indexFile.getIndexName(),keyIndexFile.toString());
-            List<String> valueIndexFile = new ArrayList<>(List.of(document.getString("Value").split("#")));
-            valueIndexFile.remove(getPrimaryKeysValuesSeparateByHash(primaryKeys,fieldName,value));
+            Document document = mongoDB.getDocument(indexFile.getIndexName(), keyIndexFile.toString());
+            List<String> valueIndexFile = new ArrayList<>(List.of(document.getString("Value").split("&")));
+            valueIndexFile.remove(getPrimaryKeysValuesSeparateByHash(primaryKeys, fieldName, value));
             mongoDB.deleteOne(indexFile.getIndexName(), "_id", keyIndexFile.toString());
-            StringBuilder valueInsert= new StringBuilder();
-            for(String i:valueIndexFile){
-                valueInsert.append(i).append("#");
+            StringBuilder valueInsert = new StringBuilder();
+            for (String i : valueIndexFile) {
+                valueInsert.append(i).append("&");
             }
-//            valueInsert.append().append("#");
-            valueInsert = new StringBuilder(valueInsert.substring(0, valueInsert.length() - 1));
-            Document document1 =new Document();
-            document1.append("_id",keyIndexFile.toString());
-            document1.append("Value",valueInsert.toString());
-            mongoDB.insertOne(indexFile.getIndexName(), document1);
-            //mongoDB.updateDocument(keyIndexFile.substring(0, keyIndexFile.length() - 1), indexFile.getIndexName(), valueIndexFile);
+            System.out.println("alma");
+            System.out.println(valueInsert);
+            if (!valueInsert.toString().equals("")) {
+                valueInsert = new StringBuilder(valueInsert.substring(0, valueInsert.length() - 1));
+                Document document1 = new Document();
+                document1.append("_id", keyIndexFile.toString());
+                document1.append("Value", valueInsert.toString());
+                mongoDB.insertOne(indexFile.getIndexName(), document1);
+                Backend.goodInsert = false;
+            }
         }
     }
 
     private String getValue(String value) {
-        if(value.charAt(value.length()-1)==';')
-            value=value.substring(0,value.length()-1);
+        if (value.charAt(value.length() - 1) == ';')
+            value = value.substring(0, value.length() - 1);
         if (value.charAt(value.length() - 1) == '\'' || value.charAt(value.length() - 1) == '\"') {
             return value.substring(1, value.length() - 1);
         }
@@ -189,19 +199,20 @@ public class Delete implements Command {
         String[] key = new String[keyValuePair.length];
         String[] value = new String[keyValuePair.length];
         String[] oneKeyOneValue;
+        System.out.println(Arrays.toString(keyValuePair));
         for (int i = 0; i < keyValuePair.length; i++) {
             oneKeyOneValue = keyValuePair[i].split("=");
-            ;
             key[i] = oneKeyOneValue[0];
             value[i] = oneKeyOneValue[1];
             if (value[i].charAt(0) == '\"' || value[i].charAt(0) == '\'') {
                 value[i] = value[i].substring(1, value[i].length() - 1);
             }
+            System.out.println(value[i]);
         }
         int nr = 0;
-        for (int i = 0; i < primaryKeys.size(); i++) {
+        for (String primaryKey : primaryKeys) {
             for (int j = 0; j < key.length; j++) {
-                if (primaryKeys.get(i).equals(key[j])) {
+                if (primaryKey.equals(key[j])) {
                     deleteValue = deleteValue.concat(value[j] + "#");
                     nr++;
                 }
