@@ -15,6 +15,7 @@ import java.util.Objects;
 public class DatabaseController {
     private final DatabaseFrame databaseFrame;
     private final ClientConnection clientConnection;
+    private String joinSelectedTable;
 
     private final String[] keyWords = {"USE", "ADD", "ALL", "ALTER", "ALTER", "TABLE", "AND", "ANY", "AS", "ASC",
             "BACKUP", "BETWEEN", "CASE", "CHECK", "COLUMN", "CONSTRAINT", "CREATE", "DATABASE",
@@ -208,18 +209,21 @@ public class DatabaseController {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         System.out.println("left join");
+                        joinSelectedTable = newTableName;
                     }
                 });
                 innerJoinButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         System.out.println("inner join");
+                        joinSelectedTable = newTableName;
                     }
                 });
                 rightJoinButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         System.out.println("right join");
+                        joinSelectedTable = newTableName;
                     }
                 });
 
