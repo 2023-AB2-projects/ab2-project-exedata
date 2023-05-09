@@ -1,6 +1,7 @@
 package Frontend.SelectPanel;
 
 import javax.swing.*;
+import javax.swing.border.MatteBorder;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -16,9 +17,12 @@ public class TableBox extends JPanel {
     private final int height = 200;
     private Point currentPoint;
     private final JPanel attributesPanel;
+    private final JPanel joinPanel;
+    private JButton innerJoin;
+    private JButton rightJoin;
+    private JButton leftJoin;
     private String tableName;
     private final ArrayList<JCheckBox> checkBoxes;
-
     private JLabel labelTableName;
 
     public TableBox(SelectQuery selectQuery, String tableName) {
@@ -30,27 +34,62 @@ public class TableBox extends JPanel {
         this.setLayout(new GridBagLayout());
 
         // Init constraints to GridBagLayout
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.weightx = 1;
-        gbc.weighty = 0.95;
-        gbc.fill = GridBagConstraints.BOTH;
+        GridBagConstraints gbc1 = new GridBagConstraints();
+        gbc1.gridx = 0;
+        gbc1.gridy = 1;
+        gbc1.weightx = 1;
+        gbc1.weighty = 0.05;
+        gbc1.fill = GridBagConstraints.BOTH;
 
         this.setBounds(boxX, boxY, width, height);
         this.setBorder(new SoftBevelBorder(SoftBevelBorder.RAISED, Color.LIGHT_GRAY, Color.GRAY));
         this.setBackground(Color.LIGHT_GRAY);
         this.currentPoint = null;
 
+        // Main label
         labelTableName = new JLabel(tableName);
-        this.add(labelTableName);
+        this.add(labelTableName, gbc1);
+
+        // Attributes panel
+        GridBagConstraints gbc2 = new GridBagConstraints();
+        gbc2.gridx = 0;
+        gbc2.gridy = 2;
+        gbc2.weightx = 1;
+        gbc2.weighty = 0.90;
+        gbc2.fill = GridBagConstraints.BOTH;
 
         attributesPanel = new JPanel();
         attributesPanel.setLayout(new GridLayout(0, 1));
 
-        this.add(attributesPanel, gbc);
+        this.add(attributesPanel, gbc2);
 
-        addMouseMotionListener(new MouseMotionAdapter() {
+        // Join labels
+        GridBagConstraints gbc3 = new GridBagConstraints();
+        gbc3.gridx = 0;
+        gbc3.gridy = 3;
+        gbc3.weightx = 1;
+        gbc3.weighty = 0.05;
+        gbc3.fill = GridBagConstraints.BOTH;
+
+        leftJoin = new JButton("LJoin");
+        innerJoin = new JButton("Join");
+        rightJoin = new JButton("RJoin");
+
+        leftJoin.setBorder(new MatteBorder(2, 0, 0, 0, Color.black));
+        leftJoin.setHorizontalAlignment(JLabel.CENTER);
+        innerJoin.setBorder(new MatteBorder(2, 2, 0, 2, Color.black));
+        innerJoin.setHorizontalAlignment(JLabel.CENTER);
+        rightJoin.setBorder(new MatteBorder(2, 0, 0, 0, Color.black));
+        rightJoin.setHorizontalAlignment(JLabel.CENTER);
+        joinPanel = new JPanel();
+        joinPanel.setLayout(new GridLayout(1, 3));
+        joinPanel.add(leftJoin);
+        joinPanel.add(innerJoin);
+        joinPanel.add(rightJoin);
+
+        this.add(joinPanel, gbc3);
+
+        labelTableName.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
                 super.mouseMoved(e);
@@ -60,7 +99,7 @@ public class TableBox extends JPanel {
                 setBounds(boxX, boxY, width, height);
             }
         });
-        addMouseListener(new MouseAdapter() {
+        labelTableName.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 super.mouseClicked(e);
