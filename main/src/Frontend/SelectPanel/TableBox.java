@@ -18,9 +18,9 @@ public class TableBox extends JPanel {
     private Point currentPoint;
     private final JPanel attributesPanel;
     private final JPanel joinPanel;
-    private JButton innerJoinButton;
-    private JButton rightJoinButton;
-    private JButton leftJoinButton;
+    private JComboBox<String> innerJoinComboBox;
+    private JComboBox<String> rightJoinComboBox;
+    private JComboBox<String> leftJoinComboBox;
     private String tableName;
     private final ArrayList<JCheckBox> checkBoxes;
     private JLabel labelTableName;
@@ -63,7 +63,7 @@ public class TableBox extends JPanel {
 
         this.add(attributesPanel, gbc2);
 
-        // Join labels
+        // Join buttons
         GridBagConstraints gbc3 = new GridBagConstraints();
         gbc3.gridx = 0;
         gbc3.gridy = 3;
@@ -71,23 +71,43 @@ public class TableBox extends JPanel {
         gbc3.weighty = 0.05;
         gbc3.fill = GridBagConstraints.BOTH;
 
-        leftJoinButton = new JButton("LJoin");
-        innerJoinButton = new JButton("Join");
-        rightJoinButton = new JButton("RJoin");
+        String[] allAttributes = selectQuery.getAllAttributes();
+        leftJoinComboBox = new JComboBox<>();
+        innerJoinComboBox = new JComboBox<String>();
+        rightJoinComboBox = new JComboBox<>();
 
-        leftJoinButton.setBorder(new MatteBorder(2, 0, 0, 0, Color.black));
-        leftJoinButton.setHorizontalAlignment(JLabel.CENTER);
-        innerJoinButton.setBorder(new MatteBorder(2, 2, 0, 2, Color.black));
-        innerJoinButton.setHorizontalAlignment(JLabel.CENTER);
-        rightJoinButton.setBorder(new MatteBorder(2, 0, 0, 0, Color.black));
-        rightJoinButton.setHorizontalAlignment(JLabel.CENTER);
+        leftJoinComboBox.addItem("-");
+        innerJoinComboBox.addItem("-");
+        rightJoinComboBox.addItem("-");
+        for (int i=0; i<allAttributes.length; i++) {
+            leftJoinComboBox.addItem(allAttributes[i]);
+            innerJoinComboBox.addItem(allAttributes[i]);
+            rightJoinComboBox.addItem(allAttributes[i]);
+        }
+
+        leftJoinComboBox.setBorder(new MatteBorder(2, 0, 2, 0, Color.black));
+        //leftJoinComboBox.setHorizontalAlignment(JLabel.CENTER);
+        innerJoinComboBox.setBorder(new MatteBorder(2, 2, 2, 2, Color.black));
+        //innerJoinComboBox.setHorizontalAlignment(JLabel.CENTER);
+        rightJoinComboBox.setBorder(new MatteBorder(2, 0, 2, 0, Color.black));
+        //rightJoinComboBox.setHorizontalAlignment(JLabel.CENTER);
         joinPanel = new JPanel();
         joinPanel.setLayout(new GridLayout(1, 3));
-        joinPanel.add(leftJoinButton);
-        joinPanel.add(innerJoinButton);
-        joinPanel.add(rightJoinButton);
+        joinPanel.add(leftJoinComboBox);
+        joinPanel.add(innerJoinComboBox);
+        joinPanel.add(rightJoinComboBox);
 
         this.add(joinPanel, gbc3);
+
+//        // Join labels
+//        GridBagConstraints gbc4 = new GridBagConstraints();
+//        gbc4.gridx = 0;
+//        gbc4.gridy = 4;
+//        gbc4.weightx = 1;
+//        gbc4.weighty = 0.05;
+//        gbc4.fill = GridBagConstraints.BOTH;
+//
+//        this.add(new JLabel("joins:"), gbc4);
 
         labelTableName.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
@@ -150,15 +170,15 @@ public class TableBox extends JPanel {
         return checkBoxes;
     }
 
-    public JButton getInnerJoinButton() {
-        return innerJoinButton;
+    public JComboBox<String> getInnerJoinComboBox() {
+        return innerJoinComboBox;
     }
 
-    public JButton getRightJoinButton() {
-        return rightJoinButton;
+    public JComboBox<String> getRightJoinComboBox() {
+        return rightJoinComboBox;
     }
 
-    public JButton getLeftJoinButton() {
-        return leftJoinButton;
+    public JComboBox<String> getLeftJoinComboBox() {
+        return leftJoinComboBox;
     }
 }

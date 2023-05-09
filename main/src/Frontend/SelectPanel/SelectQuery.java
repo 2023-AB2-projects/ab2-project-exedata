@@ -29,6 +29,9 @@ public class SelectQuery extends JPanel {
     private String[] allDatabases;
     private String[] allTables;
     private String[] allAttributes;
+    private ArrayList<String> leftJoins;
+    private ArrayList<String> innerJoins;
+    private ArrayList<String> rightJoins;
     protected int width = this.getWidth();
     protected int height = this.getWidth();
     private String currentDatabaseName;
@@ -141,6 +144,10 @@ public class SelectQuery extends JPanel {
             centerDown.setLayout(null);
             tableBoxes = new ArrayList<>();
 
+            leftJoins = new ArrayList<>();
+            innerJoins = new ArrayList<>();
+            rightJoins = new ArrayList<>();
+
             panel2.add(centerDown);
 
             this.add(panel1);
@@ -221,5 +228,17 @@ public class SelectQuery extends JPanel {
 
     public JTable getTable() {
         return table;
+    }
+
+    public ArrayList<String> getLeftJoins() {
+        return leftJoins;
+    }
+
+    public ArrayList<String> getInnerJoins() {
+        return innerJoins;
+    }
+
+    public ArrayList<String> getRightJoins() {
+        return rightJoins;
     }
 }

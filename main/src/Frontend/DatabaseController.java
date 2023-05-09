@@ -15,7 +15,8 @@ import java.util.Objects;
 public class DatabaseController {
     private final DatabaseFrame databaseFrame;
     private final ClientConnection clientConnection;
-    private String joinSelectedTable;
+    private String joinSelectedTable = "-";
+    private String joinSelectedAttribute = "-";
 
     private final String[] keyWords = {"USE", "ADD", "ALL", "ALTER", "ALTER", "TABLE", "AND", "ANY", "AS", "ASC",
             "BACKUP", "BETWEEN", "CASE", "CHECK", "COLUMN", "CONSTRAINT", "CREATE", "DATABASE",
@@ -177,9 +178,9 @@ public class DatabaseController {
                 String[] allAttributes = databaseFrame.getPanelCenter().getSelectQuery().getAllAttributes();
                 ArrayList<JCheckBox> checkBoxes = tableBox.getCheckBoxes();
 
-                JButton leftJoinButton = tableBox.getLeftJoinButton();
-                JButton innerJoinButton = tableBox.getInnerJoinButton();
-                JButton rightJoinButton = tableBox.getRightJoinButton();
+                JComboBox leftJoinComboBox = tableBox.getLeftJoinComboBox();
+                JComboBox innerJoinComboBox = tableBox.getInnerJoinComboBox();
+                JComboBox rightJoinComboBox = tableBox.getRightJoinComboBox();
 
                 tableBoxes.add(tableBox);
                 int length = tableBoxes.size();
@@ -205,25 +206,82 @@ public class DatabaseController {
                     });
                 }
 
-                leftJoinButton.addActionListener(new ActionListener() {
+                leftJoinComboBox.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        System.out.println("left join");
-                        joinSelectedTable = newTableName;
+                        if (!Objects.equals(joinSelectedTable, "-")) {
+                            if (!Objects.equals(joinSelectedTable, newTableName)) {
+                                ArrayList<TableBox> tableBoxes = databaseFrame.getPanelCenter().getSelectQuery().getTableBoxes();
+                                databaseFrame.getPanelCenter().getSelectQuery().getLeftJoins()
+                                        .add(joinSelectedTable
+                                                + " INNER JOIN " + newTableName
+                                                + " ON " + joinSelectedTable + "." + joinSelectedAttribute + "=" + newTableName + "." + leftJoinComboBox.getSelectedItem().toString());
+                                for (int i=0; i<databaseFrame.getPanelCenter().getSelectQuery().getLeftJoins().size(); i++) {
+                                    System.out.println(databaseFrame.getPanelCenter().getSelectQuery().getLeftJoins().get(i));
+                                }
+                                System.out.println("===========================================================================");
+
+                                for (int i=0; i<tableBoxes.size(); i++) {
+                                    if (tableBoxes.get(i).getTableName().equals(joinSelectedTable)) {
+                                        tableBoxes.get(i).getLeftJoinComboBox().setSelectedIndex(0);
+                                    }
+                                    if (tableBoxes.get(i).getTableName().equals(newTableName)) {
+                                        tableBoxes.get(i).getLeftJoinComboBox().setSelectedIndex(0);
+                                    }
+                                }
+                                joinSelectedTable = "-";
+                                joinSelectedAttribute = "-";
+                            }
+                        } else {
+                            joinSelectedTable = newTableName;
+                            joinSelectedAttribute = leftJoinComboBox.getSelectedItem().toString();
+                        }
                     }
                 });
-                innerJoinButton.addActionListener(new ActionListener() {
+                innerJoinComboBox.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        System.out.println("inner join");
-                        joinSelectedTable = newTableName;
+                        if (!Objects.equals(joinSelectedTable, "-")) {
+                            if (!Objects.equals(joinSelectedTable, newTableName)) {
+                                ArrayList<TableBox> tableBoxes = databaseFrame.getPanelCenter().getSelectQuery().getTableBoxes();
+                                for (int i=0; i<tableBoxes.size(); i++) {
+                                    if (tableBoxes.get(i).getTableName().equals(joinSelectedTable)) {
+                                        tableBoxes.get(i).getInnerJoinComboBox().setSelectedIndex(0);
+                                    }
+                                    if (tableBoxes.get(i).getTableName().equals(newTableName)) {
+                                        tableBoxes.get(i).getInnerJoinComboBox().setSelectedIndex(0);
+                                    }
+                                }
+                                System.out.println("IJoin: " + joinSelectedTable + " " + newTableName);
+                                joinSelectedTable = "-";
+                            }
+                        } else {
+                            joinSelectedTable = newTableName;
+                            joinSelectedAttribute = leftJoinComboBox.getSelectedItem().toString();
+                        }
                     }
                 });
-                rightJoinButton.addActionListener(new ActionListener() {
+                rightJoinComboBox.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        System.out.println("right join");
-                        joinSelectedTable = newTableName;
+                        if (!Objects.equals(joinSelectedTable, "-")) {
+                            if (!Objects.equals(joinSelectedTable, newTableName)) {
+                                ArrayList<TableBox> tableBoxes = databaseFrame.getPanelCenter().getSelectQuery().getTableBoxes();
+                                for (int i=0; i<tableBoxes.size(); i++) {
+                                    if (tableBoxes.get(i).getTableName().equals(joinSelectedTable)) {
+                                        tableBoxes.get(i).getRightJoinComboBox().setSelectedIndex(0);
+                                    }
+                                    if (tableBoxes.get(i).getTableName().equals(newTableName)) {
+                                        tableBoxes.get(i).getRightJoinComboBox().setSelectedIndex(0);
+                                    }
+                                }
+                                System.out.println("RJoin: " + joinSelectedTable + " " + newTableName);
+                                joinSelectedTable = "-";
+                            }
+                        } else {
+                            joinSelectedTable = newTableName;
+                            joinSelectedAttribute = leftJoinComboBox.getSelectedItem().toString();
+                        }
                     }
                 });
 
