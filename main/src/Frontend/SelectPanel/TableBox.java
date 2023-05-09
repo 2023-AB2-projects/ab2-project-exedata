@@ -18,9 +18,9 @@ public class TableBox extends JPanel {
     private Point currentPoint;
     private final JPanel attributesPanel;
     private final JPanel joinPanel;
-    private JButton innerJoin;
-    private JButton rightJoin;
-    private JButton leftJoin;
+    private JButton innerJoinButton;
+    private JButton rightJoinButton;
+    private JButton leftJoinButton;
     private String tableName;
     private final ArrayList<JCheckBox> checkBoxes;
     private JLabel labelTableName;
@@ -71,21 +71,21 @@ public class TableBox extends JPanel {
         gbc3.weighty = 0.05;
         gbc3.fill = GridBagConstraints.BOTH;
 
-        leftJoin = new JButton("LJoin");
-        innerJoin = new JButton("Join");
-        rightJoin = new JButton("RJoin");
+        leftJoinButton = new JButton("LJoin");
+        innerJoinButton = new JButton("Join");
+        rightJoinButton = new JButton("RJoin");
 
-        leftJoin.setBorder(new MatteBorder(2, 0, 0, 0, Color.black));
-        leftJoin.setHorizontalAlignment(JLabel.CENTER);
-        innerJoin.setBorder(new MatteBorder(2, 2, 0, 2, Color.black));
-        innerJoin.setHorizontalAlignment(JLabel.CENTER);
-        rightJoin.setBorder(new MatteBorder(2, 0, 0, 0, Color.black));
-        rightJoin.setHorizontalAlignment(JLabel.CENTER);
+        leftJoinButton.setBorder(new MatteBorder(2, 0, 0, 0, Color.black));
+        leftJoinButton.setHorizontalAlignment(JLabel.CENTER);
+        innerJoinButton.setBorder(new MatteBorder(2, 2, 0, 2, Color.black));
+        innerJoinButton.setHorizontalAlignment(JLabel.CENTER);
+        rightJoinButton.setBorder(new MatteBorder(2, 0, 0, 0, Color.black));
+        rightJoinButton.setHorizontalAlignment(JLabel.CENTER);
         joinPanel = new JPanel();
         joinPanel.setLayout(new GridLayout(1, 3));
-        joinPanel.add(leftJoin);
-        joinPanel.add(innerJoin);
-        joinPanel.add(rightJoin);
+        joinPanel.add(leftJoinButton);
+        joinPanel.add(innerJoinButton);
+        joinPanel.add(rightJoinButton);
 
         this.add(joinPanel, gbc3);
 
@@ -148,5 +148,17 @@ public class TableBox extends JPanel {
 
     public ArrayList<JCheckBox> getCheckBoxes() {
         return checkBoxes;
+    }
+
+    public JButton getInnerJoinButton() {
+        return innerJoinButton;
+    }
+
+    public JButton getRightJoinButton() {
+        return rightJoinButton;
+    }
+
+    public JButton getLeftJoinButton() {
+        return leftJoinButton;
     }
 }

@@ -176,6 +176,10 @@ public class DatabaseController {
                 String[] allAttributes = databaseFrame.getPanelCenter().getSelectQuery().getAllAttributes();
                 ArrayList<JCheckBox> checkBoxes = tableBox.getCheckBoxes();
 
+                JButton leftJoinButton = tableBox.getLeftJoinButton();
+                JButton innerJoinButton = tableBox.getInnerJoinButton();
+                JButton rightJoinButton = tableBox.getRightJoinButton();
+
                 tableBoxes.add(tableBox);
                 int length = tableBoxes.size();
 
@@ -199,6 +203,25 @@ public class DatabaseController {
                         }
                     });
                 }
+
+                leftJoinButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        System.out.println("left join");
+                    }
+                });
+                innerJoinButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        System.out.println("inner join");
+                    }
+                });
+                rightJoinButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        System.out.println("right join");
+                    }
+                });
 
                 // center
                 DefaultTableModel model = (DefaultTableModel) databaseFrame.getPanelCenter().getSelectQuery().getTable().getModel();
