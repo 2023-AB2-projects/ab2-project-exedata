@@ -241,4 +241,16 @@ public class SelectQuery extends JPanel {
     public ArrayList<String> getRightJoins() {
         return rightJoins;
     }
+
+    public void setLeftJoins(ArrayList<String> leftJoins) {
+        this.leftJoins = leftJoins;
+    }
+
+    public void setInnerJoins(ArrayList<String> innerJoins) {
+        this.innerJoins = innerJoins;
+    }
+
+    public void setRightJoins(ArrayList<String> rightJoins) {
+        this.rightJoins = rightJoins;
+    }
 }

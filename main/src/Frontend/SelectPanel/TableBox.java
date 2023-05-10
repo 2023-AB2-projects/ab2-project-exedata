@@ -99,16 +99,6 @@ public class TableBox extends JPanel {
 
         this.add(joinPanel, gbc3);
 
-//        // Join labels
-//        GridBagConstraints gbc4 = new GridBagConstraints();
-//        gbc4.gridx = 0;
-//        gbc4.gridy = 4;
-//        gbc4.weightx = 1;
-//        gbc4.weighty = 0.05;
-//        gbc4.fill = GridBagConstraints.BOTH;
-//
-//        this.add(new JLabel("joins:"), gbc4);
-
         labelTableName.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -144,6 +134,9 @@ public class TableBox extends JPanel {
                             model.addRow(rowData);
                         }
                     }
+                    selectQuery.setLeftJoins(updateJoins(selectQuery.getLeftJoins()));
+                    selectQuery.setInnerJoins(updateJoins(selectQuery.getInnerJoins()));
+                    selectQuery.setRightJoins(updateJoins(selectQuery.getRightJoins()));
                 }
                 currentPoint = getMousePosition();
             }
@@ -180,5 +173,16 @@ public class TableBox extends JPanel {
 
     public JComboBox<String> getLeftJoinComboBox() {
         return leftJoinComboBox;
+    }
+
+    private ArrayList<String> updateJoins(ArrayList<String> joins) {
+        ArrayList<String> newJoins = new ArrayList<>();
+        for (int i=0; i<joins.size(); i++) {
+            String[] splitted =joins.get(i).split(" ");
+            if (!splitted[0].equals(tableName) && !splitted[3].equals(tableName)) {
+                newJoins.add(joins.get(i));
+            }
+        }
+        return newJoins;
     }
 }

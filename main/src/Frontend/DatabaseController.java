@@ -353,66 +353,9 @@ public class DatabaseController {
                 String[] usedTablesArray = usedTables.toString().split(",");
 
                 // JOIN BUILDING
-                if (leftJoins.size()!=0) {
-                    String[] currentJoinTables = leftJoins.get(0).split(" ");
-                    queue.add(currentJoinTables[0]);
-                    queue.add(currentJoinTables[3]);
-                    joinCondition.append(leftJoins.get(0));
-                    while (!queue.isEmpty()) {
-                        String first = queue.peek();
-                        for (int i=1; i<leftJoins.size(); i++) {
-                            currentJoinTables = leftJoins.get(i).split(" ");
-                            if (currentJoinTables[0].equals(first)) {
-                                queue.add(currentJoinTables[3]);
-                                joinCondition.append("\n");
-                                for (int j=1; j<currentJoinTables.length; j++) {
-                                    joinCondition.append(currentJoinTables[j]).append(" ");
-                                }
-                            }
-                        }
-                        queue.remove();
-                    }
-                }
-                if (innerJoins.size()!=0) {
-                    String[] currentJoinTables = innerJoins.get(0).split(" ");
-                    queue.add(currentJoinTables[0]);
-                    queue.add(currentJoinTables[3]);
-                    joinCondition.append(innerJoins.get(0));
-                    while (!queue.isEmpty()) {
-                        String first = queue.peek();
-                        for (int i=1; i<innerJoins.size(); i++) {
-                            currentJoinTables = innerJoins.get(i).split(" ");
-                            if (currentJoinTables[0].equals(first)) {
-                                queue.add(currentJoinTables[3]);
-                                joinCondition.append("\n");
-                                for (int j=1; j<currentJoinTables.length; j++) {
-                                    joinCondition.append(currentJoinTables[j]).append(" ");
-                                }
-                            }
-                        }
-                        queue.remove();
-                    }
-                }
-                if (rightJoins.size()!=0) {
-                    String[] currentJoinTables = rightJoins.get(0).split(" ");
-                    queue.add(currentJoinTables[0]);
-                    queue.add(currentJoinTables[3]);
-                    joinCondition.append(rightJoins.get(0));
-                    while (!queue.isEmpty()) {
-                        String first = queue.peek();
-                        for (int i=1; i<rightJoins.size(); i++) {
-                            currentJoinTables = rightJoins.get(i).split(" ");
-                            if (currentJoinTables[0].equals(first)) {
-                                queue.add(currentJoinTables[3]);
-                                joinCondition.append("\n");
-                                for (int j=1; j<currentJoinTables.length; j++) {
-                                    joinCondition.append(currentJoinTables[j]).append(" ");
-                                }
-                            }
-                        }
-                        queue.remove();
-                    }
-                }
+                buildJoin(queue, leftJoins, joinCondition);
+                buildJoin(queue, rightJoins, joinCondition);
+                buildJoin(queue, innerJoins, joinCondition);
 
                 // add tables which are not part of join (CROSS JOIN)
                 int k = 0;
@@ -535,5 +478,28 @@ public class DatabaseController {
             }
         }
         return true;
+    }
+
+    private void buildJoin(Queue<String> queue, ArrayList<String> joins, StringBuilder joinCondition) {
+        if (joins.size()!=0) {
+            String[] currentJoinTables = joins.get(0).split(" ");
+            queue.add(currentJoinTables[0]);
+            queue.add(currentJoinTables[3]);
+            joinCondition.append(joins.get(0));
+            while (!queue.isEmpty()) {
+                String first = queue.peek();
+                for (int i=1; i<joins.size(); i++) {
+                    currentJoinTables = joins.get(i).split(" ");
+                    if (currentJoinTables[0].equals(first)) {
+                        queue.add(currentJoinTables[3]);
+                        joinCondition.append("\n");
+                        for (int j=1; j<currentJoinTables.length; j++) {
+                            joinCondition.append(currentJoinTables[j]).append(" ");
+                        }
+                    }
+                }
+                queue.remove();
+            }
+        }
     }
 }
