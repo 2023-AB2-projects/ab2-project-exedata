@@ -1,6 +1,5 @@
 package Frontend;
 
-import Frontend.SelectPanel.SelectQuery;
 import Frontend.SelectPanel.TableBox;
 
 import javax.swing.*;
@@ -10,7 +9,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Objects;
+import java.util.Queue;
 
 public class DatabaseController {
     private final DatabaseFrame databaseFrame;
@@ -216,10 +217,6 @@ public class DatabaseController {
                                         .add(joinSelectedTable
                                                 + " LEFT JOIN " + newTableName
                                                 + " ON " + joinSelectedTable + "." + joinSelectedAttribute + "=" + newTableName + "." + leftJoinComboBox.getSelectedItem().toString());
-                                for (int i=0; i<databaseFrame.getPanelCenter().getSelectQuery().getLeftJoins().size(); i++) {
-                                    System.out.println(databaseFrame.getPanelCenter().getSelectQuery().getLeftJoins().get(i));
-                                }
-                                System.out.println("===========================================================================");
 
                                 for (int i=0; i<tableBoxes.size(); i++) {
                                     if (tableBoxes.get(i).getTableName().equals(joinSelectedTable)) {
@@ -252,11 +249,6 @@ public class DatabaseController {
                                                 + " INNER JOIN " + newTableName
                                                 + " ON " + joinSelectedTable + "." + joinSelectedAttribute + "=" + newTableName + "." + innerJoinComboBox.getSelectedItem().toString());
 
-                                for (int i=0; i<databaseFrame.getPanelCenter().getSelectQuery().getInnerJoins().size(); i++) {
-                                    System.out.println(databaseFrame.getPanelCenter().getSelectQuery().getInnerJoins().get(i));
-                                }
-                                System.out.println("===========================================================================");
-
                                 for (int i=0; i<tableBoxes.size(); i++) {
                                     if (tableBoxes.get(i).getTableName().equals(joinSelectedTable)) {
                                         tableBoxes.get(i).getInnerJoinComboBox().setSelectedIndex(0);
@@ -288,11 +280,6 @@ public class DatabaseController {
                                                 + " RIGHT JOIN " + newTableName
                                                 + " ON " + joinSelectedTable + "." + joinSelectedAttribute + "=" + newTableName + "." + rightJoinComboBox.getSelectedItem().toString());
 
-                                for (int i=0; i<databaseFrame.getPanelCenter().getSelectQuery().getRightJoins().size(); i++) {
-                                    System.out.println(databaseFrame.getPanelCenter().getSelectQuery().getRightJoins().get(i));
-                                }
-                                System.out.println("===========================================================================");
-
                                 for (int i=0; i<tableBoxes.size(); i++) {
                                     if (tableBoxes.get(i).getTableName().equals(joinSelectedTable)) {
                                         tableBoxes.get(i).getRightJoinComboBox().setSelectedIndex(0);
@@ -310,7 +297,6 @@ public class DatabaseController {
                         } else {
                             joinSelectedTable = newTableName;
                             joinSelectedAttribute = rightJoinComboBox.getSelectedItem().toString();
-
                         }
                     }
                 });
@@ -327,12 +313,18 @@ public class DatabaseController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JTable table = databaseFrame.getPanelCenter().getSelectQuery().getTable();
+
                 // SELECT FROM
                 StringBuilder selectCommand = new StringBuilder();
                 JTextPane jTextPane = databaseFrame.getPanelCenter().getSelectQuery().getSelectCommandText();
                 selectCommand.append("SELECT ");
                 ArrayList<TableBox> tableBoxes = databaseFrame.getPanelCenter().getSelectQuery().getTableBoxes();
                 StringBuilder usedTables = new StringBuilder();
+
+                ArrayList<String> leftJoins = databaseFrame.getPanelCenter().getSelectQuery().getLeftJoins();
+                ArrayList<String> innerJoins = databaseFrame.getPanelCenter().getSelectQuery().getInnerJoins();
+                ArrayList<String> rightJoins = databaseFrame.getPanelCenter().getSelectQuery().getRightJoins();
+
                 for (int i=0; i<tableBoxes.size(); i++) {
                     String tableName = tableBoxes.get(i).getTableName();
                     ArrayList<JCheckBox> jCheckBox = tableBoxes.get(i).getCheckBoxes();
@@ -354,10 +346,91 @@ public class DatabaseController {
                         usedTables.append(tableName).append(",");
                     }
                 }
+                // FIFO (queue) where I have to find all pairs of first table and then second and so on
+                // bulid FROM (with joins)
+                Queue<String> queue = new LinkedList<>();
+                StringBuilder joinCondition = new StringBuilder();
+                String[] usedTablesArray = usedTables.toString().split(",");
+
+                // JOIN BUILDING
+                if (leftJoins.size()!=0) {
+                    String[] currentJoinTables = leftJoins.get(0).split(" ");
+                    queue.add(currentJoinTables[0]);
+                    queue.add(currentJoinTables[3]);
+                    joinCondition.append(leftJoins.get(0));
+                    while (!queue.isEmpty()) {
+                        String first = queue.peek();
+                        for (int i=1; i<leftJoins.size(); i++) {
+                            currentJoinTables = leftJoins.get(i).split(" ");
+                            if (currentJoinTables[0].equals(first)) {
+                                queue.add(currentJoinTables[3]);
+                                joinCondition.append("\n");
+                                for (int j=1; j<currentJoinTables.length; j++) {
+                                    joinCondition.append(currentJoinTables[j]).append(" ");
+                                }
+                            }
+                        }
+                        queue.remove();
+                    }
+                }
+                if (innerJoins.size()!=0) {
+                    String[] currentJoinTables = innerJoins.get(0).split(" ");
+                    queue.add(currentJoinTables[0]);
+                    queue.add(currentJoinTables[3]);
+                    joinCondition.append(innerJoins.get(0));
+                    while (!queue.isEmpty()) {
+                        String first = queue.peek();
+                        for (int i=1; i<innerJoins.size(); i++) {
+                            currentJoinTables = innerJoins.get(i).split(" ");
+                            if (currentJoinTables[0].equals(first)) {
+                                queue.add(currentJoinTables[3]);
+                                joinCondition.append("\n");
+                                for (int j=1; j<currentJoinTables.length; j++) {
+                                    joinCondition.append(currentJoinTables[j]).append(" ");
+                                }
+                            }
+                        }
+                        queue.remove();
+                    }
+                }
+                if (rightJoins.size()!=0) {
+                    String[] currentJoinTables = rightJoins.get(0).split(" ");
+                    queue.add(currentJoinTables[0]);
+                    queue.add(currentJoinTables[3]);
+                    joinCondition.append(rightJoins.get(0));
+                    while (!queue.isEmpty()) {
+                        String first = queue.peek();
+                        for (int i=1; i<rightJoins.size(); i++) {
+                            currentJoinTables = rightJoins.get(i).split(" ");
+                            if (currentJoinTables[0].equals(first)) {
+                                queue.add(currentJoinTables[3]);
+                                joinCondition.append("\n");
+                                for (int j=1; j<currentJoinTables.length; j++) {
+                                    joinCondition.append(currentJoinTables[j]).append(" ");
+                                }
+                            }
+                        }
+                        queue.remove();
+                    }
+                }
+
+                // add tables which are not part of join (CROSS JOIN)
+                int k = 0;
+                if (joinCondition.toString().equals("") && usedTablesArray.length!=0) {
+                    joinCondition.append(usedTablesArray[0]).append(" ");
+                    k = 1;
+                }
+                while (k<usedTablesArray.length) {
+                    if (!usedTablesArray[k].equals("") && notInJoins(String.valueOf(joinCondition), usedTablesArray[k])) {
+                        joinCondition.append("\nCROSS JOIN ").append(usedTablesArray[k]);
+                    }
+                    k++;
+                }
+
                 selectCommand = new StringBuilder(selectCommand.substring(0, selectCommand.length() - 1));
                 selectCommand.append("\nFROM ");
                 if (usedTables.length()!=0) {
-                    selectCommand.append(usedTables.substring(0, usedTables.length()-1));
+                    selectCommand.append(joinCondition);
                 }
 
                 // WHERE AND ORDER BY
@@ -366,6 +439,7 @@ public class DatabaseController {
                 String[] orderByConditionsArray = new String[101];
                 boolean existsFilter = false;
                 boolean existsSortType = false;
+
                 for (int i=0; i<table.getRowCount(); i++) {
                     String attribute = (String) table.getValueAt(i, 0);
                     String tableName = (String) table.getValueAt(i, 2);
@@ -451,5 +525,15 @@ public class DatabaseController {
             }
         }
         return "";
+    }
+
+    private boolean notInJoins(String joinCondition, String tableName) {
+        String[] splitted = joinCondition.split("\\s+");
+        for (String s : splitted) {
+            if (s.equals(tableName)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
