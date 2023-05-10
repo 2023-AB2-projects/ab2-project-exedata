@@ -195,7 +195,7 @@ public class DatabaseController {
                 centerDown.add(tableBoxes.get(length - 1));
 
                 // add actionListener to each attribute
-                for (int i=1; i<checkBoxes.size(); i++) {
+                for (int i = 1; i < checkBoxes.size(); i++) {
                     int finalI = i;
                     checkBoxes.get(i).addActionListener(new ActionListener() {
                         @Override
@@ -218,7 +218,7 @@ public class DatabaseController {
                                                 + " LEFT JOIN " + newTableName
                                                 + " ON " + joinSelectedTable + "." + joinSelectedAttribute + "=" + newTableName + "." + leftJoinComboBox.getSelectedItem().toString());
 
-                                for (int i=0; i<tableBoxes.size(); i++) {
+                                for (int i = 0; i < tableBoxes.size(); i++) {
                                     if (tableBoxes.get(i).getTableName().equals(joinSelectedTable)) {
                                         tableBoxes.get(i).getLeftJoinComboBox().setSelectedIndex(0);
                                     }
@@ -249,7 +249,7 @@ public class DatabaseController {
                                                 + " INNER JOIN " + newTableName
                                                 + " ON " + joinSelectedTable + "." + joinSelectedAttribute + "=" + newTableName + "." + innerJoinComboBox.getSelectedItem().toString());
 
-                                for (int i=0; i<tableBoxes.size(); i++) {
+                                for (int i = 0; i < tableBoxes.size(); i++) {
                                     if (tableBoxes.get(i).getTableName().equals(joinSelectedTable)) {
                                         tableBoxes.get(i).getInnerJoinComboBox().setSelectedIndex(0);
                                     }
@@ -280,7 +280,7 @@ public class DatabaseController {
                                                 + " RIGHT JOIN " + newTableName
                                                 + " ON " + joinSelectedTable + "." + joinSelectedAttribute + "=" + newTableName + "." + rightJoinComboBox.getSelectedItem().toString());
 
-                                for (int i=0; i<tableBoxes.size(); i++) {
+                                for (int i = 0; i < tableBoxes.size(); i++) {
                                     if (tableBoxes.get(i).getTableName().equals(joinSelectedTable)) {
                                         tableBoxes.get(i).getRightJoinComboBox().setSelectedIndex(0);
                                     }
@@ -325,15 +325,15 @@ public class DatabaseController {
                 ArrayList<String> innerJoins = databaseFrame.getPanelCenter().getSelectQuery().getInnerJoins();
                 ArrayList<String> rightJoins = databaseFrame.getPanelCenter().getSelectQuery().getRightJoins();
 
-                for (int i=0; i<tableBoxes.size(); i++) {
+                for (int i = 0; i < tableBoxes.size(); i++) {
                     String tableName = tableBoxes.get(i).getTableName();
                     ArrayList<JCheckBox> jCheckBox = tableBoxes.get(i).getCheckBoxes();
                     boolean used = false;
-                    for (int j=0; j<jCheckBox.size(); j++) {
+                    for (int j = 0; j < jCheckBox.size(); j++) {
                         if (jCheckBox.get(j).isSelected()) {
                             used = true;
                             selectCommand.append(tableName).append(".").append(jCheckBox.get(j).getText());
-                            if (j!=0) {  // not *
+                            if (j != 0) {  // not *
                                 String alias = getAlias(table, tableName, jCheckBox.get(j).getText());
                                 if (!alias.equals("")) {
                                     selectCommand.append(" AS ").append(alias);
@@ -354,16 +354,16 @@ public class DatabaseController {
 
                 // JOIN BUILDING
                 buildJoin(queue, leftJoins, joinCondition);
-                buildJoin(queue, rightJoins, joinCondition);
                 buildJoin(queue, innerJoins, joinCondition);
+                buildJoin(queue, rightJoins, joinCondition);
 
                 // add tables which are not part of join (CROSS JOIN)
                 int k = 0;
-                if (joinCondition.toString().equals("") && usedTablesArray.length!=0) {
+                if (joinCondition.toString().equals("") && usedTablesArray.length != 0) {
                     joinCondition.append(usedTablesArray[0]).append(" ");
                     k = 1;
                 }
-                while (k<usedTablesArray.length) {
+                while (k < usedTablesArray.length) {
                     if (!usedTablesArray[k].equals("") && notInJoins(String.valueOf(joinCondition), usedTablesArray[k])) {
                         joinCondition.append("\nCROSS JOIN ").append(usedTablesArray[k]);
                     }
@@ -372,7 +372,7 @@ public class DatabaseController {
 
                 selectCommand = new StringBuilder(selectCommand.substring(0, selectCommand.length() - 1));
                 selectCommand.append("\nFROM ");
-                if (usedTables.length()!=0) {
+                if (usedTables.length() != 0) {
                     selectCommand.append(joinCondition);
                 }
 
@@ -383,17 +383,16 @@ public class DatabaseController {
                 boolean existsFilter = false;
                 boolean existsSortType = false;
 
-                for (int i=0; i<table.getRowCount(); i++) {
+                for (int i = 0; i < table.getRowCount(); i++) {
                     String attribute = (String) table.getValueAt(i, 0);
                     String tableName = (String) table.getValueAt(i, 2);
                     String filterCondition = (String) table.getValueAt(i, 5);
                     String sortType = (String) table.getValueAt(i, 3);
                     String sortOrder = (String) table.getValueAt(i, 4);
                     if (!filterCondition.equals("")) {
-                        // condition check (syntax) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         existsFilter = true;
                         conditions.append("(").append(tableName).append(".").append(attribute).append(filterCondition);
-                        for (int j=6; j<table.getColumnCount(); j++) {
+                        for (int j = 6; j < table.getColumnCount(); j++) {
                             String orCondition = (String) table.getValueAt(i, j);
                             if (!orCondition.equals("")) {
                                 conditions.append(" OR ").append(tableName).append(".").append(attribute).append(orCondition);
@@ -415,16 +414,16 @@ public class DatabaseController {
                 }
                 if (existsFilter) {
                     selectCommand.append("\nWHERE ");
-                    selectCommand.append(conditions.substring(0, conditions.length()-5));
+                    selectCommand.append(conditions.substring(0, conditions.length() - 5));
                 }
                 if (existsSortType) {
                     selectCommand.append("\nORDER BY ");
-                    for (int i=1; i<=100; i++) {
+                    for (int i = 1; i <= 100; i++) {
                         if (orderByConditionsArray[i] != null) {
                             orderByConditions.append(orderByConditionsArray[i]);
                         }
                     }
-                    selectCommand.append(orderByConditions.substring(0, orderByConditions.length()-1));
+                    selectCommand.append(orderByConditions.substring(0, orderByConditions.length() - 1));
                 }
 
                 jTextPane.setText(String.valueOf(selectCommand));
@@ -462,7 +461,7 @@ public class DatabaseController {
     }
 
     private String getAlias(JTable table, String tableName, String attributeName) {
-        for (int i=0; i<table.getRowCount(); i++) {
+        for (int i = 0; i < table.getRowCount(); i++) {
             if (table.getValueAt(i, 0).equals(attributeName) && table.getValueAt(i, 2).equals(tableName)) {
                 return table.getValueAt(i, 1).toString();
             }
@@ -481,19 +480,19 @@ public class DatabaseController {
     }
 
     private void buildJoin(Queue<String> queue, ArrayList<String> joins, StringBuilder joinCondition) {
-        if (joins.size()!=0) {
+        if (joins.size() != 0) {
             String[] currentJoinTables = joins.get(0).split(" ");
             queue.add(currentJoinTables[0]);
             queue.add(currentJoinTables[3]);
             joinCondition.append(joins.get(0));
             while (!queue.isEmpty()) {
                 String first = queue.peek();
-                for (int i=1; i<joins.size(); i++) {
+                for (int i = 1; i < joins.size(); i++) {
                     currentJoinTables = joins.get(i).split(" ");
                     if (currentJoinTables[0].equals(first)) {
                         queue.add(currentJoinTables[3]);
                         joinCondition.append("\n");
-                        for (int j=1; j<currentJoinTables.length; j++) {
+                        for (int j = 1; j < currentJoinTables.length; j++) {
                             joinCondition.append(currentJoinTables[j]).append(" ");
                         }
                     }
