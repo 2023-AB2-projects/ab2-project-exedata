@@ -73,12 +73,12 @@ public class TableBox extends JPanel {
 
         String[] allAttributes = selectQuery.getAllAttributes();
         leftJoinComboBox = new JComboBox<>();
-        innerJoinComboBox = new JComboBox<String>();
+        innerJoinComboBox = new JComboBox<>();
         rightJoinComboBox = new JComboBox<>();
 
-        leftJoinComboBox.addItem("-");
-        innerJoinComboBox.addItem("-");
-        rightJoinComboBox.addItem("-");
+        leftJoinComboBox.addItem("LJ");
+        innerJoinComboBox.addItem("J");
+        rightJoinComboBox.addItem("RJ");
         for (int i=0; i<allAttributes.length; i++) {
             leftJoinComboBox.addItem(allAttributes[i]);
             innerJoinComboBox.addItem(allAttributes[i]);
@@ -140,7 +140,7 @@ public class TableBox extends JPanel {
                         ArrayList<JCheckBox> jCheckBoxes = tableBoxes.get(i).getCheckBoxes();
                         String tableName = tableBoxes.get(i).getTableName();
                         for (int j=1; j<jCheckBoxes.size(); j++) {
-                            Object[] rowData = {jCheckBoxes.get(j).getText(), "", tableName, "", "", "", ""};
+                            Object[] rowData = {jCheckBoxes.get(j).getText(), "", tableName, "Unsorted", "Unsorted", "", ""};
                             model.addRow(rowData);
                         }
                     }
