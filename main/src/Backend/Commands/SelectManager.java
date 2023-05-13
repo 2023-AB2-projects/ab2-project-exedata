@@ -1,9 +1,13 @@
 package Backend.Commands;
 
+import Backend.Databases.Attribute;
 import Backend.Databases.Databases;
+import Backend.Databases.Table;
+import Backend.Parser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,11 +34,48 @@ public class SelectManager {
         //GROUP BY
         //HAVING
         //ORDER BY
-//        SELECT students.StudID,specialization.SpecID
-//        FROM specialization INNER JOIN groups ON specialization.SpecID=groups.SpecID
-//        INNER JOIN students ON groups.GroupId=students.GroupId
-//        WHERE (students.StudID>0)
-//        ORDER BY students.GroupId DESC,students.StudID
+    }
+
+    public String check() {
+        for (String i : from) {
+            if (!databases.getDatabase(Parser.currentDatabaseName).checkTableExists(i)) {
+                return "Table " + i + " doesn't exists!";
+            }
+        }
+        String temp;
+        String temp2;
+        for (String i : select) {
+            temp = existsInDatabase(i);
+            if (temp != null)
+                return temp;
+        }
+        for (Condition i : where) {
+            temp = existsInDatabase(i.getLeftSide());
+            temp2 = existsInDatabase(i.getRightSide());
+            if (temp != null && temp2 != null) {
+                return temp;
+            }
+        }
+        return null;
+    }
+
+    private String existsInDatabase(String field) {
+        if (field.contains(".")) {
+            String[] temp = field.split("\\.");
+            if (!databases.getDatabase(Parser.currentDatabaseName).checkTableExists(temp[0]))
+                return "Table " + temp[0] + " doesn't exists!";
+            if (!databases.getDatabase(Parser.currentDatabaseName).getTable(temp[0]).checkAttributeExists(temp[1]))
+                return "Table " + temp[0] + " attribute " + temp[1] + " doesn't exists!";
+        } else {
+            boolean exists = false;
+            for (Table j : databases.getDatabase(Parser.currentDatabaseName).getTables()) {
+                if (j.checkAttributeExists(field))
+                    exists = true;
+            }
+            if (!exists)
+                return "The " + field + " doesn't exists!";
+        }
+        return null;
     }
 
     private void replaceAlias() {
@@ -50,7 +91,6 @@ public class SelectManager {
                 }
             }
         }
-        System.out.println(select);
         //where
         String left;
         String right;
@@ -71,7 +111,7 @@ public class SelectManager {
                     right = from.get(index) + "." + temp[1];
                 }
             }
-            where.set(i,new Condition(left,where.get(i).getOperator(),right));
+            where.set(i, new Condition(left, where.get(i).getOperator(), right));
         }
     }
 
@@ -81,9 +121,13 @@ public class SelectManager {
         }
 
         String selectPart = selectPartParser();
-        selectSeparate(selectPart);
+        boolean hasStar = Objects.equals(selectPart, "*");
         String fromPart = fromPartParser();
         fromSeparate(fromPart);
+        selectSeparate(selectPart);
+        if (hasStar) {
+            replaceStar();
+        }
         String wherePart = wherePartParser();
         whereSeparate(wherePart);
 
@@ -93,13 +137,61 @@ public class SelectManager {
 
         String orderByPart = orderByPartParser();
 
+        replaceStarInSelectAfterThePont();
+    }
+
+    private void replaceStarInSelectAfterThePont() {
+        List<String> temp = new ArrayList<>();
+        List<String> tempAS = new ArrayList<>();
+        String tableName;
+        for (int i = 0; i < select.size(); i++) {
+            if (select.get(i).contains(".*")) {
+                tableName = select.get(i).split("\\.")[0];
+                Table table = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName);
+                if (table != null) {
+                    List<Attribute> attributeList = table.getStructure();
+                    for (Attribute j : attributeList) {
+                        temp.add(table.getName() + "." + j.getName());
+                        tempAS.add(null);
+                    }
+                }
+            } else {
+                temp.add(select.get(i));
+                tempAS.add(selectAS.get(i));
+            }
+        }
+        select=temp;
+        selectAS=tempAS;
+    }
+
+    private void replaceStar() {
+        select = new ArrayList<>();
+        selectAS = new ArrayList<>();
+        for (String i : from) {
+            Table table = databases.getDatabase(Parser.currentDatabaseName).getTable(i);
+            if (table != null) {
+                List<Attribute> attributeList = table.getStructure();
+                for (Attribute j : attributeList) {
+                    select.add(table.getName() + "." + j.getName());
+                    selectAS.add(null);
+                }
+            }
+        }
     }
 
     private void whereSeparate(String wherePart) {
         where = new ArrayList<>();
-        wherePart = wherePart.replaceAll("\\s+(?i)AND\\s+", " AND ");
-        for (String i : wherePart.split("\\s+(?i)AND\\s+")) {
-            where.add(new Condition(i));
+        if (!Objects.equals(wherePart, "")) {
+            wherePart = wherePart.replaceAll("\\s+(?i)AND\\s+", " AND ");
+            for (String i : wherePart.split("\\s+(?i)AND\\s+")) {
+                if (i.charAt(0) == '(') {
+                    i = i.substring(1);
+                }
+                if (i.charAt(i.length() - 1) == ')') {
+                    i = i.substring(0, i.length() - 1);
+                }
+                where.add(new Condition(i));
+            }
         }
     }
 
@@ -120,9 +212,9 @@ public class SelectManager {
     }
 
     private void selectSeparate(String selectPart) {
-        selectPart = selectPart.replaceAll(",\\s*", ",");
         select = new ArrayList<>();
         selectAS = new ArrayList<>();
+        selectPart = selectPart.replaceAll(",\\s*", ",");
         Pattern pattern = Pattern.compile("\\s*(.+)\\s+AS\\s+(.+)\\s*", Pattern.CASE_INSENSITIVE);
         Matcher matcher;
         for (String i : selectPart.split(",")) {
@@ -168,7 +260,8 @@ public class SelectManager {
                     fromPart = fromMatcher.group(1);
                     command = "ORDER BY " + command.substring(fromMatcher.end());
                 } else {
-                    fromPart = command;
+                    fromPart = command.substring(1);
+                    command = "";
                 }
             }
         }
