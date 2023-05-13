@@ -112,7 +112,6 @@ public class Delete implements Command {
                     mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
                     if (checkDeleteData(tableName, deleteValue, databases, mongoDB)) {
                         mongoDB.deleteOne(tableName, "_id", deleteValue);
-                        System.out.println("almaaaa");
                         for (IndexFile i : databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getIndexFiles()) {
                             deleteUpdateIndexFile(keyValuePairs, i, databases, mongoDB, tableName);
                         }
