@@ -49,10 +49,12 @@ public class Select implements Command {
     }
 
     private void sendData(List<String> result) {
+        System.out.println("Sending data...");
         for (String i : result) {
             writer.println(i);
         }
         writer.println("null");
+        System.out.println("Finished!");
     }
 
     private List<String> projection(List<Document> values, SelectManager selectManager) {

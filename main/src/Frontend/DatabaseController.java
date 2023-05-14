@@ -90,6 +90,7 @@ public class DatabaseController {
                             if(pattern.matcher(s).find()){
                                 //ha select
                                 List<String> result = clientConnection.getSelectResult();
+                                System.out.println(result);
                             }
                             // varom a valaszt
                         }

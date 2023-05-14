@@ -81,7 +81,19 @@ public class ClientConnection {
     }
 
     public List<String> getSelectResult(){
-        List<String> result=new ArrayList<>();
-        return result;
+        List<String> data=new ArrayList<>();
+        String receiveData;
+        try {
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            receiveData = reader.readLine();
+            while (!(receiveData.equals("null"))) {
+                data.add(receiveData);
+                receiveData = reader.readLine();
+            }
+            reader.close();
+        } catch (Exception e) {
+
+        }
+        return data;
     }
 }
