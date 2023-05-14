@@ -10,8 +10,10 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.regex.Pattern;
 
 public class DatabaseController {
     private final DatabaseFrame databaseFrame;
@@ -32,9 +34,9 @@ public class DatabaseController {
     };
 
     public DatabaseController() {
-        databaseFrame = new DatabaseFrame();
         clientConnection = new ClientConnection(12000);
         clientConnection.connect(12000);
+        databaseFrame = new DatabaseFrame(clientConnection);
         databaseFrame.getPanelTop().getConnect().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -81,8 +83,14 @@ public class DatabaseController {
                         String[] commands = command.split(";" + System.lineSeparator());
                         //set error message chanel is empty
                         databaseFrame.getPanelDown().getErrorLabel().setText("");
+                        Pattern pattern = Pattern.compile("^(?i)SELECT");
                         for (String s : commands) {
+                            s=formatCommandInFrontend(s);
                             clientConnection.send(s);
+                            if(pattern.matcher(s).find()){
+                                //ha select
+                                List<String> result = clientConnection.getSelectResult();
+                            }
                             // varom a valaszt
                         }
                         clientConnection.send("END");
@@ -500,5 +508,14 @@ public class DatabaseController {
                 queue.remove();
             }
         }
+    }
+
+    private String formatCommandInFrontend(String message){
+        message = message.replaceAll(System.lineSeparator() + "+", " ");
+        message = message.replaceAll("\t", " ");
+        message = message.replaceAll("\s+", " ");
+        message = message.replaceAll("^\s+", "");
+        message = message.replaceAll("\s+$", "");
+        return message;
     }
 }

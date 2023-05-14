@@ -30,7 +30,7 @@ public class PanelCenter extends JPanel {
 
     private JLabel inputLabel;
 
-    public PanelCenter(PanelDown panelDown) {
+    public PanelCenter(PanelDown panelDown, ClientConnection clientConnection) {
         this.panelDown = panelDown;
         this.setLayout(new GridLayout(1, 2));
 
@@ -73,7 +73,7 @@ public class PanelCenter extends JPanel {
         //================================================================================================
         cards = new JPanel();
         inputAreaPanelCommandLine = new JPanel();
-        inputAreaPanelInsDelQuery = new InsertDeleteQuery(this.panelDown);
+        inputAreaPanelInsDelQuery = new InsertDeleteQuery(this.panelDown, clientConnection);
         inputAreaPanelSelectQuery = new SelectQuery();
 
         inputAreaPanelCommandLine.setLayout(new GridLayout(1, 1));

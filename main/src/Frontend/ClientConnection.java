@@ -54,11 +54,11 @@ public class ClientConnection {
 
     public void send(String message) throws IOException {
         if (status == 1) {
-            message = message.replaceAll(System.lineSeparator() + "+", " ");
-            message = message.replaceAll("\t", " ");
-            message = message.replaceAll("\s+", " ");
-            message = message.replaceAll("^\s+", "");
-            message = message.replaceAll("\s+$", "");
+//            message = message.replaceAll(System.lineSeparator() + "+", " ");
+//            message = message.replaceAll("\t", " ");
+//            message = message.replaceAll("\s+", " ");
+//            message = message.replaceAll("^\s+", "");
+//            message = message.replaceAll("\s+$", "");
             System.out.println("I sent this command: " + message);
             printWriter.println(message);
         }
@@ -78,5 +78,10 @@ public class ClientConnection {
 
         }
         return data;
+    }
+
+    public List<String> getSelectResult(){
+        List<String> result=new ArrayList<>();
+        return result;
     }
 }

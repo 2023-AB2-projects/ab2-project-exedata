@@ -6,6 +6,7 @@ import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SocketServer.ErrorClient;
 import Backend.SocketServer.Server;
 
+import java.io.PrintWriter;
 import java.util.regex.Pattern;
 import static Backend.Commands.FormatCommand.formatCommand;
 
@@ -29,7 +30,7 @@ public class Parser {
     public static String currentDatabaseName;
     public static String currentTableName;
 
-    public static Command commandType(String command) {
+    public static Command commandType(String command, PrintWriter writer) {
         //System.out.println(command);
         if(command.equals("END")){
             Backend.end = -1;
@@ -54,7 +55,7 @@ public class Parser {
         } else if (delete.matcher(command).find() || deleteAll.matcher(command).find() || deleteMultiplePK.matcher(command).find()) {
             return new Delete(command);
         } else if (select.matcher(command).find()) {
-            return new Select(command);
+            return new Select(command, writer);
         }
         ErrorClient.send("Wrong command!");
         System.out.println("Wrong command!");

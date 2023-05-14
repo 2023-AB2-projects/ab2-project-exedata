@@ -43,7 +43,7 @@ public class Server implements Runnable {
                 while ((command = reader.readLine()) != null) {
                     System.out.println("I receive this massage:" + command);
                     if (!command.startsWith("!GET")) {
-                        Command a = Parser.commandType(command);
+                        Command a = Parser.commandType(command, writer);
 
                         setNumberOfInsertedRows(command);
                         setNumberOfDeletedRows(command);

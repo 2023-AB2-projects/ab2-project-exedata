@@ -38,12 +38,12 @@ public class InsertDeleteQuery extends JPanel {
     private int numberOfRows;
     private final PanelDown panelDown;
 
-    public InsertDeleteQuery(PanelDown panelDown) {
+    public InsertDeleteQuery(PanelDown panelDown, ClientConnection c) {
         this.panelDown = panelDown;
         this.setLayout(new BorderLayout());
         header = new JPanel();
         center = new JPanel();
-        clientConnectionInsertDelete = new ClientConnection(12002);
+        clientConnectionInsertDelete = c;
 
         databases = LoadJSON.load("databases.json");
         if (databases == null || databases.getDatabaseList().size() == 0) {

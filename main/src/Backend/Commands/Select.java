@@ -14,6 +14,7 @@ import org.bson.conversions.Bson;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import java.io.PrintWriter;
 import java.util.*;
 
 import static com.mongodb.client.model.Filters.*;
@@ -22,9 +23,11 @@ public class Select implements Command {
     private final String command;
     private Databases databases;
     private MongoDB mongoDB;
+    private final PrintWriter writer;
 
-    public Select(String command) {
+    public Select(String command, PrintWriter w) {
         this.command = command;
+        writer = w;
     }
 
     @Override
@@ -42,7 +45,14 @@ public class Select implements Command {
         List<Document> result = processing(selectManager);
         System.out.println(result);
         List<String> projectionResult = projection(result, selectManager);
+        sendData(projectionResult);
+    }
 
+    private void sendData(List<String> result) {
+        for (String i : result) {
+            writer.println(i);
+        }
+        writer.println("null");
     }
 
     private List<String> projection(List<Document> values, SelectManager selectManager) {
@@ -68,17 +78,17 @@ public class Select implements Command {
     }
 
     private String getSelectedAttribute(Document document, int[] indexArray) {
-        String[] primaryKey=((String)document.get("_id")).split("#");
-        String[] attribute=((String)document.get("Value")).split("#");
+        String[] primaryKey = ((String) document.get("_id")).split("#");
+        String[] attribute = ((String) document.get("Value")).split("#");
         StringBuilder result = new StringBuilder();
-        for(int i: indexArray){
-            if(i<0){
-                result.append(primaryKey[(i+1)*(-1)]).append("#");
-            }else{
+        for (int i : indexArray) {
+            if (i < 0) {
+                result.append(primaryKey[(i + 1) * (-1)]).append("#");
+            } else {
                 result.append(attribute[i]).append("#");
             }
         }
-        return result.substring(0,result.length()-1);
+        return result.substring(0, result.length() - 1);
     }
 
     private int[] createIndexArray(List<String> select, String tableName) {
