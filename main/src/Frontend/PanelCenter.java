@@ -6,6 +6,7 @@ import Frontend.SelectPanel.SelectQuery;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -19,6 +20,8 @@ public class PanelCenter extends JPanel {
     private final JTextPane inputArea; // command input (ex. CREATE TABLE)
     private JPanel commandLineInput;
     private JPanel commandLineHeader;
+    private JPanel commandLineResults;
+    private JTable resultsTable;
     private JButton buttonCommandLine;
     private JButton buttonInsertDeleteQuery;
     private JButton buttonSelectQuery;
@@ -92,8 +95,11 @@ public class PanelCenter extends JPanel {
 
         //================================================================================================
         // right side of PanelCenter
-        JPanel commandLineResults = new JPanel();
+        commandLineResults = new JPanel();
         commandLineResults.setLayout(new GridLayout(1, 1));
+        resultsTable = new JTable();
+        JScrollPane jScrollPane = new JScrollPane(resultsTable);
+        commandLineResults.add(jScrollPane);
         this.add(commandLineResults);
     }
 
@@ -147,5 +153,9 @@ public class PanelCenter extends JPanel {
 
     public JLabel getInputLabel() {
         return inputLabel;
+    }
+
+    public JTable getResultsTable() {
+        return resultsTable;
     }
 }

@@ -5,15 +5,15 @@ import Frontend.SelectPanel.TableBox;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
-import java.util.Queue;
 import java.util.regex.Pattern;
 
 public class DatabaseController {
@@ -92,9 +92,17 @@ public class DatabaseController {
                                 //ha select
                                 List<String> result = clientConnection.getSelectResult();
                                 System.out.println(result);
-                            }
-                            // varom a valaszt
 
+                                Object[] columnNames = result.get(0).split("#");
+                                JTable table = databaseFrame.getPanelCenter().getResultsTable();
+                                DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+                                for (int i=1; i<result.size(); i++) {
+                                    Object[] rowData = result.get(i).split("#");
+                                    model.addRow(rowData);
+                                }
+
+                                table.setModel(model);
+                            }
                         }
                         clientConnection.send("END");
 
