@@ -42,6 +42,7 @@ public class Select implements Command {
         List<Document> result = processing(selectManager);
         System.out.println(result);
         List<String> projectionResult = projection(result, selectManager);
+
     }
 
     private List<String> projection(List<Document> values, SelectManager selectManager) {
