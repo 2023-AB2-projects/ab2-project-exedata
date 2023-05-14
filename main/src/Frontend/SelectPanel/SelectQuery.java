@@ -24,6 +24,7 @@ public class SelectQuery extends JPanel {
     private JPanel centerDown;
     private JTextPane selectCommandText;
     private JButton runButton;
+    private JButton sendButton;
     private JComboBox databaseComboBox;
     private JComboBox tableComboBox = new JComboBox();
     private String[] allDatabases;
@@ -38,6 +39,7 @@ public class SelectQuery extends JPanel {
     private String currentTableName;
     private JTable table;
     private JPanel panel1;
+    private JPanel panelButtons;
     private JPanel panel2;
 
     public SelectQuery() {
@@ -138,7 +140,20 @@ public class SelectQuery extends JPanel {
             runButton.setBackground(Color.GREEN);
             runButton.setForeground(Color.BLACK);
             runButton.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.black));
-            panel1.add(runButton);
+
+            // send button
+            sendButton = new JButton("Send query");
+            sendButton.setFont(new Font("Arial", Font.BOLD, 20));
+            sendButton.setBackground(new Color(67, 142, 238));
+            sendButton.setForeground(Color.BLACK);
+            sendButton.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.black));
+
+            panelButtons = new JPanel();
+            panelButtons.setLayout(new GridLayout(1, 2));
+            panelButtons.add(runButton);
+            panelButtons.add(sendButton);
+
+            panel1.add(panelButtons);
 
             // Center down
             centerDown.setLayout(null);
