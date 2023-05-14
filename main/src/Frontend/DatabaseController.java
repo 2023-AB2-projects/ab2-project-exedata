@@ -1,5 +1,6 @@
 package Frontend;
 
+import Backend.SocketServer.ErrorClient;
 import Frontend.SelectPanel.TableBox;
 
 import javax.swing.*;
@@ -83,7 +84,7 @@ public class DatabaseController {
                         String[] commands = command.split(";" + System.lineSeparator());
                         //set error message chanel is empty
                         databaseFrame.getPanelDown().getErrorLabel().setText("");
-                        Pattern pattern = Pattern.compile("^(?i)SELECT");
+                        Pattern pattern = Pattern.compile("^\\s*(?i)SELECT");
                         for (String s : commands) {
                             s=formatCommandInFrontend(s);
                             clientConnection.send(s);
@@ -93,11 +94,12 @@ public class DatabaseController {
                                 System.out.println(result);
                             }
                             // varom a valaszt
+
                         }
                         clientConnection.send("END");
 
                     } catch (IOException ex) {
-                        databaseFrame.getPanelCenter().getMessagesLabel().setText("Connection ERROR to server on 12000 port!");
+                        ErrorClient.send("Connection ERROR to server on 12000 port!");
                     }
                 } else {
                     JTextPane jTextPane = databaseFrame.getPanelCenter().getInputArea();
@@ -436,6 +438,18 @@ public class DatabaseController {
                 }
 
                 jTextPane.setText(String.valueOf(selectCommand));
+            }
+        });
+        databaseFrame.getPanelCenter().getSelectQuery().getSendButton().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectQuery = databaseFrame.getPanelCenter().getSelectQuery().getSelectCommandText().getText();
+                databaseFrame.getPanelCenter().getInputArea().setText(selectQuery.replaceAll("\n", System.lineSeparator()));
+
+                databaseFrame.getPanelCenter().getInputLabel().setText("Command line:");
+                JPanel cards = databaseFrame.getPanelCenter().getCards();
+                CardLayout cl = (CardLayout) (cards.getLayout());
+                cl.show(cards, databaseFrame.getPanelCenter().getPanelCommandString());
             }
         });
         TimerThread timerThread = new TimerThread(databaseFrame.getPanelTop());

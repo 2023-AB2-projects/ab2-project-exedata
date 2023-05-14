@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 
 public class PanelCenter extends JPanel {
-    private final JLabel messagesLabel; // messages under query result
     private JPanel cards;
     private JPanel inputAreaPanelCommandLine;
     private InsertDeleteQuery inputAreaPanelInsDelQuery;
@@ -94,26 +93,7 @@ public class PanelCenter extends JPanel {
         //================================================================================================
         // right side of PanelCenter
         JPanel commandLineResults = new JPanel();
-        commandLineResults.setLayout(new BorderLayout());
-        // right label
-        commandLineResults.setFont(new Font("Courier New", Font.BOLD, 15));
-        commandLineResults.setBorder(new MatteBorder(0, 0, 2, 0, Color.black));
-
-        //================================================================================================
-        messagesLabel = new JLabel("There will appear compilation results.");
-        messagesLabel.setBorder(new MatteBorder(2, 2, 2, 2, Color.black));
-        commandLineResults.add(messagesLabel, BorderLayout.SOUTH);
-
-        //================================================================================================
-        BufferedImage img = null;
-        try {
-            img = ImageIO.read(new File("main/background.png"));
-            JLabel imageLabel = new JLabel(new ImageIcon(img));
-            commandLineResults.add(imageLabel, BorderLayout.CENTER);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        commandLineResults.setLayout(new GridLayout(1, 1));
         this.add(commandLineResults);
     }
 
@@ -123,10 +103,6 @@ public class PanelCenter extends JPanel {
 
     public SelectQuery getSelectQuery() {
         return inputAreaPanelSelectQuery;
-    }
-
-    public JLabel getMessagesLabel() {
-        return messagesLabel;
     }
 
     public JTextPane getInputArea() {

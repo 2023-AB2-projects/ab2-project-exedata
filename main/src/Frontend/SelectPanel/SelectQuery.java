@@ -88,7 +88,7 @@ public class SelectQuery extends JPanel {
             Object[] columnNames = {"Column", "Alias", "Table", "Sort Type", "Sort Order", "Filter", "OR"};
             Object[][] data = {};
             DefaultTableModel model = new DefaultTableModel(data, columnNames) {
-//                @Override
+                //                @Override
 //                public Class<?> getColumnClass(int column) {
 //                    if (column == 3) {
 //                        return Boolean.class;
@@ -107,7 +107,7 @@ public class SelectQuery extends JPanel {
             int columnIndex = table.getColumnModel().getColumnIndex("Sort Type");
             TableColumn comboBoxColumn = table.getColumnModel().getColumn(columnIndex);
 
-            comboBoxColumn.setCellEditor(new DefaultCellEditor(new JComboBox(new Object[] {"Ascending", "Descending", "Unsorted"})));
+            comboBoxColumn.setCellEditor(new DefaultCellEditor(new JComboBox(new Object[]{"Ascending", "Descending", "Unsorted"})));
 
             // Sort Order
             columnIndex = table.getColumnModel().getColumnIndex("Sort Order");
@@ -115,7 +115,7 @@ public class SelectQuery extends JPanel {
 
             Object[] numbers = new Object[101];
             numbers[0] = "Unsorted";
-            for (int i=1; i<=100; i++) {
+            for (int i = 1; i <= 100; i++) {
                 numbers[i] = String.valueOf(i);
             }
             comboBoxColumn.setCellEditor(new DefaultCellEditor(new JComboBox(numbers)));
@@ -142,7 +142,7 @@ public class SelectQuery extends JPanel {
             runButton.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.black));
 
             // send button
-            sendButton = new JButton("Send query");
+            sendButton = new JButton("Send query (to command line)");
             sendButton.setFont(new Font("Arial", Font.BOLD, 20));
             sendButton.setBackground(new Color(67, 142, 238));
             sendButton.setForeground(Color.BLACK);
@@ -211,6 +211,10 @@ public class SelectQuery extends JPanel {
 
     public JButton getRunButton() {
         return runButton;
+    }
+
+    public JButton getSendButton() {
+        return sendButton;
     }
 
     public ArrayList<TableBox> getTableBoxes() {
