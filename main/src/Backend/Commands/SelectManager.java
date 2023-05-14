@@ -337,4 +337,24 @@ public class SelectManager {
         }
         return orderByPart;
     }
+
+    public List<String> getSelect() {
+        return select;
+    }
+
+    public List<String> getSelectAS() {
+        return selectAS;
+    }
+
+    public List<String> getFrom() {
+        return from;
+    }
+
+    public List<String> getFromAS() {
+        return fromAS;
+    }
+
+    public List<Condition> getWhere() {
+        return where;
+    }
 }

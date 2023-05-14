@@ -14,6 +14,15 @@ public class Database {
     public Database() {
     }
 
+    public String whichTableContainsThisAttribute(String column){
+        for (Table i : tables) {
+            if (i.checkAttributeExists(column)) {
+                return i.getName();
+            }
+        }
+        return null;
+    }
+
     public boolean checkTableExists(String tableName) {
         for (Table i : tables) {
             if (i.getName().equals(tableName)) {

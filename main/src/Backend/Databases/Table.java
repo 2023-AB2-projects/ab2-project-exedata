@@ -36,6 +36,15 @@ public class Table {
         return null;
     }
 
+    public IndexFile getIndexFileIfKnowTheAttributes(String[] attributeNames){
+        for(IndexFile i : indexFiles){
+            if (i.getIndexAttributes().size()==attributeNames.length && i.equalsIndexAttributes(attributeNames)){
+                return i;
+            }
+        }
+        return null;
+    }
+
     public boolean existIndexName(String indexName) {
         for (IndexFile i : indexFiles) {
             if (i.getIndexName().equals(indexName)) {
