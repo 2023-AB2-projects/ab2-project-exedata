@@ -1,7 +1,6 @@
 package Backend.Commands;
 
 import Backend.Parser;
-import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
 
 import java.util.ArrayList;
@@ -11,6 +10,7 @@ import Backend.Databases.*;
 import Backend.SocketServer.ErrorClient;
 
 import static Backend.Commands.FormatCommand.formatWords;
+import static Backend.SocketServer.Server.databases;
 import static Backend.SocketServer.Server.mongoDB;
 
 public class CreateTable implements Command {
@@ -21,7 +21,6 @@ public class CreateTable implements Command {
     private final String[] type;
     private boolean syntaxError;
     private final String databaseName;
-    private Databases databases;
 
     public CreateTable(String command) {
         databaseName = Parser.currentDatabaseName;
@@ -61,7 +60,6 @@ public class CreateTable implements Command {
         String currentTableName = beforeAndAfterTheFirstOpenBracket[0].split(" ")[2];
         table = new Table(currentTableName, attributeList, primaryKeyList, foreignKeysList, uniqueKeysList, indexFilesList);
 
-        databases = LoadJSON.load("databases.json");
         if (databases == null) {
             System.out.println("Doesn't exists JSONFile!");
             ErrorClient.send("Doesn't exists JSONFile!");

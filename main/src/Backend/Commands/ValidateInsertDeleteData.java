@@ -5,7 +5,6 @@ import Backend.Databases.Databases;
 import Backend.Databases.ForeignKey;
 import Backend.Databases.Table;
 import Backend.Parser;
-import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SocketServer.ErrorClient;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
@@ -16,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static Backend.Common.getValueByAttributeName;
+import static Backend.SocketServer.Server.databases;
 import static Backend.SocketServer.Server.mongoDB;
 
 public class ValidateInsertDeleteData {
@@ -47,7 +47,6 @@ public class ValidateInsertDeleteData {
     }
 
     public static boolean checkInsertData(String tableName, String[] column, String[] values) {
-        Databases databases = LoadJSON.load("databases.json");
         if (databases == null) {
             System.out.println("JSON file doesn't exists!");
             ErrorClient.send("JSON file doesn't exists!");

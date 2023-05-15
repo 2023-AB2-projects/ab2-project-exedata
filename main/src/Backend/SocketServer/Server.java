@@ -1,8 +1,10 @@
 package Backend.SocketServer;
 
 import Backend.Commands.Command;
+import Backend.Databases.Databases;
 import Backend.MongoDBManagement.MongoDB;
 import Backend.Parser;
+import Backend.SaveLoadJSON.LoadJSON;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 
@@ -22,10 +24,12 @@ public class Server implements Runnable {
     private PrintWriter writer;
     private final int port;
     public static MongoDB mongoDB;
+    public static Databases databases;
 
     public Server(int port) {
         this.port = port;
         mongoDB=new MongoDB();
+        databases= LoadJSON.load("databases.json");
     }
 
     @Override

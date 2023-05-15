@@ -2,11 +2,11 @@ package Backend;
 
 import Backend.Commands.*;
 import Backend.Databases.Databases;
-import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SocketServer.ErrorClient;
 import java.io.PrintWriter;
 import java.util.regex.Pattern;
 import static Backend.Commands.FormatCommand.formatCommand;
+import static Backend.SocketServer.Server.databases;
 
 public class Parser {
     // Create instances of the matched type
@@ -62,7 +62,6 @@ public class Parser {
 
     private static String returnTheDatabaseName(String command) {
         String databaseName = command.split(" ")[1];
-        Databases databases = LoadJSON.load("databases.json");
         if (databases == null) {
             System.out.println("Doesn't exists JSON file!");
             ErrorClient.send("Doesn't exists JSON file!");

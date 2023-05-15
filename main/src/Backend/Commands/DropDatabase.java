@@ -1,10 +1,9 @@
 package Backend.Commands;
 
-import Backend.Databases.Databases;
-import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
 import Backend.SocketServer.ErrorClient;
 
+import static Backend.SocketServer.Server.databases;
 import static Backend.SocketServer.Server.mongoDB;
 
 public class DropDatabase implements Command {
@@ -19,8 +18,6 @@ public class DropDatabase implements Command {
     public void performAction() {
         //DROP DATABASE PERSONS;
         String currentDatabaseName = command.split(" ")[2];
-
-        Databases databases = LoadJSON.load("databases.json");
         if (databases == null) {
             System.out.println("JSONFile Doesn't exists!");
             ErrorClient.send("JSONFile Doesn't exists!");

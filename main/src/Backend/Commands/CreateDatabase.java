@@ -1,13 +1,13 @@
 package Backend.Commands;
 
 import Backend.Databases.*;
-import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
 import Backend.SocketServer.ErrorClient;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static Backend.SocketServer.Server.databases;
 import static Backend.SocketServer.Server.mongoDB;
 
 
@@ -23,7 +23,7 @@ public class CreateDatabase implements Command {
     public void performAction() {
         //CREATE DATABASE PERSONS;
         String currentDatabaseName = command.split(" ")[2];
-        Databases databases = LoadJSON.load("databases.json");
+//        Databases databases = LoadJSON.load("databases.json");
         if (databases == null) {
             List<Database> databaseList = new ArrayList<>();
             List<Table> tableList = new ArrayList<>();

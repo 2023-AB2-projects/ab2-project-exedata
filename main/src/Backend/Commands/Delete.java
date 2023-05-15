@@ -4,7 +4,6 @@ import Backend.Backend;
 import Backend.Databases.Databases;
 import Backend.Databases.IndexFile;
 import Backend.Parser;
-import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SocketServer.ErrorClient;
 import org.bson.Document;
 
@@ -19,6 +18,7 @@ import java.util.regex.Pattern;
 import static Backend.Commands.CreateIndex.createIndexFileInMongoDB;
 import static Backend.Commands.FormatCommand.getPrimaryKeysValuesSeparateByHash;
 import static Backend.Commands.ValidateInsertDeleteData.checkDeleteData;
+import static Backend.SocketServer.Server.databases;
 import static Backend.SocketServer.Server.mongoDB;
 
 public class Delete implements Command {
@@ -37,7 +37,6 @@ public class Delete implements Command {
         Matcher matcher = pattern.matcher(command);
         Matcher matcherAll = patternAll.matcher(command);
         Matcher matcherMultiplePK = patternMultiplePK.matcher(command);
-        Databases databases = LoadJSON.load("databases.json");
         if (databases == null || databases.getDatabaseList().size() == 0) {
             System.out.println("Database doesn't exists!");
             ErrorClient.send("Database doesn't exists!");

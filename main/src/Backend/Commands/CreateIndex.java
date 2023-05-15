@@ -10,19 +10,18 @@ import Backend.Backend;
 import Backend.Common;
 import Backend.Databases.*;
 import Backend.Parser;
-import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
 import Backend.SocketServer.ErrorClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
 
+import static Backend.SocketServer.Server.databases;
 import static Backend.SocketServer.Server.mongoDB;
 
 public class CreateIndex implements Command {
 
     private final String command;
-    private Databases databases;
 
     public CreateIndex(String command) {
         this.command = command;
@@ -32,7 +31,6 @@ public class CreateIndex implements Command {
     public void performAction() {
         //CREATE INDEX index_name
         //ON table_name (column1, column2, ...);
-        databases = LoadJSON.load("databases.json");
         if (databases == null) {
             ErrorClient.send("Databases doesn't exists!");
             return;

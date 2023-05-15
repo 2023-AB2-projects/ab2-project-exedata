@@ -1,12 +1,11 @@
 package Backend.Commands;
 
-import Backend.Databases.Databases;
 import Backend.Parser;
-import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
 import Backend.SocketServer.ErrorClient;
 
 import static Backend.Parser.currentDatabaseName;
+import static Backend.SocketServer.Server.databases;
 import static Backend.SocketServer.Server.mongoDB;
 
 public class DropIndex implements Command {
@@ -19,7 +18,6 @@ public class DropIndex implements Command {
     @Override
     public void performAction() {
         //DROP INDEX index_name ON table_name;
-        Databases databases = LoadJSON.load("databases.json");
         if (databases == null) {
             System.out.println("Databases doesn't exists!");
             ErrorClient.send("Databases doesn't exists!");

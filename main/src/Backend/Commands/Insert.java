@@ -4,7 +4,6 @@ import Backend.Databases.Attribute;
 import Backend.Databases.Databases;
 import Backend.Databases.IndexFile;
 import Backend.Parser;
-import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SocketServer.ErrorClient;
 import org.bson.Document;
 
@@ -17,6 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static Backend.Commands.FormatCommand.getPrimaryKeysValuesSeparateByHash;
+import static Backend.SocketServer.Server.databases;
 import static Backend.SocketServer.Server.mongoDB;
 
 public class Insert implements Command {
@@ -42,7 +42,6 @@ public class Insert implements Command {
                 String[] value = matcher.group(3).replaceAll("\\s+", "").replaceAll("'", "").replaceAll("\"", "").split(",");
 
                 if (ValidateInsertDeleteData.checkInsertData(tableName, fieldName, value)) {
-                    Databases databases = LoadJSON.load("databases.json");
                     assert databases != null;
                     primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName, databases);
                     String primaryKeysString = allPrimaryKeyValueDividedByHash(fieldName, value, primaryKeys);
