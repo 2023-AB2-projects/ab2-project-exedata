@@ -85,7 +85,6 @@ public class ClientConnection {
                 data.add(receiveData);
                 receiveData = reader.readLine();
             }
-            reader.close();
         } catch (Exception e) {
 
         }

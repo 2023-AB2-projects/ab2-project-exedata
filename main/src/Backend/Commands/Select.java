@@ -9,7 +9,6 @@ import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SocketServer.ErrorClient;
 import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -42,6 +41,7 @@ public class Select implements Command {
         if (massage != null) {
             ErrorClient.send(massage);
             System.out.println(massage);
+            sendData(new ArrayList<>());
             return;
         }
         List<Document> result = processing(selectManager);
@@ -154,7 +154,7 @@ public class Select implements Command {
         }
         List<Document> result = new ArrayList<>();
 
-        FindIterable<Document> documents = null;
+        FindIterable<Document> documents;
         if (primaryKeySet != null) {
             Bson filter = Filters.in("_id", primaryKeySet);
             documents = mongoDB.getDocuments(selectManager.getFrom().get(0)).find(filter);
