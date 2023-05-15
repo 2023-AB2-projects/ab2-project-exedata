@@ -4,7 +4,6 @@ import Backend.Databases.Attribute;
 import Backend.Databases.Databases;
 import Backend.Databases.ForeignKey;
 import Backend.Databases.Table;
-import Backend.MongoDBManagement.MongoDB;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SocketServer.ErrorClient;
@@ -17,10 +16,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static Backend.Common.getValueByAttributeName;
+import static Backend.SocketServer.Server.mongoDB;
 
 public class ValidateInsertDeleteData {
 
-    public static boolean checkDeleteData(String tableName, String id, Databases databases, MongoDB mongoDB) {
+    public static boolean checkDeleteData(String tableName, String id, Databases databases) {
         Document document = mongoDB.getDocument(tableName, id);
         List<String> primaryKeyList = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey();
         List<Attribute> attributeList = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getStructure();
@@ -123,30 +123,21 @@ public class ValidateInsertDeleteData {
     }
 
     public static boolean checkExistsValueInTableIfDoesHaveIndexFile(String indexFileName, String value) {
-        MongoDB mongoDB = new MongoDB();
         mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
         Document document = new Document("_id", value);
-        if (mongoDB.existsID(indexFileName, document)) {
-            mongoDB.disconnectFromLocalhost();
-            return true;
-        }
-        mongoDB.disconnectFromLocalhost();
-        return false;
+        return mongoDB.existsID(indexFileName, document);
     }
 
     public static boolean checkExistsValueInTableIfDoesNotHaveIndexFile(String tableName, String attributeName, String value, Databases databases) {
-        MongoDB mongoDB = new MongoDB();
         mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
         MongoCollection<Document> documents = mongoDB.getDocuments(tableName);
         for (Document i : documents.find()) {
             if (Objects.equals(getValueByAttributeName(i, attributeName,
                     databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey(),
                     databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getStructure()), value)) {
-                mongoDB.disconnectFromLocalhost();
                 return true;
             }
         }
-        mongoDB.disconnectFromLocalhost();
         return false;
     }
 

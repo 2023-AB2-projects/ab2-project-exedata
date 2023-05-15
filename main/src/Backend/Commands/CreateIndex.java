@@ -1,7 +1,5 @@
 package Backend.Commands;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +9,6 @@ import java.util.regex.Pattern;
 import Backend.Backend;
 import Backend.Common;
 import Backend.Databases.*;
-import Backend.MongoDBManagement.MongoDB;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
@@ -19,6 +16,8 @@ import Backend.SocketServer.ErrorClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import org.bson.Document;
+
+import static Backend.SocketServer.Server.mongoDB;
 
 public class CreateIndex implements Command {
 
@@ -103,7 +102,6 @@ public class CreateIndex implements Command {
     public static void  createIndexFileInMongoDB(String indexName, String tableName, String[] attributeNames, Databases databases) {
         // Create index file (collection) in MongoDB
         // Connection
-        MongoDB mongoDB = new MongoDB();
         mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
         mongoDB.createCollection(indexName);
         List<Attribute> attributeList = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getStructure();

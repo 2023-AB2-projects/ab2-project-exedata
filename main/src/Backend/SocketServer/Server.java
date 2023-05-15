@@ -21,9 +21,11 @@ public class Server implements Runnable {
     private BufferedReader reader;
     private PrintWriter writer;
     private final int port;
+    public static MongoDB mongoDB;
 
     public Server(int port) {
         this.port = port;
+        mongoDB=new MongoDB();
     }
 
     @Override
@@ -41,7 +43,7 @@ public class Server implements Runnable {
                 writer = new PrintWriter(clientSocket.getOutputStream(), true);
                 String command;
                 while ((command = reader.readLine()) != null) {
-                    System.out.println("I receive this massage:" + command);
+                    //System.out.println("I receive this massage:" + command);
                     if (!command.startsWith("!GET")) {
                         Command a = Parser.commandType(command, writer);
 
@@ -98,13 +100,11 @@ public class Server implements Runnable {
         String databaseName = command.split(" ")[2];
         String tableName = command.split(" ")[3];
         tableName = tableName.substring(0, tableName.length() - 1);
-        MongoDB mongoDB = new MongoDB();
         mongoDB.createDatabaseOrUse(databaseName);
         MongoCollection<Document> documents = mongoDB.getDocuments(tableName);
         for (Document i : documents.find()) {
             writer.println(i.toJson());
         }
         writer.println("null");
-        mongoDB.disconnectFromLocalhost();
     }
 }

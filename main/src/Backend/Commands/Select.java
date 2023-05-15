@@ -4,7 +4,6 @@ import Backend.Databases.Attribute;
 import Backend.Databases.Databases;
 import Backend.Databases.IndexFile;
 import Backend.Databases.Table;
-import Backend.MongoDBManagement.MongoDB;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SocketServer.ErrorClient;
@@ -18,12 +17,12 @@ import javax.xml.transform.TransformerException;
 import java.io.PrintWriter;
 import java.util.*;
 
+import static Backend.SocketServer.Server.mongoDB;
 import static com.mongodb.client.model.Filters.*;
 
 public class Select implements Command {
     private final String command;
     private Databases databases;
-    private MongoDB mongoDB;
     private final PrintWriter writer;
 
     public Select(String command, PrintWriter w) {
@@ -34,7 +33,6 @@ public class Select implements Command {
     @Override
     public void performAction() throws ParserConfigurationException, TransformerException {
         //SELECT * FROM disciplines WHERE CreditNr > 4 AND DName=Databases1;
-        mongoDB = new MongoDB();
         databases = LoadJSON.load("databases.json");
         SelectManager selectManager = new SelectManager(command, databases);
         String massage = selectManager.check();

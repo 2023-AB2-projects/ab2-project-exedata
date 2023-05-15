@@ -4,8 +4,6 @@ import Backend.Commands.*;
 import Backend.Databases.Databases;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SocketServer.ErrorClient;
-import Backend.SocketServer.Server;
-
 import java.io.PrintWriter;
 import java.util.regex.Pattern;
 import static Backend.Commands.FormatCommand.formatCommand;

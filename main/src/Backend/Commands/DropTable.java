@@ -5,7 +5,8 @@ import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
 import Backend.SocketServer.ErrorClient;
-import Backend.MongoDBManagement.MongoDB;
+
+import static Backend.SocketServer.Server.mongoDB;
 
 public class DropTable implements Command {
     // drop table from json file
@@ -28,10 +29,8 @@ public class DropTable implements Command {
         } else {
             databases.getDatabase(Parser.currentDatabaseName).dropTable(currentTableName);
             SaveJSON.save(databases, "databases.json");
-            MongoDB mongoDB = new MongoDB();
             mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
             mongoDB.dropCollection(currentTableName);
-            mongoDB.disconnectFromLocalhost();
             ErrorClient.send("The " + currentTableName + "table is deleted!");
         }
     }

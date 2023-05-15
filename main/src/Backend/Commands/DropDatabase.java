@@ -4,7 +4,8 @@ import Backend.Databases.Databases;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
 import Backend.SocketServer.ErrorClient;
-import Backend.MongoDBManagement.MongoDB;
+
+import static Backend.SocketServer.Server.mongoDB;
 
 public class DropDatabase implements Command {
     // Drop database from json file
@@ -28,9 +29,7 @@ public class DropDatabase implements Command {
             databases.dropDatabase(currentDatabaseName);
         }
         SaveJSON.save(databases, "databases.json");
-        MongoDB mongoDB = new MongoDB();
         mongoDB.dropDatabase(currentDatabaseName);
-        mongoDB.disconnectFromLocalhost();
         ErrorClient.send(currentDatabaseName + " is deleted!");
     }
 }

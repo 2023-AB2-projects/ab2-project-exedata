@@ -4,10 +4,11 @@ import Backend.Databases.*;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SaveLoadJSON.SaveJSON;
 import Backend.SocketServer.ErrorClient;
-import Backend.MongoDBManagement.MongoDB;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static Backend.SocketServer.Server.mongoDB;
 
 
 public class CreateDatabase implements Command {
@@ -39,9 +40,7 @@ public class CreateDatabase implements Command {
             }
         }
         SaveJSON.save(databases, "databases.json");
-        MongoDB mongoDB = new MongoDB();
         mongoDB.createDatabaseOrUse(currentDatabaseName);
-        mongoDB.disconnectFromLocalhost();
         ErrorClient.send("Database " + currentDatabaseName + " created!");
     }
 }

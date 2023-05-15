@@ -1,11 +1,9 @@
 package Backend.Databases;
 
-import Backend.Parser;
 import Backend.SocketServer.ErrorClient;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class Table {
     private String name;

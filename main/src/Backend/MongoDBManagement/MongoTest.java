@@ -2,8 +2,8 @@ package Backend.MongoDBManagement;
 
 public class MongoTest {
     public static void main(String[] args) {
-        MongoDB mongoDB = new MongoDB();
-        mongoDB.connectToLocalhost();
+//        MongoDB mongoDB = new MongoDB();
+//        mongoDB.connectToLocalhost();
 
 //        mongoDB.useOrCreateDatabase("new");
 //        Document document= new Document();

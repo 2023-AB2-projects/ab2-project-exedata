@@ -6,7 +6,6 @@ import Backend.Databases.IndexFile;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SocketServer.ErrorClient;
-import Backend.MongoDBManagement.MongoDB;
 import org.bson.Document;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -18,6 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static Backend.Commands.FormatCommand.getPrimaryKeysValuesSeparateByHash;
+import static Backend.SocketServer.Server.mongoDB;
 
 public class Insert implements Command {
     private final String command;
@@ -43,7 +43,6 @@ public class Insert implements Command {
 
                 if (ValidateInsertDeleteData.checkInsertData(tableName, fieldName, value)) {
                     Databases databases = LoadJSON.load("databases.json");
-                    MongoDB mongoDB = new MongoDB();
                     assert databases != null;
                     primaryKeys = getPrimaryKeys(Parser.currentDatabaseName, tableName, databases);
                     String primaryKeysString = allPrimaryKeyValueDividedByHash(fieldName, value, primaryKeys);
@@ -60,16 +59,14 @@ public class Insert implements Command {
 
                     List<IndexFile> indexFileList = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getIndexFiles();
                     for (IndexFile i : indexFileList) {
-                        insertUpdateIndexFile(fieldName, value, i, databases, mongoDB, tableName);
+                        insertUpdateIndexFile(fieldName, value, i, databases, tableName);
                     }
-
-                    mongoDB.disconnectFromLocalhost();
                 }
             }
         }
     }
 
-    public void insertUpdateIndexFile(String[] fieldName, String[] value, IndexFile indexFile, Databases databases, MongoDB mongoDB, String tableName) {
+    public void insertUpdateIndexFile(String[] fieldName, String[] value, IndexFile indexFile, Databases databases, String tableName) {
         StringBuilder keyIndexFile = new StringBuilder();
         List<String> indexAttributes = indexFile.getIndexAttributes();
         List<String> primaryKeys = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey();

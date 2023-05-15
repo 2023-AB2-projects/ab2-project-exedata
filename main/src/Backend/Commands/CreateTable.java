@@ -9,9 +9,9 @@ import java.util.List;
 
 import Backend.Databases.*;
 import Backend.SocketServer.ErrorClient;
-import Backend.MongoDBManagement.MongoDB;
 
 import static Backend.Commands.FormatCommand.formatWords;
+import static Backend.SocketServer.Server.mongoDB;
 
 public class CreateTable implements Command {
     // create table in a certain database with primary key, foreign key, attributes, null value, default value, constraints, ...
@@ -86,10 +86,8 @@ public class CreateTable implements Command {
                 if (!databases.getDatabase(databaseName).checkTableExists(table.getName())) {
                     databases.getDatabase(databaseName).addTable(table);
                     SaveJSON.save(databases, "databases.json");
-                    MongoDB mongoDB = new MongoDB();
                     mongoDB.createDatabaseOrUse(databaseName);
                     mongoDB.createCollection(table.getName());
-                    mongoDB.disconnectFromLocalhost();
                     ErrorClient.send("Table " + currentTableName + " created!");
                 } else {
                     System.out.println("Table is exists!");

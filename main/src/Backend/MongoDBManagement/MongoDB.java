@@ -85,7 +85,7 @@ public class MongoDB {
     public void insertOne(String collectionName, Document document) {
         if (!existsID(collectionName, document)) {
             database.getCollection(collectionName).insertOne(document);
-            System.out.println("Document inserted to " + collectionName + "!");
+            //System.out.println("Document inserted to " + collectionName + "!");
             Backend.goodInsert = true;
         } else {
             System.out.println("Insert error to " + collectionName + ", " + document.get("_id") + " primary key already exists!");

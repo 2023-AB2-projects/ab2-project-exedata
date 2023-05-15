@@ -2,8 +2,6 @@ package Backend;
 
 import Backend.Databases.Attribute;
 import org.bson.Document;
-
-import java.util.Arrays;
 import java.util.List;
 
 public class Common {

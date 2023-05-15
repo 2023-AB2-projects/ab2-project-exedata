@@ -2,12 +2,10 @@ package Backend.Commands;
 
 import Backend.Backend;
 import Backend.Databases.Databases;
-import Backend.Databases.ForeignKey;
 import Backend.Databases.IndexFile;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SocketServer.ErrorClient;
-import Backend.MongoDBManagement.MongoDB;
 import org.bson.Document;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -21,6 +19,7 @@ import java.util.regex.Pattern;
 import static Backend.Commands.CreateIndex.createIndexFileInMongoDB;
 import static Backend.Commands.FormatCommand.getPrimaryKeysValuesSeparateByHash;
 import static Backend.Commands.ValidateInsertDeleteData.checkDeleteData;
+import static Backend.SocketServer.Server.mongoDB;
 
 public class Delete implements Command {
     private final String command;
@@ -49,7 +48,6 @@ public class Delete implements Command {
             System.out.println("Please select your database first!");
             ErrorClient.send("Please select your database first!");
         } else {
-            MongoDB mongoDB = new MongoDB();
             if (matcher.matches()) {
                 String tableName = matcher.group(1);
                 String fieldName = matcher.group(2);
@@ -66,12 +64,12 @@ public class Delete implements Command {
                         System.out.println("Error with deletion! Please specify all the primary keys!");
                         ErrorClient.send("Error with deletion! Please specify all the primary keys!");
                     } else {
-                        if (checkDeleteData(tableName, value, databases, mongoDB)) {
+                        if (checkDeleteData(tableName, value, databases)) {
                             mongoDB.deleteOne(tableName, "_id", value);
                             for (IndexFile i : databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getIndexFiles()) {
                                 String[] v = new String[1];
                                 v[0]=fieldName + '=' + value;
-                                deleteUpdateIndexFile(v, i, databases, mongoDB, tableName);
+                                deleteUpdateIndexFile(v, i, databases, tableName);
                             }
                         } else {
                             System.out.println("Error with foreign key constraint!");
@@ -86,7 +84,7 @@ public class Delete implements Command {
                 String tableName = matcherAll.group(1);
                 mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
                 for (Document i : mongoDB.getDocuments(tableName).find()) {
-                    if (checkDeleteData(tableName, i.getString("_id"), databases, mongoDB)) {
+                    if (checkDeleteData(tableName, i.getString("_id"), databases)) {
                         mongoDB.deleteOne(tableName, "_id", i.getString("_id"));
                     }
                 }
@@ -110,10 +108,10 @@ public class Delete implements Command {
                     ErrorClient.send("Error with deletion! Please specify all the primary keys!");
                 } else {
                     mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
-                    if (checkDeleteData(tableName, deleteValue, databases, mongoDB)) {
+                    if (checkDeleteData(tableName, deleteValue, databases)) {
                         mongoDB.deleteOne(tableName, "_id", deleteValue);
                         for (IndexFile i : databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getIndexFiles()) {
-                            deleteUpdateIndexFile(keyValuePairs, i, databases, mongoDB, tableName);
+                            deleteUpdateIndexFile(keyValuePairs, i, databases, tableName);
                         }
                     } else {
                         System.out.println("Error with foreign key constraint!");
@@ -121,12 +119,11 @@ public class Delete implements Command {
                     }
                 }
             }
-            mongoDB.disconnectFromLocalhost();
         }
 
     }
 
-    public void deleteUpdateIndexFile(String[] keyValuePairs, IndexFile indexFile, Databases databases, MongoDB mongoDB, String tableName) {
+    public void deleteUpdateIndexFile(String[] keyValuePairs, IndexFile indexFile, Databases databases, String tableName) {
         List<String> fieldName = new ArrayList<>();
         List<String> value = new ArrayList<>();
         for (String i : keyValuePairs) {
