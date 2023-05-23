@@ -6,11 +6,12 @@ import Backend.Databases.Table;
 import Backend.Parser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static Backend.SocketServer.Server.databases;
 
 public class SelectManager {
     private String command;
@@ -25,61 +26,30 @@ public class SelectManager {
     private List<Condition> join;
     private List<String> fromAS;
     private List<Condition> where;
+    private String errorMassage;
 
     public SelectManager(String command, Databases databases) {
+        errorMassage = null;
         this.command = command;
         this.databases = databases;
+    }
+
+    public String processing() {
         //separate select parts
         separate();
+        if (errorMassage != null)
+            return errorMassage;
         //replace alias to tableName
         replaceAlias();
+        if (errorMassage != null)
+            return errorMassage;
+        ////////////////check!
         //SELECT
         //FROM
         //WHERE
         //GROUP BY
         //HAVING
         //ORDER BY
-    }
-
-    public String check() {
-        for (String i : from) {
-            if (!databases.getDatabase(Parser.currentDatabaseName).checkTableExists(i)) {
-                return "Table " + i + " doesn't exists!";
-            }
-        }
-        String temp;
-        String temp2;
-        for (String i : select) {
-            temp = existsInDatabase(i);
-            if (temp != null)
-                return temp;
-        }
-        for (Condition i : where) {
-            temp = existsInDatabase(i.getLeftSide());
-            temp2 = existsInDatabase(i.getRightSide());
-            if (temp != null && temp2 != null) {
-                return temp;
-            }
-        }
-        return null;
-    }
-
-    private String existsInDatabase(String field) {
-        if (field.contains(".")) {
-            String[] temp = field.split("\\.");
-            if (!databases.getDatabase(Parser.currentDatabaseName).checkTableExists(temp[0]))
-                return "Table " + temp[0] + " doesn't exists!";
-            if (!databases.getDatabase(Parser.currentDatabaseName).getTable(temp[0]).checkAttributeExists(temp[1]))
-                return "Table " + temp[0] + " attribute " + temp[1] + " doesn't exists!";
-        } else {
-            boolean exists = false;
-            for (Table j : databases.getDatabase(Parser.currentDatabaseName).getTables()) {
-                if (j.checkAttributeExists(field))
-                    exists = true;
-            }
-            if (!exists)
-                return "The " + field + " doesn't exists!";
-        }
         return null;
     }
 
@@ -99,44 +69,55 @@ public class SelectManager {
         //where
         String left;
         String right;
-        for (int i = 0; i < where.size(); i++) {
-            left = where.get(i).getLeftSide();
-            right = where.get(i).getRightSide();
-            if (left.contains(".")) {
-                temp = left.split("\\.");
-                index = fromAS.indexOf(temp[0]);
-                if (index >= 0) {
-                    left = from.get(index) + "." + temp[1];
-                }
-            }
-            if (right.contains(".")) {
-                temp = right.split("\\.");
-                index = fromAS.indexOf(temp[0]);
-                if (index >= 0) {
-                    right = from.get(index) + "." + temp[1];
-                }
-            }
-            where.set(i, new Condition(left, where.get(i).getOperator(), right, from, fromAS));
-        }
+//        for (int i = 0; i < where.size(); i++) {
+//            left = where.get(i).getLeftSide();
+//            right = where.get(i).getRightSide();
+//            if (left.contains(".")) {
+//                temp = left.split("\\.");
+//                index = fromAS.indexOf(temp[0]);
+//                if (index >= 0) {
+//                    left = from.get(index) + "." + temp[1];
+//                }
+//            }
+//            if (right.contains(".")) {
+//                temp = right.split("\\.");
+//                index = fromAS.indexOf(temp[0]);
+//                if (index >= 0) {
+//                    right = from.get(index) + "." + temp[1];
+//                }
+//            }
+//            Condition condition = new Condition(left, where.get(i).getOperator(), right, from, fromAS);
+//            if (condition.getErrorMassage() != null) {
+//                errorMassage = condition.getErrorMassage();
+//                return;
+//            }
+//            where.set(i, condition);
+//        }
     }
 
     private void separate() {
         if (command.charAt(command.length() - 1) == ';') {
             command = command.substring(0, command.length() - 1);
         }
-        //select min(a.korte), max(a.alma) as as, aasc from alma a inner join korte k on a.asd=k.sa
 
         String selectPart = selectPartParser();
         boolean hasStar = Objects.equals(selectPart, "*");
+
         String fromPart = fromPartParser();
         fromSeparate(fromPart);
+        if (errorMassage != null)
+            return;
+
         if (hasStar) {
             replaceStar();
-        }else{
+        } else {
             selectSeparate(selectPart);
         }
+
         String wherePart = wherePartParser();
         whereSeparate(wherePart);
+        if (errorMassage != null)
+            return;
 
         String groupByPart = groupByPartParser();
 
@@ -154,13 +135,10 @@ public class SelectManager {
         for (int i = 0; i < select.size(); i++) {
             if (select.get(i).contains(".*")) {
                 tableName = select.get(i).split("\\.")[0];
-                Table table = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName);
-                if (table != null) {
-                    List<Attribute> attributeList = table.getStructure();
-                    for (Attribute j : attributeList) {
-                        temp.add(table.getName() + "." + j.getName());
-                        tempAS.add(null);
-                    }
+                List<Attribute> attributeList = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getStructure();
+                for (Attribute j : attributeList) {
+                    temp.add(tableName + "." + j.getName());
+                    tempAS.add(null);
                 }
             } else {
                 temp.add(select.get(i));
@@ -174,16 +152,14 @@ public class SelectManager {
     private void replaceStar() {
         select = new ArrayList<>();
         selectAS = new ArrayList<>();
-        function=new ArrayList<>();
-        functionIndexInSelect=new ArrayList<>();
+        function = new ArrayList<>();
+        functionIndexInSelect = new ArrayList<>();
         for (String i : from) {
             Table table = databases.getDatabase(Parser.currentDatabaseName).getTable(i);
-            if (table != null) {
-                List<Attribute> attributeList = table.getStructure();
-                for (Attribute j : attributeList) {
-                    select.add(table.getName() + "." + j.getName());
-                    selectAS.add(null);
-                }
+            List<Attribute> attributeList = table.getStructure();
+            for (Attribute j : attributeList) {
+                select.add(table.getName() + "." + j.getName());
+                selectAS.add(null);
             }
         }
     }
@@ -199,10 +175,12 @@ public class SelectManager {
                 if (i.charAt(i.length() - 1) == ')') {
                     i = i.substring(0, i.length() - 1);
                 }
-                Condition condition=new Condition(i,from,fromAS);
-//                if(condition.getRightSide()==)
+                Condition condition = new Condition(i, from, fromAS);
+                if (condition.getErrorMassage() != null) {
+                    errorMassage = condition.getErrorMassage();
+                    return;
+                }
                 where.add(condition);
-
             }
         }
     }
@@ -216,18 +194,35 @@ public class SelectManager {
         join = new ArrayList<>();
         String[] parts;
         String[] words;
+
         for (String i : fromPartSeparateByJoin) {
             parts = i.split("(?i) ON ");
             if (parts.length == 2) {
                 words = parts[0].split(" ");
+                if (!databases.getDatabase(Parser.currentDatabaseName).checkTableExists(words[0])) {
+                    errorMassage = "The table: " + words[0] + " doesn't exists!";
+                    return;
+                }
                 from.add(words[0]);
+
                 if (words.length == 2)
                     fromAS.add(words[1]);
                 else
                     fromAS.add(null);
-                join.add(new Condition(parts[1],from,fromAS));
+
+                Condition condition = new Condition(parts[1], from, fromAS);
+                if (condition.getErrorMassage() != null) {
+                    errorMassage = condition.getErrorMassage();
+                    return;
+                }
+                join.add(condition);
+
             } else {
                 words = parts[0].split(" ");
+                if (!databases.getDatabase(Parser.currentDatabaseName).checkTableExists(words[0])) {
+                    errorMassage = "The table: " + words[0] + " doesn't exists!";
+                    return;
+                }
                 from.add(words[0]);
                 if (words.length == 2)
                     fromAS.add(words[1]);
@@ -250,9 +245,13 @@ public class SelectManager {
         for (String i : selectPart.split(",")) {
             matcher = pattern.matcher(i);
             if (matcher.find()) {
+                if (!checkSelectAttributeIsExists(matcher.group(1)))
+                    return;
                 select.add(matcher.group(1));
                 selectAS.add(matcher.group(2));
             } else {
+                if (!checkSelectAttributeIsExists(i))
+                    return;
                 select.add(i);
                 selectAS.add(null);
             }
@@ -262,6 +261,43 @@ public class SelectManager {
                 functionIndexInSelect.add(select.size() - 1);
             }
         }
+    }
+
+    private boolean checkSelectAttributeIsExists(String selectPart) {
+        Pattern pattern = Pattern.compile("\\s*\\((.+)\\)\\s*");
+        Matcher matcher = pattern.matcher(selectPart);
+        if (matcher.find()) {
+            selectPart = matcher.group(1);
+        }
+        if (selectPart.contains(".")) {
+            String tableName = selectPart.split("\\.")[0];
+            String attributeName = selectPart.split("\\.")[1];
+            if (!databases.getDatabase(Parser.currentDatabaseName).checkTableExists(tableName)) {
+                errorMassage = "The table: " + tableName + " doesn't exists!";
+                return false;
+            }
+            if (!from.contains(tableName)) {
+                errorMassage = "The table: " + tableName + " doesn't exists in from!";
+                return false;
+            }
+            if (!databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).checkAttributeExists(attributeName)) {
+                errorMassage = "The attribute: " + attributeName + " doesn't exists!";
+                return false;
+            }
+        } else {
+            int howManyAttribute = 0;
+            for (String i : from) {
+                Table table = databases.getDatabase(Parser.currentDatabaseName).getTable(i);
+                if (table.checkAttributeExists(selectPart)) {
+                    howManyAttribute++;
+                }
+            }
+            if (howManyAttribute > 1)
+                errorMassage = "The attribute " + selectPart + " is already exists in two different table!";
+            else if (howManyAttribute < 1)
+                errorMassage = "The attribute " + selectPart + " doesn't exists!";
+        }
+        return true;
     }
 
     private String selectPartParser() {

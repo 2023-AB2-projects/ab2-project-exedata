@@ -32,7 +32,7 @@ public class Select implements Command {
     public void performAction() throws ParserConfigurationException, TransformerException {
         //SELECT * FROM disciplines WHERE CreditNr > 4 AND DName=Databases1;
         SelectManager selectManager = new SelectManager(command, databases);
-        String massage = selectManager.check();
+        String massage = selectManager.processing();
         if (massage != null) {
             ErrorClient.send(massage);
             System.out.println(massage);
