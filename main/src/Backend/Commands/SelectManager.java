@@ -6,6 +6,7 @@ import Backend.Databases.Table;
 import Backend.Parser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -17,7 +18,11 @@ public class SelectManager {
 
     private List<String> select;
     private List<String> selectAS;
+    private List<String> function;
+    private List<Integer> functionIndexInSelect;
     private List<String> from;
+
+    private List<Condition> join;
     private List<String> fromAS;
     private List<Condition> where;
 
@@ -111,7 +116,7 @@ public class SelectManager {
                     right = from.get(index) + "." + temp[1];
                 }
             }
-            where.set(i, new Condition(left, where.get(i).getOperator(), right));
+            where.set(i, new Condition(left, where.get(i).getOperator(), right, from, fromAS));
         }
     }
 
@@ -119,14 +124,16 @@ public class SelectManager {
         if (command.charAt(command.length() - 1) == ';') {
             command = command.substring(0, command.length() - 1);
         }
+        //select min(a.korte), max(a.alma) as as, aasc from alma a inner join korte k on a.asd=k.sa
 
         String selectPart = selectPartParser();
         boolean hasStar = Objects.equals(selectPart, "*");
         String fromPart = fromPartParser();
         fromSeparate(fromPart);
-        selectSeparate(selectPart);
         if (hasStar) {
             replaceStar();
+        }else{
+            selectSeparate(selectPart);
         }
         String wherePart = wherePartParser();
         whereSeparate(wherePart);
@@ -137,10 +144,10 @@ public class SelectManager {
 
         String orderByPart = orderByPartParser();
 
-        replaceStarInSelectAfterThePont();
+        replaceStarInSelectAfterThePoint();
     }
 
-    private void replaceStarInSelectAfterThePont() {
+    private void replaceStarInSelectAfterThePoint() {
         List<String> temp = new ArrayList<>();
         List<String> tempAS = new ArrayList<>();
         String tableName;
@@ -160,13 +167,15 @@ public class SelectManager {
                 tempAS.add(selectAS.get(i));
             }
         }
-        select=temp;
-        selectAS=tempAS;
+        select = temp;
+        selectAS = tempAS;
     }
 
     private void replaceStar() {
         select = new ArrayList<>();
         selectAS = new ArrayList<>();
+        function=new ArrayList<>();
+        functionIndexInSelect=new ArrayList<>();
         for (String i : from) {
             Table table = databases.getDatabase(Parser.currentDatabaseName).getTable(i);
             if (table != null) {
@@ -190,33 +199,54 @@ public class SelectManager {
                 if (i.charAt(i.length() - 1) == ')') {
                     i = i.substring(0, i.length() - 1);
                 }
-                where.add(new Condition(i));
+                Condition condition=new Condition(i,from,fromAS);
+//                if(condition.getRightSide()==)
+                where.add(condition);
+
             }
         }
     }
 
     private void fromSeparate(String fromPart) {
         fromPart = fromPart.replaceAll(",\\s*", ",");
+        fromPart = fromPart.replaceAll("\\s+", " ");
+        String[] fromPartSeparateByJoin = fromPart.split("(?i) INNER JOIN ");
         from = new ArrayList<>();
         fromAS = new ArrayList<>();
-        Pattern pattern = Pattern.compile("\\s*(.+)\\s+AS\\s+(.+)\\s*", Pattern.CASE_INSENSITIVE);
-        Matcher matcher;
-        matcher = pattern.matcher(fromPart);
-        if (matcher.find()) {
-            from.add(matcher.group(1));
-            fromAS.add(matcher.group(2));
-        } else {
-            from.add(fromPart);
-            fromAS.add(null);
+        join = new ArrayList<>();
+        String[] parts;
+        String[] words;
+        for (String i : fromPartSeparateByJoin) {
+            parts = i.split("(?i) ON ");
+            if (parts.length == 2) {
+                words = parts[0].split(" ");
+                from.add(words[0]);
+                if (words.length == 2)
+                    fromAS.add(words[1]);
+                else
+                    fromAS.add(null);
+                join.add(new Condition(parts[1],from,fromAS));
+            } else {
+                words = parts[0].split(" ");
+                from.add(words[0]);
+                if (words.length == 2)
+                    fromAS.add(words[1]);
+                else
+                    fromAS.add(null);
+            }
         }
     }
 
     private void selectSeparate(String selectPart) {
         select = new ArrayList<>();
         selectAS = new ArrayList<>();
+        function = new ArrayList<>();
+        functionIndexInSelect = new ArrayList<>();
         selectPart = selectPart.replaceAll(",\\s*", ",");
         Pattern pattern = Pattern.compile("\\s*(.+)\\s+AS\\s+(.+)\\s*", Pattern.CASE_INSENSITIVE);
         Matcher matcher;
+        Pattern patternFunction = Pattern.compile("\\(.+\\)");
+        Matcher matcherFunction;
         for (String i : selectPart.split(",")) {
             matcher = pattern.matcher(i);
             if (matcher.find()) {
@@ -225,6 +255,11 @@ public class SelectManager {
             } else {
                 select.add(i);
                 selectAS.add(null);
+            }
+            matcherFunction = patternFunction.matcher(select.get(select.size() - 1));
+            if (matcherFunction.find()) {
+                function.add(select.get(select.size() - 1));
+                functionIndexInSelect.add(select.size() - 1);
             }
         }
     }

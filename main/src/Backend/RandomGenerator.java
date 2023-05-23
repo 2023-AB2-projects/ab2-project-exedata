@@ -72,7 +72,7 @@ public class RandomGenerator {
         String charSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         try {
             clientConnection.send("USE " + databaseName + ";");
-            for (int i = 69055; i < numberOfRows; i++) {
+            for (int i = 0; i < numberOfRows; i++) {
                 insert = new StringBuilder("INSERT INTO " + tableName + " (");
                 values = new StringBuilder();
                 for (int j = 0; j < attributeList.size(); j++) {
