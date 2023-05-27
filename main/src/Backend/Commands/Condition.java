@@ -56,14 +56,6 @@ public class Condition {
         whichTable(from, fromAS);
     }
 
-    public Condition(String leftSide, String operator, String rightSide, List<String> from, List<String> fromAS) {
-        errorMassage = null;
-        this.leftSide = leftSide;
-        this.operator = operator;
-        this.rightSide = rightSide;
-        whichTable(from, fromAS);
-    }
-
     private void whichTable(List<String> from, List<String> fromAS) {
         leftSideTableName = null;
         rightSideTableName = null;

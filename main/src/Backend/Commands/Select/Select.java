@@ -1,16 +1,8 @@
 package Backend.Commands.Select;
 
 import Backend.Commands.Command;
-import Backend.Commands.Condition;
-import Backend.Databases.Attribute;
-import Backend.Databases.IndexFile;
-import Backend.Databases.Table;
-import Backend.Parser;
 import Backend.SocketServer.ErrorClient;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.model.Filters;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -18,8 +10,6 @@ import java.io.PrintWriter;
 import java.util.*;
 
 import static Backend.SocketServer.Server.databases;
-import static Backend.SocketServer.Server.mongoDB;
-import static com.mongodb.client.model.Filters.*;
 
 public class Select implements Command {
     private final String command;

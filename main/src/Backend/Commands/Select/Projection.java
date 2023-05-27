@@ -10,7 +10,10 @@ import java.util.List;
 import static Backend.SocketServer.Server.databases;
 
 public class Projection {
-    private List<String> projection(List<Document> values, SelectManager selectManager) {
+    public Projection() {
+    }
+
+    public List<String> projectionProcessing(List<Document> values, SelectManager selectManager) {
         List<String> result = new ArrayList<>();
         StringBuilder columns = new StringBuilder();
         List<String> select = selectManager.getSelect();
