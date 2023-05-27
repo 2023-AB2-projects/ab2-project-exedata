@@ -12,14 +12,13 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static Backend.SocketServer.Server.databases;
-
 public class SelectManager {
     private String command;
     private final Databases databases;
 
     private List<String> select;
     private List<String> selectAS;
+    private List<String> tableNameOfSelectAttribute;
     private List<String> function;
     private List<Integer> functionIndexInSelect;
     private List<String> from;
@@ -27,6 +26,8 @@ public class SelectManager {
     private List<Condition> join;
     private List<String> fromAS;
     private List<Condition> where;
+    private List<String> groupBy;
+    private List<String> tableNameOfGroupByAttribute;
     private String errorMassage;
 
     public SelectManager(String command, Databases databases) {
@@ -40,10 +41,6 @@ public class SelectManager {
         separate();
         if (errorMassage != null)
             return errorMassage;
-        //replace alias to tableName
-        replaceAlias();
-        if (errorMassage != null)
-            return errorMassage;
         ////////////////check!
         //SELECT
         //FROM
@@ -52,48 +49,6 @@ public class SelectManager {
         //HAVING
         //ORDER BY
         return null;
-    }
-
-    private void replaceAlias() {
-        int index;
-        String[] temp;
-        ///select
-        for (int i = 0; i < select.size(); i++) {
-            if (select.get(i).contains(".")) {
-                temp = select.get(i).split("\\.");
-                index = fromAS.indexOf(temp[0]);
-                if (index >= 0) {
-                    select.set(i, from.get(index) + "." + temp[1]);
-                }
-            }
-        }
-        //where
-        String left;
-        String right;
-//        for (int i = 0; i < where.size(); i++) {
-//            left = where.get(i).getLeftSide();
-//            right = where.get(i).getRightSide();
-//            if (left.contains(".")) {
-//                temp = left.split("\\.");
-//                index = fromAS.indexOf(temp[0]);
-//                if (index >= 0) {
-//                    left = from.get(index) + "." + temp[1];
-//                }
-//            }
-//            if (right.contains(".")) {
-//                temp = right.split("\\.");
-//                index = fromAS.indexOf(temp[0]);
-//                if (index >= 0) {
-//                    right = from.get(index) + "." + temp[1];
-//                }
-//            }
-//            Condition condition = new Condition(left, where.get(i).getOperator(), right, from, fromAS);
-//            if (condition.getErrorMassage() != null) {
-//                errorMassage = condition.getErrorMassage();
-//                return;
-//            }
-//            where.set(i, condition);
-//        }
     }
 
     private void separate() {
@@ -113,7 +68,10 @@ public class SelectManager {
             replaceStar();
         } else {
             selectSeparate(selectPart);
+            replaceStarInSelectAfterThePoint();
         }
+        if (errorMassage != null)
+            return;
 
         String wherePart = wherePartParser();
         whereSeparate(wherePart);
@@ -121,46 +79,79 @@ public class SelectManager {
             return;
 
         String groupByPart = groupByPartParser();
+        groupBySeparate(groupByPart);
+        if (errorMassage != null)
+            return;
 
         String havingPart = havingPartParser();
 
         String orderByPart = orderByPartParser();
-
-        replaceStarInSelectAfterThePoint();
     }
 
     private void replaceStarInSelectAfterThePoint() {
         List<String> temp = new ArrayList<>();
         List<String> tempAS = new ArrayList<>();
+        List<String> tempTableName = new ArrayList<>();
         String tableName;
         for (int i = 0; i < select.size(); i++) {
             if (select.get(i).contains(".*")) {
                 tableName = select.get(i).split("\\.")[0];
                 List<Attribute> attributeList = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getStructure();
                 for (Attribute j : attributeList) {
-                    temp.add(tableName + "." + j.getName());
+                    temp.add(j.getName());
                     tempAS.add(null);
+                    tempTableName.add(tableName);
                 }
             } else {
                 temp.add(select.get(i));
                 tempAS.add(selectAS.get(i));
+                tempTableName.add(tableNameOfSelectAttribute.get(i));
             }
         }
         select = temp;
         selectAS = tempAS;
+        tableNameOfSelectAttribute = tempTableName;
     }
 
     private void replaceStar() {
         select = new ArrayList<>();
         selectAS = new ArrayList<>();
+        tableNameOfSelectAttribute = new ArrayList<>();
         function = new ArrayList<>();
         functionIndexInSelect = new ArrayList<>();
         for (String i : from) {
             Table table = databases.getDatabase(Parser.currentDatabaseName).getTable(i);
             List<Attribute> attributeList = table.getStructure();
             for (Attribute j : attributeList) {
-                select.add(table.getName() + "." + j.getName());
+                select.add(j.getName());
                 selectAS.add(null);
+                tableNameOfSelectAttribute.add(table.getName());
+            }
+        }
+    }
+
+    private void groupBySeparate(String groupByPart) {
+        groupBy = new ArrayList<>();
+        tableNameOfGroupByAttribute = new ArrayList<>();
+        String tableName;
+        if (!Objects.equals(groupByPart, "")) {
+            groupByPart = groupByPart.replaceAll("\\s*,\\s*", ",");
+            for (String i : groupByPart.split(",")) {
+                tableName = checkSelectAttributeIsExists(i);
+                if (tableName == null) {
+                    return;
+                }
+                if (i.contains("."))
+                    groupBy.add(i.split("\\.")[1]);
+                else
+                    groupBy.add(i);
+                tableNameOfGroupByAttribute.add(tableName);
+            }
+            for (String i : select) {
+                if (!groupBy.contains(i) && !i.contains(")")) {
+                    errorMassage = "The " + i + " doesn't contains the GROUP BY clause";
+                    return;
+                }
             }
         }
     }
@@ -181,13 +172,17 @@ public class SelectManager {
                     errorMassage = condition.getErrorMassage();
                     return;
                 }
-                where.add(condition);
+                if (condition.getLeftSideTableName() != null && condition.getRightSideTableName() != null &&
+                        !Objects.equals(condition.getLeftSideTableName(), condition.getRightSideTableName()))
+                    join.add(condition);
+                else
+                    where.add(condition);
             }
         }
     }
 
     private void fromSeparate(String fromPart) {
-        fromPart = fromPart.replaceAll(",\\s*", ",");
+        fromPart = fromPart.replaceAll("\\s*,\\s*", ",");
         fromPart = fromPart.replaceAll("\\s+", " ");
         String[] fromPartSeparateByJoin = fromPart.split("(?i) INNER JOIN ");
         from = new ArrayList<>();
@@ -236,54 +231,87 @@ public class SelectManager {
     private void selectSeparate(String selectPart) {
         select = new ArrayList<>();
         selectAS = new ArrayList<>();
+        tableNameOfSelectAttribute = new ArrayList<>();
         function = new ArrayList<>();
         functionIndexInSelect = new ArrayList<>();
-        selectPart = selectPart.replaceAll(",\\s*", ",");
+        String tableName;
+        selectPart = selectPart.replaceAll("\\s*,\\s*", ",");
         Pattern pattern = Pattern.compile("\\s*(.+)\\s+AS\\s+(.+)\\s*", Pattern.CASE_INSENSITIVE);
         Matcher matcher;
         Pattern patternFunction = Pattern.compile("\\(.+\\)");
         Matcher matcherFunction;
         for (String i : selectPart.split(",")) {
-            matcher = pattern.matcher(i);
-            if (matcher.find()) {
-                if (!checkSelectAttributeIsExists(matcher.group(1)))
-                    return;
-                select.add(matcher.group(1));
-                selectAS.add(matcher.group(2));
+            if (!i.contains(".*")) {
+                matcher = pattern.matcher(i);
+                if (matcher.find()) {
+                    tableName = checkSelectAttributeIsExists(matcher.group(1));
+                    if (tableName == null)
+                        return;
+                    if (matcher.group(1).contains("."))
+                        select.add(matcher.group(1).split("\\.")[1]);
+                    else
+                        select.add(matcher.group(1));
+                    selectAS.add(matcher.group(2));
+                    tableNameOfSelectAttribute.add(tableName);
+                } else {
+                    tableName = checkSelectAttributeIsExists(i);
+                    if (tableName == null) {
+                        if (!i.contains("*"))
+                            return;
+                        else {
+                            Pattern pattern1 = Pattern.compile("\\s*COUNT\\(\\*\\)\\s*", Pattern.CASE_INSENSITIVE);
+                            Matcher matcher1 = pattern1.matcher(i);
+                            if (matcher1.find())
+                                errorMassage = null;
+                            else
+                                errorMassage = "Don't use * in " + i;
+                        }
+                    }
+
+                    if (i.contains(".") && !i.contains(")"))
+                        select.add(i.split("\\.")[1]);
+                    else
+                        select.add(i);
+                    selectAS.add(null);
+                    tableNameOfSelectAttribute.add(tableName);
+                }
+                matcherFunction = patternFunction.matcher(select.get(select.size() - 1));
+                if (matcherFunction.find()) {
+                    function.add(select.get(select.size() - 1));
+                    functionIndexInSelect.add(select.size() - 1);
+                }
             } else {
-                if (!checkSelectAttributeIsExists(i))
-                    return;
                 select.add(i);
                 selectAS.add(null);
-            }
-            matcherFunction = patternFunction.matcher(select.get(select.size() - 1));
-            if (matcherFunction.find()) {
-                function.add(select.get(select.size() - 1));
-                functionIndexInSelect.add(select.size() - 1);
+                tableNameOfSelectAttribute.add((null));
             }
         }
     }
 
-    private boolean checkSelectAttributeIsExists(String selectPart) {
+    private String checkSelectAttributeIsExists(String selectPart) {
         Pattern pattern = Pattern.compile("\\s*\\((.+)\\)\\s*");
         Matcher matcher = pattern.matcher(selectPart);
+        String tableName = null;
         if (matcher.find()) {
             selectPart = matcher.group(1);
         }
         if (selectPart.contains(".")) {
-            String tableName = selectPart.split("\\.")[0];
+            tableName = selectPart.split("\\.")[0];
             String attributeName = selectPart.split("\\.")[1];
+            int index = fromAS.indexOf(tableName);
+            if (index >= 0)
+                tableName = from.get(index);
             if (!databases.getDatabase(Parser.currentDatabaseName).checkTableExists(tableName)) {
                 errorMassage = "The table: " + tableName + " doesn't exists!";
-                return false;
+                return null;
             }
             if (!from.contains(tableName)) {
                 errorMassage = "The table: " + tableName + " doesn't exists in from!";
-                return false;
+                return null;
             }
             if (!databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).checkAttributeExists(attributeName)) {
                 errorMassage = "The attribute: " + attributeName + " doesn't exists!";
-                return false;
+                return null;
             }
         } else {
             int howManyAttribute = 0;
@@ -291,6 +319,7 @@ public class SelectManager {
                 Table table = databases.getDatabase(Parser.currentDatabaseName).getTable(i);
                 if (table.checkAttributeExists(selectPart)) {
                     howManyAttribute++;
+                    tableName = table.getName();
                 }
             }
             if (howManyAttribute > 1)
@@ -298,7 +327,7 @@ public class SelectManager {
             else if (howManyAttribute < 1)
                 errorMassage = "The attribute " + selectPart + " doesn't exists!";
         }
-        return true;
+        return tableName;
     }
 
     private String selectPartParser() {
@@ -380,7 +409,12 @@ public class SelectManager {
                 groupByPart = groupByMatcher.group(1);
                 command = "ORDER BY " + command.substring(groupByMatcher.end());
             } else {
-                groupByPart = command;
+                groupByPattern = Pattern.compile("^GROUP BY\\s+(.+)\\s*", Pattern.CASE_INSENSITIVE);
+                groupByMatcher = groupByPattern.matcher(command);
+                if (groupByMatcher.find())
+                    groupByPart = groupByMatcher.group(1);
+                else
+                    groupByPart = "";
             }
         }
         return groupByPart;
@@ -418,8 +452,24 @@ public class SelectManager {
         return selectAS;
     }
 
+    public List<String> getTableNameOfSelectAttribute() {
+        return tableNameOfSelectAttribute;
+    }
+
+    public List<String> getFunction() {
+        return function;
+    }
+
+    public List<Integer> getFunctionIndexInSelect() {
+        return functionIndexInSelect;
+    }
+
     public List<String> getFrom() {
         return from;
+    }
+
+    public List<Condition> getJoin() {
+        return join;
     }
 
     public List<String> getFromAS() {
@@ -428,5 +478,17 @@ public class SelectManager {
 
     public List<Condition> getWhere() {
         return where;
+    }
+
+    public List<String> getGroupBy() {
+        return groupBy;
+    }
+
+    public List<String> getTableNameOfGroupByAttribute() {
+        return tableNameOfGroupByAttribute;
+    }
+
+    public String getErrorMassage() {
+        return errorMassage;
     }
 }

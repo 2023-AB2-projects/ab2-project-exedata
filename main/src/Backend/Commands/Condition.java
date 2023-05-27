@@ -72,7 +72,7 @@ public class Condition {
         checkPointReferences(from, fromAS);
         if (!checkTableAndAttributeExists(from))
             return;
-        if (leftSideTableName == null || rightSideTableName == null) {
+        if (leftSideTableName == null && rightSideTableName == null) {
             int howManyLeftAttribute = 0;
             int howManyRightAttribute = 0;
             for (String i : from) {
@@ -131,14 +131,14 @@ public class Condition {
         if (leftSide.contains(".")) {
             leftSideTableName = leftSide.split("\\.")[0];
             int index = fromAS.indexOf(leftSideTableName);
-            if (index > 0)
+            if (index >= 0)
                 leftSideTableName = from.get(index);
             leftSideAttributeName = leftSide.split("\\.")[1];
         }
         if (rightSide.contains(".")) {
             rightSideTableName = rightSide.split("\\.")[0];
             int index = fromAS.indexOf(rightSideTableName);
-            if (index > 0)
+            if (index >= 0)
                 rightSideTableName = from.get(index);
             rightSideAttributeName = rightSide.split("\\.")[1];
         }
