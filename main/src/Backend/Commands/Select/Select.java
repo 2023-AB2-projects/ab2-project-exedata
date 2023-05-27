@@ -36,9 +36,9 @@ public class Select implements Command {
         List<Document> result = selection.processing(0);
         System.out.println(result);
 
-        Projection projection = new Projection();
-        List<String> projectionResult = projection.projectionProcessing(result, selectManager);
-        sendData(projectionResult);
+//        Projection projection = new Projection();
+//        List<String> projectionResult = projection.projectionProcessing(result, selectManager);
+//        sendData(projectionResult);
     }
 
     private void sendData(List<String> result) {
