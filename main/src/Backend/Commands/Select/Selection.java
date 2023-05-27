@@ -25,7 +25,7 @@ public class Selection {
         this.selectManager = selectManager;
     }
 
-    public List<Document> processing(int whichTable) {
+    public List<String> processing(int whichTable) {
         //megnezni es vegig jarni a where-t, hogy van-e index az adott mezon
         List<Condition> restWhere = new ArrayList<>();
         Set<String> primaryKeySet = null;
@@ -46,7 +46,7 @@ public class Selection {
                 }
             }
         }
-        List<Document> result = new ArrayList<>();
+        List<String> result = new ArrayList<>();
 
         FindIterable<Document> documents;
         if (primaryKeySet != null) {
@@ -57,10 +57,22 @@ public class Selection {
         }
         for (Document j : documents) {
             if (conditionOfWhere(j, restWhere, selectManager.getFrom().get(whichTable))) {
-                result.add(j);
+                result.add(convertToString(j));
             }
         }
         return result;
+    }
+
+    private String convertToString(Document document) {
+        String pk = (String) document.get("_id");
+        String value = (String) document.get("Value");
+        StringBuilder result = new StringBuilder(pk);
+        result.append("#");
+        for (String i : value.split("#")) {
+            result.append(i).append("#");
+        }
+        result = new StringBuilder(result.substring(0, result.length() - 1));
+        return result.toString();
     }
 
     private boolean conditionOfWhere(Document document, List<Condition> where, String tableName) {
