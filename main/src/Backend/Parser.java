@@ -1,7 +1,7 @@
 package Backend;
 
 import Backend.Commands.*;
-import Backend.Databases.Databases;
+import Backend.Commands.Select.Select;
 import Backend.SocketServer.ErrorClient;
 import java.io.PrintWriter;
 import java.util.regex.Pattern;

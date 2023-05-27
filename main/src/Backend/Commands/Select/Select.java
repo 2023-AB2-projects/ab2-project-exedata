@@ -1,5 +1,7 @@
-package Backend.Commands;
+package Backend.Commands.Select;
 
+import Backend.Commands.Command;
+import Backend.Commands.Condition;
 import Backend.Databases.Attribute;
 import Backend.Databases.IndexFile;
 import Backend.Databases.Table;

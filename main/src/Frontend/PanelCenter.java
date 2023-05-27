@@ -1,16 +1,10 @@
 package Frontend;
 
-import Backend.Commands.Select;
 import Frontend.SelectPanel.SelectQuery;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 public class PanelCenter extends JPanel {
     private JPanel cards;
