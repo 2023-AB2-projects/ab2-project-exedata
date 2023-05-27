@@ -6,6 +6,7 @@ import Backend.Databases.IndexFile;
 import Backend.Databases.Table;
 import Backend.Parser;
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -73,8 +74,8 @@ public class Selection {
     }
 
     private boolean checkCondition(Condition condition, List<String> value, Table table) {
-        String leftColumnName=condition.getLeftSideAttributeName();
-        String rightColumnName=condition.getRightSideAttributeName();
+        String leftColumnName = condition.getLeftSideAttributeName();
+        String rightColumnName = condition.getRightSideAttributeName();
 
         Attribute leftAttribute = table.getAttribute(leftColumnName);
         Attribute rightAttribute = table.getAttribute(rightColumnName);
