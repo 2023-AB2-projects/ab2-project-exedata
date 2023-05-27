@@ -32,10 +32,10 @@ public class Select implements Command {
             return;
         }
 
-        Join join = new Join(selectManager);
-
-
-        sendData(new ArrayList<>());
+        Join join = new Join(selectManager); // 0 pos = attributeNames (if has alias, alias)
+//        Projection projection = new Projection();
+//        List<String> projectionResults = projection.projectionProcessing(join.getJoinResult(), selectManager);
+        sendData(join.getJoinResult());
     }
 
     private void sendData(List<String> result) {

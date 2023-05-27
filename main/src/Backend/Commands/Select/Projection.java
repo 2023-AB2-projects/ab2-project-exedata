@@ -13,7 +13,7 @@ public class Projection {
     public Projection() {
     }
 
-    public List<String> projectionProcessing(List<Document> values, SelectManager selectManager) {
+    public List<String> projectionProcessing(List<String> values, SelectManager selectManager) {
         List<String> result = new ArrayList<>();
         StringBuilder columns = new StringBuilder();
         List<String> select = selectManager.getSelect();
@@ -29,13 +29,17 @@ public class Projection {
         //id nev email
         //id nev kor email
         //-1 0 2
-        for (Document i : values) {
-            result.add(getSelectedAttribute(i, indexArray));
+        for (int i : indexArray) {
+            System.out.println(i);
+        }
+        for (int i=1; i<values.size(); i++) {
+            result.add(values.get(i));
         }
         return result;
     }
 
     private String getSelectedAttribute(Document document, int[] indexArray) {
+        //List<String> values = List.of(document.split("#"));
         String[] primaryKey = ((String) document.get("_id")).split("#");
         String[] attribute = ((String) document.get("Value")).split("#");
         StringBuilder result = new StringBuilder();
