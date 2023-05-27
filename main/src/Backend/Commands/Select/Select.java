@@ -31,14 +31,11 @@ public class Select implements Command {
             sendData(new ArrayList<>());
             return;
         }
-        Selection selection = new Selection(selectManager);
 
-        List<Document> result = selection.processing(0);
-        System.out.println(result);
+        Join join = new Join(selectManager);
 
-//        Projection projection = new Projection();
-//        List<String> projectionResult = projection.projectionProcessing(result, selectManager);
-//        sendData(projectionResult);
+
+        sendData(new ArrayList<>());
     }
 
     private void sendData(List<String> result) {
