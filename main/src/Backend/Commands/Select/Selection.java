@@ -6,7 +6,6 @@ import Backend.Databases.IndexFile;
 import Backend.Databases.Table;
 import Backend.Parser;
 import com.mongodb.client.FindIterable;
-import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.conversions.Bson;

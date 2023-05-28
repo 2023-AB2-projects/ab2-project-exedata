@@ -35,6 +35,7 @@ public class Select implements Command {
         Join join = new Join(selectManager); // 0 pos = attributeNames (if has alias, alias)
 //        Projection projection = new Projection();
 //        List<String> projectionResults = projection.projectionProcessing(join.getJoinResult(), selectManager);
+        System.out.println(join.getJoinResult().size());
         sendData(join.getJoinResult());
     }
 
