@@ -247,7 +247,7 @@ public class SelectManager {
                     tableName = checkSelectAttributeIsExists(matcher.group(1));
                     if (tableName == null)
                         return;
-                    if (matcher.group(1).contains("."))
+                    if (matcher.group(1).contains(".") && !i.contains(")"))
                         select.add(matcher.group(1).split("\\.")[1]);
                     else
                         select.add(matcher.group(1));
