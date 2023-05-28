@@ -39,12 +39,11 @@ public class Select implements Command {
 
         List<String> currentResults = join.getJoinResult();
 
-        // sendData(currentResults);
-        // here I need to do group by (so i need a format like join.getJoinResults()
+        //sendData(currentResults);
         List<String> groupBy = selectManager.getGroupBy();
         if (groupBy.size()!=0) {
             GroupBy group = new GroupBy(selectManager, currentResults);
-            sendData(group.getResults());
+            sendData(group.getFinalResults());
         }
         else {
             sendData(currentResults);
