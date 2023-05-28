@@ -15,7 +15,7 @@ import java.util.Random;
 
 public class RandomGenerator {
     public static void main(String[] args) {
-        new RandomGenerator("test", "alma", 100);
+        new RandomGenerator("test", "alma", 100000);
     }
 
     private final String databaseName;

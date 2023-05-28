@@ -31,9 +31,6 @@ public class Join {
             joinResult = joining(joinResult, allAttributeNames, subResult, attributeNamesTableIndex, joinConditions);
             allAttributeNames.addAll(attributeNamesTableIndex);
         }
-
-        System.out.println(allAttributeNames);
-
         joinResult.set(0, attributeNamesTableIndexToString(allAttributeNames));
     }
 
@@ -43,8 +40,8 @@ public class Join {
         result.add("");
         String temp;
         for (int i = 1; i < record1.size(); i++) {
-            for (int j = 0; j < record2.size(); j++) {
-                temp = checkConditions(record1.get(i), attributeNames1, record2.get(j), attributeNames2, conditions);
+            for (String s : record2) {
+                temp = checkConditions(record1.get(i), attributeNames1, s, attributeNames2, conditions);
                 if (temp != null)
                     result.add(temp);
             }
@@ -79,8 +76,8 @@ public class Join {
                     return checkString(value1, value2, c.getOperator());
             } else if (attributeNames1.contains(attributeNameInCondition2) &&
                     attributeNames2.contains(attributeNameInCondition1)) {
-                value2 = getAttributeValueByName(record1, attributeNameInCondition1, attributeNames1);
-                value1 = getAttributeValueByName(record2, attributeNameInCondition2, attributeNames2);
+                value1 = getAttributeValueByName(record1, attributeNameInCondition2, attributeNames1);
+                value2 = getAttributeValueByName(record2, attributeNameInCondition1, attributeNames2);
                 if (numeric)
                     return checkNumeric(Double.valueOf(value1), Double.valueOf(value2), c.getOperator());
                 else

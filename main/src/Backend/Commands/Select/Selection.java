@@ -65,13 +65,7 @@ public class Selection {
     private String convertToString(Document document) {
         String pk = (String) document.get("_id");
         String value = (String) document.get("Value");
-        StringBuilder result = new StringBuilder(pk);
-        result.append("#");
-        for (String i : value.split("#")) {
-            result.append(i).append("#");
-        }
-        result = new StringBuilder(result.substring(0, result.length() - 1));
-        return result.toString();
+        return pk+"#"+value;
     }
 
     private boolean conditionOfWhere(Document document, List<Condition> where, String tableName) {

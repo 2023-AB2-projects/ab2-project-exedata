@@ -15,7 +15,6 @@ import java.util.regex.Pattern;
 public class SelectManager {
     private String command;
     private final Databases databases;
-
     private List<String> select;
     private List<String> selectAS;
     private List<String> tableNameOfSelectAttribute;
@@ -247,7 +246,7 @@ public class SelectManager {
                     tableName = checkSelectAttributeIsExists(matcher.group(1));
                     if (tableName == null)
                         return;
-                    if (matcher.group(1).contains("."))
+                    if (matcher.group(1).contains(".") && !i.contains(")"))
                         select.add(matcher.group(1).split("\\.")[1]);
                     else
                         select.add(matcher.group(1));
