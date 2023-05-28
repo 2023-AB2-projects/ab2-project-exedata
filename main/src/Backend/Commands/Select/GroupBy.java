@@ -42,41 +42,40 @@ public class GroupBy {
         results.add(attributeResults.toString());
 
         // go through table elements and apply group by condition
-        String allAttributes = currentResults.get(0);
+        List<String> allAttributes = List.of(currentResults.get(0).split("#"));
         String groupByAttribute = results.get(0);
-        System.out.println(allAttributes);
-        System.out.println("============================================");
 
-        for (int i=1; i<currentResults.size(); i++) {
-            System.out.println(currentResults.get(i));
+        currentResults.remove(0);
+
+//        for (int i=1; i<currentResults.size(); i++) {
+//            System.out.println(currentResults.get(i));
+//        }
+
+        int groupByAttributePos = getGroupByAttributePosition(allAttributes, groupByAttribute);
+
+        Map<String, Double> countMap = new HashMap<>();
+        Map<String, Double> sumMap = new HashMap<>();
+        Map<String, Double> avgMap = new HashMap<>();
+
+//        List<Integer> avgColumnPositions = getAvgColumnPositions(selectAttributes);
+//        for (int i=0; i<avgColumnPositions.size(); i++) {
+//            System.out.println(avgColumnPositions.get(i));
+//        }
+
+        Set<String> uniqueStrings = new HashSet<>();
+
+        for (String item : tableData) {
+            String[] columns = item.split("#");
+
+            String columnAttribute = columns[groupByAttributePos];
+            uniqueStrings.add(columnAttribute);
         }
 
-//        int groupByAttributePos = getGroupByAttributePosition(attributeNames,
-//                tableNameOfGroupByAttributes.get(0), groupByAttributes.get(0));
-//
-//        Map<String, Double> countMap = new HashMap<>();
-//        Map<String, Double> sumMap = new HashMap<>();
-//        Map<String, Double> avgMap = new HashMap<>();
-//
-////        List<Integer> avgColumnPositions = getAvgColumnPositions(selectAttributes);
-////        for (int i=0; i<avgColumnPositions.size(); i++) {
-////            System.out.println(avgColumnPositions.get(i));
-////        }
-//
-//        Set<String> uniqueStrings = new HashSet<>();
-//
-//        for (String item : tableData) {
-//            String[] columns = item.split("#");
-//
-//            String columnAttribute = columns[groupByAttributePos];
-//            uniqueStrings.add(columnAttribute);
-//        }
-//
-//        for (String uniqueString : uniqueStrings) {
-//            results.add(uniqueString);
-//        }
-//
-//        System.out.println(results);
+        for (String uniqueString : uniqueStrings) {
+            results.add(uniqueString);
+        }
+
+        System.out.println(results);
 
 
 
@@ -96,11 +95,11 @@ public class GroupBy {
         return result;
     }
 
-    private int getGroupByAttributePosition(List<String> attributeNames, String tableNameOfGroupByAttribute,
-                                            String groupByAttribute) {
-        for (int i=0; i<attributeNames.size(); i++) {
-            List<String> splitted = List.of(attributeNames.get(i).split("\\."));
-            if (splitted.get(0).equals(tableNameOfGroupByAttribute) && splitted.get(1).equals(groupByAttribute)) {
+    private int getGroupByAttributePosition(List<String> allAttributes, String groupByAttribute) {
+        String[] splitGroupByAttribute = groupByAttribute.split("\\.", 2);
+        for (int i=0; i<allAttributes.size(); i++) {
+            String[] splitAttribute = allAttributes.get(i).split("\\.", 2);
+            if (splitGroupByAttribute[0].equals(splitAttribute[0]) && splitGroupByAttribute[1].equals(splitAttribute[1])) {
                 return i;
             }
         }
