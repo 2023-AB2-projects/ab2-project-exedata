@@ -38,18 +38,18 @@ public class Select implements Command {
 
 
         List<String> currentResults = join.getJoinResult();
-        System.out.println(currentResults.size());
-        sendData(currentResults);
 
-        // here I need to do group by (so i need a format like join.getJoinResults())
-//        List<String> groupBy = selectManager.getGroupBy();
-//        if (groupBy.size()!=0) {
-//            System.out.println("GROUP BY");
-//            GroupBy group = new GroupBy(selectManager);
-//        }
-//        else {
-//            System.out.println("NO GROUP BY");
-//        }
+        // sendData(currentResults);
+        // here I need to do group by (so i need a format like join.getJoinResults()
+        List<String> groupBy = selectManager.getGroupBy();
+        if (groupBy.size()!=0) {
+            System.out.println("GROUP BY");
+            GroupBy group = new GroupBy(selectManager, currentResults);
+            sendData(group.getResults());
+        }
+        else {
+            System.out.println("NO GROUP BY");
+        }
     }
 
     private void sendData(List<String> result) {
