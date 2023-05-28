@@ -37,15 +37,7 @@ public class Join {
         List<String> table1 = tableSelectResultsSeparately.processing(0);
         joinResult = new ArrayList<>();
         joinResult.add(attributeNamesTableIndexToString(allAttributeNames));
-
-        for (int i=0; i<table1.size(); i++) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int j=0; j<getAttributeNames(tableNames.get(0)).size(); j++) {
-                stringBuilder.append(getAttributeValueByName(table1.get(i), 0, getAttributeNames(tableNames.get(0)).get(j))).append("#");
-            }
-            stringBuilder = new StringBuilder(stringBuilder.substring(0, stringBuilder.length()-1));
-            joinResult.add(stringBuilder.toString());
-        }
+        joinResult.addAll(table1);
     }
 
     public List<String> getJoinResult() {
