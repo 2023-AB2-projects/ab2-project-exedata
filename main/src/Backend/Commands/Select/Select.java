@@ -43,12 +43,11 @@ public class Select implements Command {
         // here I need to do group by (so i need a format like join.getJoinResults()
         List<String> groupBy = selectManager.getGroupBy();
         if (groupBy.size()!=0) {
-            System.out.println("GROUP BY");
             GroupBy group = new GroupBy(selectManager, currentResults);
             sendData(group.getResults());
         }
         else {
-            System.out.println("NO GROUP BY");
+            sendData(currentResults);
         }
     }
 
