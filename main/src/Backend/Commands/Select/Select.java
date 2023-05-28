@@ -2,7 +2,6 @@ package Backend.Commands.Select;
 
 import Backend.Commands.Command;
 import Backend.SocketServer.ErrorClient;
-import org.bson.Document;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -39,14 +38,22 @@ public class Select implements Command {
 
         List<String> currentResults = join.getJoinResult();
 
-        //sendData(currentResults);
         List<String> groupBy = selectManager.getGroupBy();
-        if (groupBy.size()!=0) {
+        if (groupBy.size() != 0) {
             GroupBy group = new GroupBy(selectManager, currentResults);
             sendData(group.getFinalResults());
-        }
-        else {
-            sendData(currentResults);
+        } else {
+            boolean basic = true;
+            for (int i = 0; i < selectManager.getSelect().size(); i++) {
+                if (selectManager.getSelect().get(i).contains("(")) {  // aggregation without group by
+                    AggregationWithoutGroupBy aggregationWithoutGroupBy = new AggregationWithoutGroupBy(selectManager, currentResults);
+                    sendData(aggregationWithoutGroupBy.getFinalResults());
+                    basic = false;
+                }
+            }
+            if (basic) {
+                sendData(currentResults);
+            }
         }
     }
 

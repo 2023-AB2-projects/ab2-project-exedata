@@ -8,8 +8,8 @@ public class GroupBy {
     private SelectManager selectManager;
     List<String> results;
     List<String> finalResults;
-
     List<String> allAttributes;
+
     public GroupBy(SelectManager selectManager, List<String> currentResults) {
         this.selectManager = selectManager;
         String groupByAttribute = selectManager.getTableNameOfGroupByAttribute().get(0) + "." + selectManager.getGroupBy().get(0);
@@ -25,22 +25,24 @@ public class GroupBy {
 //        SELECT d.DName, AVG(d.CreditNr)
 //        FROM disciplines d
 //        GROUP BY d.DName
+//        SELECT marks.DiscID, AVG(marks.Mark), SUM(marks.Mark)
+//        FROM disciplines d INNER JOIN marks m ON d.DiscID=m.DiscID
+//        GROUP BY m.DiscID
         results = new ArrayList<>();
         StringBuilder attributeResults = new StringBuilder();
-        for (int i=0; i<selectAttributes.size(); i++) {
-            if (selectASAttributes.get(i)!=null) {
+        for (int i = 0; i < selectAttributes.size(); i++) {
+            if (selectASAttributes.get(i) != null) {
                 attributeResults.append(tableNameOfSelectByAttributes.get(i)).append(".").append(selectASAttributes.get(i)).append("#");
             } else {
                 attributeResults.append(tableNameOfSelectByAttributes.get(i)).append(".").append(selectAttributes.get(i)).append("#");
             }
         }
-        attributeResults = new StringBuilder(attributeResults.substring(0, attributeResults.length()-1));
+        attributeResults = new StringBuilder(attributeResults.substring(0, attributeResults.length() - 1));
 
         // go through table elements and apply group by condition
         currentResults.remove(0);
 
         int groupByAttributePos = getAttributePosition(groupByAttribute);
-        System.out.println(groupByAttributePos);
 
         List<Integer> avgColumnPos = getColumnPositions(selectAttributes, "AVG");
         List<Integer> sumColumnPos = getColumnPositions(selectAttributes, "SUM");
@@ -56,12 +58,7 @@ public class GroupBy {
         Map<String, List<Double>> maxMap = new HashMap<>();
 
         Set<String> uniqueStrings = new HashSet<>();
-
-
-//        SELECT marks.DiscID, AVG(marks.Mark), SUM(marks.Mark)
-//        FROM disciplines d INNER JOIN marks m ON d.DiscID=m.DiscID
-//        GROUP BY m.DiscID
-        for (int i = 0; i<tableData.size(); i++) {
+        for (int i = 0; i < tableData.size(); i++) {
             String item = tableData.get(i);
             String[] columns = item.split("#");
             String columnAttributeValue = columns[groupByAttributePos];
@@ -86,8 +83,7 @@ public class GroupBy {
             List<Double> existingValuesMin = minMap.get(columnAttributeValue);
             for (int j = 0; j < minColumnPos.size(); j++) {
                 double columnValue = Double.parseDouble(columns[minColumnPos.get(j)]);
-                if (columnValue < existingValuesMin.get(j))
-                {
+                if (columnValue < existingValuesMin.get(j)) {
                     existingValuesMin.set(j, columnValue);
                 }
             }
@@ -100,8 +96,7 @@ public class GroupBy {
             List<Double> existingValuesMax = maxMap.get(columnAttributeValue);
             for (int j = 0; j < maxColumnPos.size(); j++) {
                 double columnValue = Double.parseDouble(columns[maxColumnPos.get(j)]);
-                if (columnValue > existingValuesMax.get(j))
-                {
+                if (columnValue > existingValuesMax.get(j)) {
                     existingValuesMax.set(j, columnValue);
                 }
             }
@@ -190,7 +185,7 @@ public class GroupBy {
 
     private int getAttributePosition(String attribute) {
         String[] splitGroupByAttribute = attribute.split("\\.", 2);
-        for (int i=0; i<allAttributes.size(); i++) {
+        for (int i = 0; i < allAttributes.size(); i++) {
             String[] splitAttribute = allAttributes.get(i).split("\\.", 2);
             //splitGroupByAttribute[0].equals(splitAttribute[0]) &&
             if (!attribute.contains(".")) {
@@ -199,9 +194,8 @@ public class GroupBy {
                 }
             } else {
                 String splitGroupByAttributeTableName = splitGroupByAttribute[0];
-                for (int j=0; j<selectManager.getFromAS().size(); j++) {
-                    System.out.println(selectManager.getFromAS().get(j));
-                    if (selectManager.getFromAS().get(j)!=null && selectManager.getFromAS().get(j).equals(splitGroupByAttribute[0])) {
+                for (int j = 0; j < selectManager.getFromAS().size(); j++) {
+                    if (selectManager.getFromAS().get(j) != null && selectManager.getFromAS().get(j).equals(splitGroupByAttribute[0])) {
                         splitGroupByAttributeTableName = selectManager.getFrom().get(j);
                     }
                 }
@@ -215,7 +209,7 @@ public class GroupBy {
 
     private List<Integer> getColumnPositions(List<String> selectAttributes, String aggregationKeyWord) {
         List<Integer> avgColumnPositions = new ArrayList<>();
-        for (int i=0; i<selectAttributes.size(); i++) {
+        for (int i = 0; i < selectAttributes.size(); i++) {
             if (selectAttributes.get(i).toUpperCase().contains(aggregationKeyWord)) {
                 Pattern pattern = Pattern.compile("\\((.*?)\\)");
                 Matcher matcher = pattern.matcher(selectAttributes.get(i));
