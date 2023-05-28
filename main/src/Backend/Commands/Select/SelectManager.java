@@ -15,7 +15,6 @@ import java.util.regex.Pattern;
 public class SelectManager {
     private String command;
     private final Databases databases;
-
     private List<String> select;
     private List<String> selectAS;
     private List<String> tableNameOfSelectAttribute;

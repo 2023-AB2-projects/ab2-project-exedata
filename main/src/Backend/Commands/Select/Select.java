@@ -2,7 +2,6 @@ package Backend.Commands.Select;
 
 import Backend.Commands.Command;
 import Backend.SocketServer.ErrorClient;
-import org.bson.Document;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -33,26 +32,22 @@ public class Select implements Command {
         }
 
         Join join = new Join(selectManager); // 0 pos = attributeNames (if has alias, alias)
-//        Projection projection = new Projection();
-//        List<String> projectionResults = projection.projectionProcessing(join.getJoinResult(), selectManager);
-
-
         List<String> currentResults = join.getJoinResult();
+        System.out.println(currentResults.size());
 
         // sendData(currentResults);
-        // here I need to do group by (so i need a format like join.getJoinResults()
+        // here I need to do group by (so I need a format like join.getJoinResults()
         List<String> groupBy = selectManager.getGroupBy();
-        if (groupBy.size()!=0) {
+        if (groupBy.size() != 0) {
             GroupBy group = new GroupBy(selectManager, currentResults);
             sendData(group.getResults());
-        }
-        else {
+        } else {
             sendData(currentResults);
         }
     }
 
     private void sendData(List<String> result) {
-        System.out.println("Sending data...");
+        System.out.println("Sending " + (result.size() - 1) + " records...");
         for (String i : result) {
             writer.println(i);
         }

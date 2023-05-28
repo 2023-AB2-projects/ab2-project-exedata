@@ -2,14 +2,12 @@ package Backend.Commands.Select;
 
 import Backend.Databases.Attribute;
 import Backend.Parser;
-
-import java.sql.SQLOutput;
 import java.util.*;
 
 import static Backend.SocketServer.Server.databases;
 
 public class GroupBy {
-    private SelectManager selectManager;
+    private final SelectManager selectManager;
     List<String> results;
     public GroupBy(SelectManager selectManager, List<String> currentResults) {
         this.selectManager = selectManager;
@@ -75,7 +73,7 @@ public class GroupBy {
             results.add(uniqueString);
         }
 
-        System.out.println(results);
+//        System.out.println(results);
 
 
 
