@@ -65,7 +65,6 @@ public class Server implements Runnable {
 //                        i=0;
 //                        System.out.println(command);
 //                    }
-
                 }
             } catch (Exception e) {
                 System.out.println(e);
