@@ -35,8 +35,20 @@ public class Select implements Command {
         Join join = new Join(selectManager); // 0 pos = attributeNames (if has alias, alias)
 //        Projection projection = new Projection();
 //        List<String> projectionResults = projection.projectionProcessing(join.getJoinResult(), selectManager);
-        System.out.println(join.getJoinResult().size());
-        sendData(join.getJoinResult());
+
+
+        List<String> currentResults = join.getJoinResult();
+        sendData(currentResults);
+
+        // here I need to do group by (so i need a format like join.getJoinResults()
+        List<String> groupBy = selectManager.getGroupBy();
+        if (groupBy.size()!=0) {
+            System.out.println("GROUP BY");
+            GroupBy group = new GroupBy(selectManager);
+        }
+        else {
+            System.out.println("NO GROUP BY");
+        }
     }
 
     private void sendData(List<String> result) {

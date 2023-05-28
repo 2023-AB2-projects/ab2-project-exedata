@@ -29,13 +29,19 @@ public class Projection {
         //id nev email
         //id nev kor email
         //-1 0 2
-        for (int i : indexArray) {
-            System.out.println(i);
-        }
         for (int i=1; i<values.size(); i++) {
-            result.add(values.get(i));
+            result.add(getAttributeByIndex(values.get(i)));
         }
         return result;
+    }
+
+    private String getAttributeByIndex(String value) {
+        List<String> attributes = List.of(value.split("#"));
+        for (int i=0; i<attributes.size(); i++) {
+            System.out.println(attributes.get(i));
+        }
+        return value;
+
     }
 
     private String getSelectedAttribute(Document document, int[] indexArray) {
