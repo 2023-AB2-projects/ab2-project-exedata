@@ -15,7 +15,7 @@ import java.util.Random;
 
 public class RandomGenerator {
     public static void main(String[] args) {
-        new RandomGenerator("test", "alma2", 100000);
+        new RandomGenerator("test", "alma", 100);
     }
 
     private final String databaseName;
@@ -72,7 +72,7 @@ public class RandomGenerator {
         String charSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         try {
             clientConnection.send("USE " + databaseName + ";");
-            for (int i = 71253; i < numberOfRows; i++) {
+            for (int i = 0; i < numberOfRows; i++) {
                 insert = new StringBuilder("INSERT INTO " + tableName + " (");
                 values = new StringBuilder();
                 for (int j = 0; j < attributeList.size(); j++) {
