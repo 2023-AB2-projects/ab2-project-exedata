@@ -46,6 +46,7 @@ public class Server implements Runnable {
                 reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 writer = new PrintWriter(clientSocket.getOutputStream(), true);
                 String command;
+                int i=0;
                 while ((command = reader.readLine()) != null) {
                     //System.out.println("I receive this massage:" + command);
                     if (!command.startsWith("!GET")) {
@@ -59,6 +60,12 @@ public class Server implements Runnable {
                     } else {
                         sendData(command);
                     }
+                    i++;
+                    if(i==100){
+                        i=0;
+                        System.out.println(command);
+                    }
+
                 }
             } catch (Exception e) {
                 System.out.println(e);
