@@ -186,8 +186,6 @@ public class GroupBy {
             }
             finalResults.add(stringBuilder.toString());
         }
-
-
     }
 
     private int getAttributePosition(String attribute) {
