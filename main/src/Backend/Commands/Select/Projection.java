@@ -1,14 +1,7 @@
 package Backend.Commands.Select;
 
-import Backend.Databases.Attribute;
-import Backend.Parser;
-import org.bson.Document;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import static Backend.SocketServer.Server.databases;
 
 public class Projection {
     private final SelectManager selectManager;
@@ -37,7 +30,6 @@ public class Projection {
         //id nev email
         //id nev kor email
         //-1 0 2
-        System.out.println(Arrays.toString(indexArray));
         for (int i = 1; i < values.size(); i++) {
             result.add(getSelectedAttribute(values.get(i), indexArray));
         }
