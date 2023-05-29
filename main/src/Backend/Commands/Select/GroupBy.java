@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GroupBy {
-    private SelectManager selectManager;
+    private final SelectManager selectManager;
     List<String> results;
     List<String> finalResults;
     List<String> allAttributes;
@@ -58,8 +58,7 @@ public class GroupBy {
         Map<String, List<Double>> maxMap = new HashMap<>();
 
         Set<String> uniqueStrings = new HashSet<>();
-        for (int i = 0; i < tableData.size(); i++) {
-            String item = tableData.get(i);
+        for (String item : tableData) {
             String[] columns = item.split("#");
             String columnAttributeValue = columns[groupByAttributePos];
 
@@ -209,10 +208,10 @@ public class GroupBy {
 
     private List<Integer> getColumnPositions(List<String> selectAttributes, String aggregationKeyWord) {
         List<Integer> avgColumnPositions = new ArrayList<>();
-        for (int i = 0; i < selectAttributes.size(); i++) {
-            if (selectAttributes.get(i).toUpperCase().contains(aggregationKeyWord)) {
+        for (String selectAttribute : selectAttributes) {
+            if (selectAttribute.toUpperCase().contains(aggregationKeyWord)) {
                 Pattern pattern = Pattern.compile("\\((.*?)\\)");
-                Matcher matcher = pattern.matcher(selectAttributes.get(i));
+                Matcher matcher = pattern.matcher(selectAttribute);
                 if (matcher.find()) {
                     String attributeName = matcher.group(1);
                     List<String> splitted = List.of(attributeName.split("\\."));

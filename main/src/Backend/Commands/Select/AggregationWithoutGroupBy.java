@@ -6,8 +6,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AggregationWithoutGroupBy {
-    private SelectManager selectManager;
-    private List<String> finalResults;
+    private final SelectManager selectManager;
+    private final List<String> finalResults;
     List<String> allAttributes;
 
     public AggregationWithoutGroupBy(SelectManager selectManager, List<String> currentResults) {
