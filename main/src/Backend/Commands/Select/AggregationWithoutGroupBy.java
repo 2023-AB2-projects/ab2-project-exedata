@@ -25,7 +25,7 @@ public class AggregationWithoutGroupBy {
         if (selectManager.getSelectAS().get(0) == null) {
             finalResults.add(selectManager.getSelect().get(0));
         } else {
-            finalResults.add(selectManager.getSelectAS().get(0) + "." + selectManager.getSelect().get(0));
+            finalResults.add(selectManager.getSelectAS().get(0));
         }
 
         if (matcher.find()) {
