@@ -189,7 +189,7 @@ public class GroupBy {
             String[] splitAttribute = allAttributes.get(i).split("\\.", 2);
             //splitGroupByAttribute[0].equals(splitAttribute[0]) &&
             if (!attribute.contains(".")) {
-                if (splitGroupByAttribute[0].equals(splitAttribute[1])) {
+                if (splitGroupByAttribute[0].equals(splitAttribute[1]) || splitAttribute[1].equals("*")) {
                     return i;
                 }
             } else {
