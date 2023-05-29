@@ -32,29 +32,28 @@ public class Select implements Command {
         }
 
         Join join = new Join(selectManager); // 0 pos = attributeNames (if has alias, alias)
-//        Projection projection = new Projection();
-//        List<String> projectionResults = projection.projectionProcessing(join.getJoinResult(), selectManager);
-
 
         List<String> currentResults = join.getJoinResult();
 
         List<String> groupBy = selectManager.getGroupBy();
         if (groupBy.size() != 0) {
             GroupBy group = new GroupBy(selectManager, currentResults);
+            ErrorClient.send("Select done!");
+            System.out.println("Select done!");
             sendData(group.getFinalResults());
-        } else {
-            boolean basic = true;
-            for (int i = 0; i < selectManager.getSelect().size(); i++) {
-                if (selectManager.getSelect().get(i).contains("(")) {  // aggregation without group by
-                    AggregationWithoutGroupBy aggregationWithoutGroupBy = new AggregationWithoutGroupBy(selectManager, currentResults);
-                    sendData(aggregationWithoutGroupBy.getFinalResults());
-                    basic = false;
-                }
-            }
-            if (basic) {
-                sendData(currentResults);
-            }
+            return;
         }
+        if (selectManager.getFunction().size() != 0) {
+            AggregationWithoutGroupBy aggregationWithoutGroupBy = new AggregationWithoutGroupBy(selectManager, currentResults);
+            ErrorClient.send("Select done!");
+            System.out.println("Select done!");
+            sendData(aggregationWithoutGroupBy.getFinalResults());
+            return;
+        }
+        Projection projection = new Projection(selectManager);
+        ErrorClient.send("Select done!");
+        System.out.println("Select done!");
+        sendData(projection.getResult(currentResults));
     }
 
     private void sendData(List<String> result) {

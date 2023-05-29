@@ -244,8 +244,18 @@ public class SelectManager {
                 matcher = pattern.matcher(i);
                 if (matcher.find()) {
                     tableName = checkSelectAttributeIsExists(matcher.group(1));
-                    if (tableName == null)
-                        return;
+                    if (tableName == null) {
+                        if (!i.contains("*"))
+                            return;
+                        else {
+                            Pattern pattern1 = Pattern.compile("\\s*COUNT\\(\\*\\)\\s*", Pattern.CASE_INSENSITIVE);
+                            Matcher matcher1 = pattern1.matcher(matcher.group(1));
+                            if (matcher1.find())
+                                errorMassage = null;
+                            else
+                                errorMassage = "Don't use * in " + matcher.group(1);
+                        }
+                    }
                     if (matcher.group(1).contains(".") && !i.contains(")"))
                         select.add(matcher.group(1).split("\\.")[1]);
                     else
