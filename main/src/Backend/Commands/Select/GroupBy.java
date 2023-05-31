@@ -214,7 +214,6 @@ public class GroupBy {
                 Matcher matcher = pattern.matcher(selectAttribute);
                 if (matcher.find()) {
                     String attributeName = matcher.group(1);
-                    List<String> splitted = List.of(attributeName.split("\\."));
                     avgColumnPositions.add(getAttributePosition(attributeName));
                 }
             }
