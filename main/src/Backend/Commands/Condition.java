@@ -80,15 +80,37 @@ public class Condition {
             }
             if (howManyLeftAttribute > 1)
                 errorMassage = "The attribute " + leftSideAttributeName + " is already exists in two different table!";
-            else if (leftSideTableName == null && howManyLeftAttribute < 1)
+            else if (rightSideTableName == null && howManyLeftAttribute < 1)
                 errorMassage = "The attribute " + leftSideAttributeName + " doesn't exists!";
             if (howManyRightAttribute > 1)
                 errorMassage = "The attribute " + rightSideAttributeName + " is already exists in two different table!";
-            else if (rightSideTableName == null && howManyRightAttribute < 1)
+            else if (leftSideTableName == null && howManyRightAttribute < 1)
                 errorMassage = "The attribute " + rightSideAttributeName + " doesn't exists!";
         }
         if (leftSideTableName == null && rightSideTableName == null)
             errorMassage = "Error in the condition: " + leftSide + " " + operator + " " + rightSide;
+        if (leftSideTableName != null && rightSideTableName == null) {
+            if (isString(leftSideTableName, leftSideAttributeName)) {
+                if (rightSideAttributeName.startsWith("'") && rightSideAttributeName.endsWith("'")) {
+                    rightSideAttributeName = rightSideAttributeName.substring(1, rightSideAttributeName.length() - 1);
+                } else {
+                    errorMassage = "Invalid column value: " + rightSideAttributeName;
+                }
+            }
+        } else if (rightSideTableName != null && leftSideTableName == null) {
+            if (isString(rightSideTableName, rightSideAttributeName)) {
+                if (leftSideAttributeName.startsWith("'") && leftSideAttributeName.endsWith("'")) {
+                    leftSideAttributeName = leftSideAttributeName.substring(1, leftSideAttributeName.length() - 1);
+                } else {
+                    errorMassage = "Invalid column value: " + leftSideAttributeName;
+                }
+            }
+        }
+    }
+
+    private boolean isString(String tableName, String attributeName) {
+        String type = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getAttribute(attributeName).getType();
+        return type.equals("VARCHAR") || type.equals("DATETIME") || type.equals("DATE");
     }
 
     private boolean checkTableAndAttributeExists(List<String> from) {
