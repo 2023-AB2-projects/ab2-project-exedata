@@ -462,7 +462,7 @@ public class DatabaseController {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selectQuery = databaseFrame.getPanelCenter().getSelectQuery().getSelectCommandText().getText();
-                databaseFrame.getPanelCenter().getInputArea().setText(selectQuery.replaceAll("\n", System.lineSeparator()));
+                databaseFrame.getPanelCenter().getInputArea().setText("USE " + databaseFrame.getPanelCenter().getSelectQuery().getCurrentDatabaseName() + ";" + System.lineSeparator() + selectQuery.replaceAll("\n", System.lineSeparator()));
 
                 databaseFrame.getPanelCenter().getInputLabel().setText("Command line:");
                 JPanel cards = databaseFrame.getPanelCenter().getCards();
