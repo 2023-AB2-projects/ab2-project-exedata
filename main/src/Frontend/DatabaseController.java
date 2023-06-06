@@ -1,5 +1,6 @@
 package Frontend;
 
+import Backend.Parser;
 import Backend.SocketServer.ErrorClient;
 import Frontend.SelectPanel.TableBox;
 
@@ -184,6 +185,15 @@ public class DatabaseController {
                 CardLayout cl = (CardLayout) (cards.getLayout());
                 cl.show(cards, databaseFrame.getPanelCenter().getPanelSelectQuery());
             }
+        });
+        databaseFrame.getPanelCenter().getSelectQuery().getDatabaseComboBox().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                databaseFrame.getPanelCenter().getSelectQuery().setCurrentDatabaseName(databaseFrame.getPanelCenter().getSelectQuery().getDatabaseComboBox().getSelectedItem().toString());
+                Parser.currentDatabaseName = databaseFrame.getPanelCenter().getSelectQuery().getCurrentDatabaseName();
+                String[] allTables = databaseFrame.getPanelCenter().getSelectQuery().getAllTables();
+                databaseFrame.getPanelCenter().getSelectQuery().getTableComboBox().setModel(new DefaultComboBoxModel<>(allTables));
+            };
         });
         databaseFrame.getPanelCenter().getSelectQuery().getTableComboBox().addActionListener(new ActionListener() {
             @Override
