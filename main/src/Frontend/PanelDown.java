@@ -1,19 +1,30 @@
 package Frontend;
 
 import javax.swing.*;
+import javax.swing.text.*;
 import java.awt.*;
 
 public class PanelDown extends JPanel {
-    private JLabel errorLabel;
+    private final JTextPane errorArea;
 
     public PanelDown() {
-        errorLabel = new JLabel("Error chanel!");
-        errorLabel.setForeground(Color.red);
-        errorLabel.setFont(new Font("Berlin Sans FB", Font.BOLD, 20));
-        this.add(errorLabel);
+        errorArea = new JTextPane();
+        JScrollPane scrollPane = new JScrollPane(errorArea);
+        errorArea.setEditable(false);
+        errorArea.setForeground(Color.red);
+        errorArea.setFont(new Font("Berlin Sans FB", Font.BOLD, 20));
+
+        StyledDocument doc = errorArea.getStyledDocument();
+        SimpleAttributeSet centerAlign = new SimpleAttributeSet();
+        StyleConstants.setAlignment(centerAlign, StyleConstants.ALIGN_CENTER);
+        doc.setParagraphAttributes(0, doc.getLength(), centerAlign, false);
+
+        scrollPane.setPreferredSize(new Dimension(1000, 50));
+
+        this.add(scrollPane);
     }
 
-    public JLabel getErrorLabel() {
-        return errorLabel;
+    public JTextPane getErrorArea() {
+        return errorArea;
     }
 }
