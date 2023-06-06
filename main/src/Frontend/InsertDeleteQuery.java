@@ -145,7 +145,7 @@ public class InsertDeleteQuery extends JPanel {
                     if (column != null) {
                         String contentOfRows = getContentOfTable();
                         try {
-                            panelDown.getErrorLabel().setText("");
+                            panelDown.getErrorArea().setText("");
                             clientConnectionInsertDelete.send("INSERT INTO " + Parser.currentTableName + " (" + column + ") VALUES (" + contentOfRows + ");");
                             clientConnectionInsertDelete.send("END");
                         } catch (IOException ex) {
@@ -164,7 +164,7 @@ public class InsertDeleteQuery extends JPanel {
                     String[] condition = getDeleteCondition(table.getSelectedRows());
                     for (String i : condition) {
                         try {
-                            panelDown.getErrorLabel().setText("");
+                            panelDown.getErrorArea().setText("");
                             clientConnectionInsertDelete.send("DELETE FROM " + Parser.currentTableName + " WHERE " + i + ";");
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);

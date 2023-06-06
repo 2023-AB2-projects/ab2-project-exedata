@@ -6,9 +6,6 @@ import Frontend.SelectPanel.TableBox;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -84,7 +81,7 @@ public class DatabaseController {
                         }
                         String[] commands = command.split(";" + System.lineSeparator());
                         //set error message chanel is empty
-                        databaseFrame.getPanelDown().getErrorLabel().setText("");
+                        databaseFrame.getPanelDown().getErrorArea().setText("");
                         Pattern pattern = Pattern.compile("^\\s*(?i)SELECT");
                         for (String s : commands) {
                             s=formatCommandInFrontend(s);

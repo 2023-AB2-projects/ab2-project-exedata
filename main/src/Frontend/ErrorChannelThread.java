@@ -9,7 +9,7 @@ public class ErrorChannelThread extends Thread {
 
     public ErrorChannelThread(PanelDown panelDown) {
         this.panelDown = panelDown;
-        panelDown.getErrorLabel().setText("Here the error message!");
+        panelDown.getErrorArea().setText("Here the error message!");
     }
 
     @Override
@@ -32,8 +32,12 @@ public class ErrorChannelThread extends Thread {
                 reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
                 while ((errorMassage = reader.readLine()) != null) {
-                    System.out.println("I receive this error massage: " + errorMassage);
-                    panelDown.getErrorLabel().setText(panelDown.getErrorLabel().getText() + "\n " + errorMassage);
+                    System.out.println("I received this error massage: " + errorMassage);
+                    if (panelDown.getErrorArea().getText().equals("")) {
+                        panelDown.getErrorArea().setText(errorMassage);
+                    } else {
+                        panelDown.getErrorArea().setText(panelDown.getErrorArea().getText() + "\n " + errorMassage);
+                    }
                 }
             } catch (Exception e) {
             }
