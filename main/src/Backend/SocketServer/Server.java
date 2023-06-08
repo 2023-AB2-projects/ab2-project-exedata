@@ -83,7 +83,7 @@ public class Server implements Runnable {
         }
         if (!command.split(" ")[0].equalsIgnoreCase("Insert")) {
             if (numberOfInsertedRows != -1) {
-                ErrorClient.send(numberOfInsertedRows + " rows inserted!");
+                ErrorClient.send(numberOfInsertedRows + " row(s) inserted!");
                 numberOfInsertedRows = -1;
             }
         }
@@ -100,7 +100,7 @@ public class Server implements Runnable {
         }
         if (!command.split(" ")[0].equalsIgnoreCase("Delete")) {
             if (numberOfDeletedRows != -1) {
-                ErrorClient.send(numberOfDeletedRows + " rows deleted!");
+                ErrorClient.send(numberOfDeletedRows + " row(s) deleted!");
                 numberOfDeletedRows = -1;
             }
         }
