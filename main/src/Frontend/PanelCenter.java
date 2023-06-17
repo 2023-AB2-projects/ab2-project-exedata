@@ -7,27 +7,22 @@ import javax.swing.border.MatteBorder;
 import java.awt.*;
 
 public class PanelCenter extends JPanel {
-    private JPanel cards;
-    private JPanel inputAreaPanelCommandLine;
-    private InsertDeleteQuery inputAreaPanelInsDelQuery;
-    private SelectQuery inputAreaPanelSelectQuery;
+    private final JPanel cards;
+    private final InsertDeleteQuery inputAreaPanelInsDelQuery;
+    private final SelectQuery inputAreaPanelSelectQuery;
     private final JTextPane inputArea; // command input (ex. CREATE TABLE)
-    private JPanel commandLineInput;
-    private JPanel commandLineHeader;
-    private JPanel commandLineResults;
-    private JTable resultsTable;
-    private JButton buttonCommandLine;
-    private JButton buttonInsertDeleteQuery;
-    private JButton buttonSelectQuery;
+    private final JPanel commandLineInput;
+    private final JTable resultsTable;
+    private final JButton buttonCommandLine;
+    private final JButton buttonInsertDeleteQuery;
+    private final JButton buttonSelectQuery;
     private final String panelCommandString = "PANELCOMMAND";
     private final String panelInsDelQuery = "PANELINSDELQUERY";
     private final String panelSelectQuery = "PANELSELECTQUERY";
-    private final PanelDown panelDown;
 
-    private JLabel inputLabel;
+    private final JLabel inputLabel;
 
     public PanelCenter(PanelDown panelDown, ClientConnection clientConnection) {
-        this.panelDown = panelDown;
         this.setLayout(new GridLayout(1, 2));
 
         // left side of PanelCenter
@@ -40,7 +35,7 @@ public class PanelCenter extends JPanel {
 
         // left label
         //top of commandLine
-        commandLineHeader = new JPanel();
+        JPanel commandLineHeader = new JPanel();
         commandLineHeader.setLayout(new GridLayout(1, 2));
 
         //commandLineInputLabel
@@ -68,8 +63,8 @@ public class PanelCenter extends JPanel {
         //init 3 JPanel to card
         //================================================================================================
         cards = new JPanel();
-        inputAreaPanelCommandLine = new JPanel();
-        inputAreaPanelInsDelQuery = new InsertDeleteQuery(this.panelDown, clientConnection);
+        JPanel inputAreaPanelCommandLine = new JPanel();
+        inputAreaPanelInsDelQuery = new InsertDeleteQuery(panelDown, clientConnection);
         inputAreaPanelSelectQuery = new SelectQuery();
 
         inputAreaPanelCommandLine.setLayout(new GridLayout(1, 1));
@@ -89,7 +84,7 @@ public class PanelCenter extends JPanel {
 
         //================================================================================================
         // right side of PanelCenter
-        commandLineResults = new JPanel();
+        JPanel commandLineResults = new JPanel();
         commandLineResults.setLayout(new GridLayout(1, 1));
         resultsTable = new JTable();
         JScrollPane jScrollPane = new JScrollPane(resultsTable);

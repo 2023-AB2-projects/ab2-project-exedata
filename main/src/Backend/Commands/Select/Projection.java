@@ -27,9 +27,6 @@ public class Projection {
         }
         result.add(columns.substring(0, columns.length() - 1));
         int[] indexArray = createIndexArray(withoutAliasColumns.substring(0, withoutAliasColumns.length() - 1), values.get(0));
-        //id nev email
-        //id nev kor email
-        //-1 0 2
         for (int i = 1; i < values.size(); i++) {
             result.add(getSelectedAttribute(values.get(i), indexArray));
         }
@@ -49,9 +46,6 @@ public class Projection {
         List<String> columnsList = List.of(columns.split("#"));
         List<String> allColumnsList = List.of(allColumns.split("#"));
         int[] result = new int[columnsList.size()];
-        //id nev email
-        //id nev kor email
-        //-1 0 2
         int index;
         for (int i = 0; i < columnsList.size(); i++) {
             index = allColumnsList.indexOf(columnsList.get(i));

@@ -9,10 +9,6 @@ public class FormatCommand {
     private static int[] mappingArray;
 
     public static String formatCommand(String command) {
-        //torolni az elejerol a " "
-        //torolni a vegerol a " "
-        //torolni a vegerol a ";"
-        //torolni a vegerol a ")"
 
         while (command.charAt(0) == ' ') {
             command = command.substring(1);
@@ -32,10 +28,6 @@ public class FormatCommand {
             if (command.charAt(command.length() - 1) == ';') {
                 command = command.substring(0, command.length() - 1);
             }
-
-//            if (command.charAt(command.length() - 1) == ')') {
-//                command = command.substring(0, command.length() - 1);
-//            }
         }
         return command;
     }
@@ -71,14 +63,14 @@ public class FormatCommand {
         String[] result = new String[length];
         String[] primaryKey = ((String) document.get("_id")).split("#");
         String[] attribute = ((String) document.get("Value")).split("#");
-        int primaryKeyIndex=0;
-        int attributeIndex=0;
+        int primaryKeyIndex = 0;
+        int attributeIndex = 0;
         for (int i = 0; i < length; i++) {
-            if(mappingArray[i]==0){
-                result[i]=attribute[attributeIndex];
+            if (mappingArray[i] == 0) {
+                result[i] = attribute[attributeIndex];
                 attributeIndex++;
-            }else{
-                result[i]=primaryKey[primaryKeyIndex];
+            } else {
+                result[i] = primaryKey[primaryKeyIndex];
                 primaryKeyIndex++;
             }
         }

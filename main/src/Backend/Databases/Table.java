@@ -25,18 +25,18 @@ public class Table {
     public Table() {
     }
 
-    public String getIndexFileName(String[] attributeNames){
-        for(IndexFile i : indexFiles){
-            if (i.getIndexAttributes().size()==attributeNames.length && i.equalsIndexAttributes(attributeNames)){
+    public String getIndexFileName(String[] attributeNames) {
+        for (IndexFile i : indexFiles) {
+            if (i.getIndexAttributes().size() == attributeNames.length && i.equalsIndexAttributes(attributeNames)) {
                 return i.getIndexName();
             }
         }
         return null;
     }
 
-    public IndexFile getIndexFileIfKnowTheAttributes(String[] attributeNames){
-        for(IndexFile i : indexFiles){
-            if (i.getIndexAttributes().size()==attributeNames.length && i.equalsIndexAttributes(attributeNames)){
+    public IndexFile getIndexFileIfKnowTheAttributes(String[] attributeNames) {
+        for (IndexFile i : indexFiles) {
+            if (i.getIndexAttributes().size() == attributeNames.length && i.equalsIndexAttributes(attributeNames)) {
                 return i;
             }
         }
@@ -52,11 +52,11 @@ public class Table {
         return false;
     }
 
-    public boolean isUnique(String attributeName){
+    public boolean isUnique(String attributeName) {
         return uniqueKeys.contains(attributeName);
     }
 
-    public boolean isPrimaryKey(String attributeName){
+    public boolean isPrimaryKey(String attributeName) {
         return primaryKey.contains(attributeName);
     }
 
@@ -64,7 +64,6 @@ public class Table {
         int numberOfPrimaryKey = primaryKey.size();
         for (String i : column) {
             if (!checkAttributeExists(i)) {
-                System.out.println("This column doesn't exists: " + i);
                 ErrorClient.send("This column doesn't exists: " + i);
             }
             if (primaryKey.contains(i)) {
@@ -72,13 +71,11 @@ public class Table {
             }
         }
         if (numberOfPrimaryKey != 0) {
-            System.out.println("Have a problem with primary keys!");
             ErrorClient.send("Have a problem with primary keys!");
             return false;
         }
         for (Attribute i : structure) {
             if (i.getIsnull().equalsIgnoreCase("0") && !Arrays.stream(column).toList().contains(i)) {
-                System.out.println(i.getName() + " can not be null!");
                 ErrorClient.send(i.getName() + " can not be null!");
                 return false;
             }
@@ -86,9 +83,9 @@ public class Table {
         return true;
     }
 
-    public Attribute getAttribute(String attributeName){
-        for (Attribute i : structure){
-            if(i.getName().equalsIgnoreCase(attributeName))
+    public Attribute getAttribute(String attributeName) {
+        for (Attribute i : structure) {
+            if (i.getName().equalsIgnoreCase(attributeName))
                 return i;
         }
         return null;

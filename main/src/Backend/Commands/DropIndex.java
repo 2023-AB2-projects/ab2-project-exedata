@@ -35,11 +35,9 @@ public class DropIndex implements Command {
                 SaveJSON.save(databases, "databases.json");
                 ErrorClient.send("The " + indexName + "index is deleted!");
             } else {
-                System.out.println("Table doesn't exists!");
                 ErrorClient.send("Table doesn't exists!");
             }
         } else {
-            System.out.println("Database doesn't exists!");
             ErrorClient.send("Databases doesn't exists!");
         }
     }

@@ -3,8 +3,10 @@ package Backend;
 import Backend.Commands.*;
 import Backend.Commands.Select.Select;
 import Backend.SocketServer.ErrorClient;
+
 import java.io.PrintWriter;
 import java.util.regex.Pattern;
+
 import static Backend.Commands.FormatCommand.formatCommand;
 import static Backend.SocketServer.Server.databases;
 
@@ -29,8 +31,7 @@ public class Parser {
     public static String currentTableName;
 
     public static Command commandType(String command, PrintWriter writer) {
-        //System.out.println(command);
-        if(command.equals("END")){
+        if (command.equals("END")) {
             Backend.end = -1;
             return null;
         } else if (use.matcher(command).find()) {
@@ -56,21 +57,18 @@ public class Parser {
             return new Select(command, writer);
         }
         ErrorClient.send("Wrong command!");
-        System.out.println("Wrong command!");
         return null;
     }
 
     private static String returnTheDatabaseName(String command) {
         String databaseName = command.split(" ")[1];
         if (databases == null) {
-            System.out.println("Doesn't exists JSON file!");
             ErrorClient.send("Doesn't exists JSON file!");
             return null;
         }
         if (databases.checkDatabaseExists(databaseName))
             return databaseName;
         else {
-            System.out.println("Doesn't exists this database!");
             ErrorClient.send("Doesn't exists this database!");
             return null;
         }

@@ -2,6 +2,7 @@ package Backend.SaveLoadJSON;
 
 import Backend.Databases.Databases;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.File;
 
 public class SaveJSON {
@@ -9,8 +10,7 @@ public class SaveJSON {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             objectMapper.writeValue(new File(jsonFileName), databases);
-        } catch(Exception e){
-            System.out.println(e);
+        } catch (Exception e) {
         }
     }
 }

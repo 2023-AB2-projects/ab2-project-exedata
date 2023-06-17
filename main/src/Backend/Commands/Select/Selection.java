@@ -25,18 +25,17 @@ public class Selection {
     }
 
     public List<String> processing(int whichTable) {
-        //megnezni es vegig jarni a where-t, hogy van-e index az adott mezon
         List<Condition> restWhere = new ArrayList<>();
         Set<String> primaryKeySet = null;
         Set<String> tempPrimaryKeySet;
         mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);
         for (Condition i : selectManager.getWhere()) {
-            //if we have index file in condition
+            // if we have index file in condition
             if (Objects.equals(i.getLeftSideTableName(), selectManager.getFrom().get(whichTable)) ||
                     Objects.equals(i.getRightSideTableName(), selectManager.getFrom().get(whichTable))) {
                 tempPrimaryKeySet = getPrimaryKeySetIfHaveIndexFile(i);
                 if (tempPrimaryKeySet == null) {
-                    restWhere.add(i);//not yet used
+                    restWhere.add(i); // not yet used
                 } else {
                     if (primaryKeySet == null)
                         primaryKeySet = tempPrimaryKeySet;
@@ -65,7 +64,7 @@ public class Selection {
     private String convertToString(Document document) {
         String pk = (String) document.get("_id");
         String value = (String) document.get("Value");
-        return pk+"#"+value;
+        return pk + "#" + value;
     }
 
     private boolean conditionOfWhere(Document document, List<Condition> where, String tableName) {

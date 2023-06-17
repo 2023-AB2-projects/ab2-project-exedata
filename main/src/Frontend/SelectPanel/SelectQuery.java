@@ -9,7 +9,6 @@ import Backend.SaveLoadJSON.LoadJSON;
 
 import javax.swing.*;
 import javax.swing.border.MatteBorder;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
@@ -19,7 +18,6 @@ import java.util.List;
 public class SelectQuery extends JPanel {
     private ArrayList<TableBox> tableBoxes;
     private final Databases databases;
-    private JPanel centerUp;
     private JPanel center;
     private JPanel centerDown;
     private JTextPane selectCommandText;
@@ -27,20 +25,12 @@ public class SelectQuery extends JPanel {
     private JButton sendButton;
     private JComboBox databaseComboBox;
     private JComboBox tableComboBox = new JComboBox();
-    private String[] allDatabases;
-    private String[] allTables;
-    private String[] allAttributes;
     private ArrayList<String> leftJoins;
     private ArrayList<String> innerJoins;
     private ArrayList<String> rightJoins;
-    protected int width = this.getWidth();
-    protected int height = this.getWidth();
     private String currentDatabaseName;
     private String currentTableName;
     private JTable table;
-    private JPanel panel1;
-    private JPanel panelButtons;
-    private JPanel panel2;
 
     public SelectQuery() {
         databases = LoadJSON.load("databases.json");
@@ -52,16 +42,16 @@ public class SelectQuery extends JPanel {
             this.setLayout(new GridBagLayout());
 
             this.setLayout(new GridLayout(2, 1));
-            panel1 = new JPanel();
-            panel2 = new JPanel();
+            JPanel panel1 = new JPanel();
+            JPanel panel2 = new JPanel();
             panel1.setLayout(new GridLayout(4, 1));
             panel2.setLayout(new GridLayout(1, 1));
 
             // CenterUp
-            allDatabases = getAllDatabases();
-            allTables = getAllTables();
-            allAttributes = getAllAttributes();
-            centerUp = new JPanel();
+            String[] allDatabases = getAllDatabases();
+            String[] allTables = getAllTables();
+            String[] allAttributes = getAllAttributes();
+            JPanel centerUp = new JPanel();
             center = new JPanel();
             centerDown = new JPanel();
 
@@ -88,13 +78,6 @@ public class SelectQuery extends JPanel {
             Object[] columnNames = {"Column", "Alias", "Table", "Sort Type", "Sort Order", "Filter", "OR"};
             Object[][] data = {};
             DefaultTableModel model = new DefaultTableModel(data, columnNames) {
-                //                @Override
-//                public Class<?> getColumnClass(int column) {
-//                    if (column == 3) {
-//                        return Boolean.class;
-//                    }
-//                    return super.getColumnClass(column);
-//                }
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return column != 0 && column != 2;
@@ -148,7 +131,7 @@ public class SelectQuery extends JPanel {
             sendButton.setForeground(Color.BLACK);
             sendButton.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.black));
 
-            panelButtons = new JPanel();
+            JPanel panelButtons = new JPanel();
             panelButtons.setLayout(new GridLayout(1, 2));
             panelButtons.add(runButton);
             panelButtons.add(sendButton);

@@ -21,9 +21,7 @@ public class CreateDatabase implements Command {
 
     @Override
     public void performAction() {
-        //CREATE DATABASE PERSONS;
         String currentDatabaseName = command.split(" ")[2];
-//        Databases databases = LoadJSON.load("databases.json");
         if (databases == null) {
             List<Database> databaseList = new ArrayList<>();
             List<Table> tableList = new ArrayList<>();

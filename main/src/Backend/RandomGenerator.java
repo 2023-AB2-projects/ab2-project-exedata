@@ -5,6 +5,7 @@ import Backend.Databases.Database;
 import Backend.Databases.Databases;
 import Backend.Databases.Table;
 import Backend.SaveLoadJSON.LoadJSON;
+import Backend.SocketServer.ErrorClient;
 import Frontend.ClientConnection;
 
 import java.io.IOException;
@@ -15,7 +16,7 @@ import java.util.Random;
 
 public class RandomGenerator {
     public static void main(String[] args) {
-        new RandomGenerator("test", "alma", 100000);
+        new RandomGenerator("test", "alma2", 100000);
     }
 
     private final String databaseName;
@@ -30,18 +31,6 @@ public class RandomGenerator {
     }
 
     private void generate() {
-        /*
-        create database test;
-        use test;
-        create table alma2(
-	    id int primary key,
-	    name varchar unique,
-	    email varchar,
-	    tel int unique,
-	    age int,
-	    datum DATE
-        );
-         */
         Databases databases = LoadJSON.load("databases.json");
         assert databases != null;
         Database database = databases.getDatabase(databaseName);
@@ -72,7 +61,7 @@ public class RandomGenerator {
         String charSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         try {
             clientConnection.send("USE " + databaseName + ";");
-            for (int i = 0; i < numberOfRows; i++) {
+            for (int i = 76376; i < numberOfRows; i++) {
                 insert = new StringBuilder("INSERT INTO " + tableName + " (");
                 values = new StringBuilder();
                 for (int j = 0; j < attributeList.size(); j++) {
@@ -119,8 +108,11 @@ public class RandomGenerator {
                 clientConnection.send(insert.toString());
             }
             clientConnection.send("END");
+            while (true) {
+
+            }
         } catch (IOException e) {
-            System.out.println("Error!!!!!!!!!!!!!!!!!");
+            ErrorClient.send("Error!");
         }
         clientConnection.disconnect();
     }

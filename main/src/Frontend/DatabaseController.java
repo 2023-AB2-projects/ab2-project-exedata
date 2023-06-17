@@ -73,7 +73,7 @@ public class DatabaseController {
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);
                 if (e.getKeyCode() == 116) {
-                    // elkuldes a szervernek
+                    // send to server
                     try {
                         String command = databaseFrame.getPanelCenter().getInputArea().getSelectedText();
                         if (command == null) {
@@ -87,7 +87,7 @@ public class DatabaseController {
                             s=formatCommandInFrontend(s);
                             clientConnection.send(s);
                             if(pattern.matcher(s).find()){
-                                //ha select
+                                // if select
                                 List<String> result = clientConnection.getSelectResult();
                                 System.out.println(result);
 
@@ -306,12 +306,12 @@ public class DatabaseController {
                                                 + " RIGHT JOIN " + newTableName
                                                 + " ON " + joinSelectedTable + "." + joinSelectedAttribute + "=" + newTableName + "." + rightJoinComboBox.getSelectedItem().toString());
 
-                                for (int i = 0; i < tableBoxes.size(); i++) {
-                                    if (tableBoxes.get(i).getTableName().equals(joinSelectedTable)) {
-                                        tableBoxes.get(i).getRightJoinComboBox().setSelectedIndex(0);
+                                for (TableBox box : tableBoxes) {
+                                    if (box.getTableName().equals(joinSelectedTable)) {
+                                        box.getRightJoinComboBox().setSelectedIndex(0);
                                     }
-                                    if (tableBoxes.get(i).getTableName().equals(newTableName)) {
-                                        tableBoxes.get(i).getRightJoinComboBox().setSelectedIndex(0);
+                                    if (box.getTableName().equals(newTableName)) {
+                                        box.getRightJoinComboBox().setSelectedIndex(0);
                                     }
                                 }
                                 joinSelectedTable = "-";
@@ -351,9 +351,9 @@ public class DatabaseController {
                 ArrayList<String> innerJoins = databaseFrame.getPanelCenter().getSelectQuery().getInnerJoins();
                 ArrayList<String> rightJoins = databaseFrame.getPanelCenter().getSelectQuery().getRightJoins();
 
-                for (int i = 0; i < tableBoxes.size(); i++) {
-                    String tableName = tableBoxes.get(i).getTableName();
-                    ArrayList<JCheckBox> jCheckBox = tableBoxes.get(i).getCheckBoxes();
+                for (TableBox tableBox : tableBoxes) {
+                    String tableName = tableBox.getTableName();
+                    ArrayList<JCheckBox> jCheckBox = tableBox.getCheckBoxes();
                     boolean used = false;
                     for (int j = 0; j < jCheckBox.size(); j++) {
                         if (jCheckBox.get(j).isSelected()) {

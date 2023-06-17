@@ -10,23 +10,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class TableBox extends JPanel {
-    private SelectQuery selectQuery;
     private int boxX = 5;
     private int boxY = 5;
     private final int width = 150;
     private final int height = 200;
     private Point currentPoint;
     private final JPanel attributesPanel;
-    private final JPanel joinPanel;
-    private JComboBox<String> innerJoinComboBox;
-    private JComboBox<String> rightJoinComboBox;
-    private JComboBox<String> leftJoinComboBox;
-    private String tableName;
+    private final JComboBox<String> innerJoinComboBox;
+    private final JComboBox<String> rightJoinComboBox;
+    private final JComboBox<String> leftJoinComboBox;
+    private final String tableName;
     private final ArrayList<JCheckBox> checkBoxes;
-    private JLabel labelTableName;
 
     public TableBox(SelectQuery selectQuery, String tableName) {
-        this.selectQuery = selectQuery;
         this.tableName = tableName;
         this.checkBoxes = new ArrayList<>();
         checkBoxes.add(new JCheckBox("*"));
@@ -47,7 +43,7 @@ public class TableBox extends JPanel {
         this.currentPoint = null;
 
         // Main label
-        labelTableName = new JLabel(tableName);
+        JLabel labelTableName = new JLabel(tableName);
         this.add(labelTableName, gbc1);
 
         // Attributes panel
@@ -79,10 +75,10 @@ public class TableBox extends JPanel {
         leftJoinComboBox.addItem("LJ");
         innerJoinComboBox.addItem("J");
         rightJoinComboBox.addItem("RJ");
-        for (int i=0; i<allAttributes.length; i++) {
-            leftJoinComboBox.addItem(allAttributes[i]);
-            innerJoinComboBox.addItem(allAttributes[i]);
-            rightJoinComboBox.addItem(allAttributes[i]);
+        for (String allAttribute : allAttributes) {
+            leftJoinComboBox.addItem(allAttribute);
+            innerJoinComboBox.addItem(allAttribute);
+            rightJoinComboBox.addItem(allAttribute);
         }
 
         leftJoinComboBox.setBorder(new MatteBorder(2, 0, 2, 0, Color.black));
@@ -91,7 +87,7 @@ public class TableBox extends JPanel {
         //innerJoinComboBox.setHorizontalAlignment(JLabel.CENTER);
         rightJoinComboBox.setBorder(new MatteBorder(2, 0, 2, 0, Color.black));
         //rightJoinComboBox.setHorizontalAlignment(JLabel.CENTER);
-        joinPanel = new JPanel();
+        JPanel joinPanel = new JPanel();
         joinPanel.setLayout(new GridLayout(1, 3));
         joinPanel.add(leftJoinComboBox);
         joinPanel.add(innerJoinComboBox);
@@ -126,10 +122,10 @@ public class TableBox extends JPanel {
                     DefaultTableModel model = (DefaultTableModel) selectQuery.getTable().getModel();
                     model.setRowCount(0);
                     ArrayList<TableBox> tableBoxes = selectQuery.getTableBoxes();
-                    for (int i=0; i<tableBoxes.size(); i++) {
-                        ArrayList<JCheckBox> jCheckBoxes = tableBoxes.get(i).getCheckBoxes();
-                        String tableName = tableBoxes.get(i).getTableName();
-                        for (int j=1; j<jCheckBoxes.size(); j++) {
+                    for (TableBox tableBox : tableBoxes) {
+                        ArrayList<JCheckBox> jCheckBoxes = tableBox.getCheckBoxes();
+                        String tableName = tableBox.getTableName();
+                        for (int j = 1; j < jCheckBoxes.size(); j++) {
                             Object[] rowData = {jCheckBoxes.get(j).getText(), "", tableName, "Unsorted", "Unsorted", "", ""};
                             model.addRow(rowData);
                         }
@@ -177,10 +173,10 @@ public class TableBox extends JPanel {
 
     private ArrayList<String> updateJoins(ArrayList<String> joins) {
         ArrayList<String> newJoins = new ArrayList<>();
-        for (int i=0; i<joins.size(); i++) {
-            String[] splitted =joins.get(i).split(" ");
+        for (String join : joins) {
+            String[] splitted = join.split(" ");
             if (!splitted[0].equals(tableName) && !splitted[3].equals(tableName)) {
-                newJoins.add(joins.get(i));
+                newJoins.add(join);
             }
         }
         return newJoins;

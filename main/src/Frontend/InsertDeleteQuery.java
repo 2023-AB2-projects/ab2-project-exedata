@@ -22,27 +22,19 @@ import static Backend.Commands.FormatCommand.setMappingArray;
 import static Backend.Commands.FormatCommand.separetaByHasthag;
 
 public class InsertDeleteQuery extends JPanel {
-    private JPanel header;
-    private JPanel center;
-    private JPanel centerUp;
     private JComboBox databaseComboBox;
     private JComboBox tableComboBox;
-    private JPanel centerDown;
     private ScrollableJTable table;
-    private JButton insertButton;
-    private JButton deleteButton;
     private String[] allDatabases;
     private String[] allTables;
-    private ClientConnection clientConnectionInsertDelete;
+    private final ClientConnection clientConnectionInsertDelete;
     private Databases databases;
     private int numberOfRows;
-    private final PanelDown panelDown;
 
     public InsertDeleteQuery(PanelDown panelDown, ClientConnection c) {
-        this.panelDown = panelDown;
         this.setLayout(new BorderLayout());
-        header = new JPanel();
-        center = new JPanel();
+        JPanel header = new JPanel();
+        JPanel center = new JPanel();
         clientConnectionInsertDelete = c;
 
         databases = LoadJSON.load("databases.json");
@@ -62,11 +54,11 @@ public class InsertDeleteQuery extends JPanel {
 
             fillAttributesInTable();
 
-            insertButton = new JButton("Insert");
+            JButton insertButton = new JButton("Insert");
             insertButton.setBackground(new Color(0, 170, 0));
             insertButton.setForeground(Color.white);
             insertButton.setBorder(new MatteBorder(3, 3, 3, 3, Color.yellow));
-            deleteButton = new JButton("Delete");
+            JButton deleteButton = new JButton("Delete");
             deleteButton.setBackground(new Color(255, 62, 63));
             deleteButton.setForeground(Color.white);
             deleteButton.setBorder(new MatteBorder(3, 3, 3, 3, Color.yellow));
@@ -79,8 +71,8 @@ public class InsertDeleteQuery extends JPanel {
             //=====================================================================================================
             center.setLayout(new GridLayout(2, 1));
 
-            centerUp = new JPanel();
-            centerDown = new JPanel();
+            JPanel centerUp = new JPanel();
+            JPanel centerDown = new JPanel();
 
             centerUp.setLayout(new GridLayout(2, 2));
             JLabel label1 = new JLabel("Select your database:");
@@ -173,7 +165,6 @@ public class InsertDeleteQuery extends JPanel {
                     try {
                         clientConnectionInsertDelete.send("END");
                     } catch (Exception exception) {
-                        System.out.println(exception);
                     }
                     fillAttributesInTable();
                 }
@@ -207,10 +198,6 @@ public class InsertDeleteQuery extends JPanel {
     public void refresh() {
         databases = LoadJSON.load("databases.json");
         if (databases == null || databases.getDatabaseList().size() == 0) {
-//            if(databaseComboBox!=null && tableComboBox!=null) {
-//                databaseComboBox.setModel(new DefaultComboBoxModel<String>());
-//                tableComboBox.setModel(new DefaultComboBoxModel<String>());
-//            }
         } else {
             Parser.currentDatabaseName = databases.getDatabaseList().get(0).getName();
             Parser.currentTableName = databases.getDatabase(Parser.currentDatabaseName).getTables().get(0).getName();

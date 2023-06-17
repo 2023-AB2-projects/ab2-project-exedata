@@ -2,6 +2,7 @@ package Frontend;
 
 import Backend.Commands.Command;
 import Backend.Parser;
+import Backend.SocketServer.ErrorClient;
 import com.mongodb.client.FindIterable;
 import org.bson.Document;
 
@@ -15,16 +16,14 @@ public class ClientConnection {
     private PrintWriter printWriter;
     private BufferedReader reader;
     private int status = 1;
-    private int port;
 
     public ClientConnection(int port) {
-        this.port = port;
         try {
             socket = new Socket("localhost", port);
             printWriter = new PrintWriter(socket.getOutputStream(), true);
         } catch (IOException e) {
             status = 0;
-            System.out.println("Server connection failed.");
+            ErrorClient.send("Server connection failed.");
         }
     }
 
@@ -32,11 +31,10 @@ public class ClientConnection {
         try {
             socket = new Socket("localhost", port);
             printWriter = new PrintWriter(socket.getOutputStream(), true);
-            System.out.println("Connected to server");
             status = 1;
         } catch (IOException e) {
             status = 0;
-            System.out.println("Server connection failed.");
+            ErrorClient.send("Server connection failed.");
         }
     }
 
@@ -45,16 +43,14 @@ public class ClientConnection {
             socket.close();
             printWriter.close();
         } catch (Exception e) {
-            System.out.println("Error with disconnect!");
+            ErrorClient.send("Error with disconnect!");
             return;
         }
-        System.out.println("Disconnected from the server");
         status = 0;
     }
 
     public void send(String message) throws IOException {
         if (status == 1) {
-            System.out.println("I sent this command: " + message);
             printWriter.println(message);
         }
     }
@@ -75,8 +71,8 @@ public class ClientConnection {
         return data;
     }
 
-    public List<String> getSelectResult(){
-        List<String> data=new ArrayList<>();
+    public List<String> getSelectResult() {
+        List<String> data = new ArrayList<>();
         String receiveData;
         try {
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));

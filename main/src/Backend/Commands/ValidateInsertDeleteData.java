@@ -31,12 +31,12 @@ public class ValidateInsertDeleteData {
             for (ForeignKey j : i.getForeignKeys()) {
                 if (j.getRefTable().equals(tableName)) {
                     indexFileName = i.getIndexFileName(new String[]{j.getName()});
-                    value=getValueByAttributeName(document, j.getRefAttribute(), primaryKeyList, attributeList);
+                    value = getValueByAttributeName(document, j.getRefAttribute(), primaryKeyList, attributeList);
                     if (indexFileName == null) {
-                        if(checkExistsValueInTableIfDoesNotHaveIndexFile(i.getName(), j.getName(), value, databases))
+                        if (checkExistsValueInTableIfDoesNotHaveIndexFile(i.getName(), j.getName(), value, databases))
                             return false;
                     } else {
-                        if(checkExistsValueInTableIfDoesHaveIndexFile(indexFileName, value)){
+                        if (checkExistsValueInTableIfDoesHaveIndexFile(indexFileName, value)) {
                             return false;
                         }
                     }
@@ -48,38 +48,31 @@ public class ValidateInsertDeleteData {
 
     public static boolean checkInsertData(String tableName, String[] column, String[] values) {
         if (databases == null) {
-            System.out.println("JSON file doesn't exists!");
             ErrorClient.send("JSON file doesn't exists!");
             return false;
         }
         if (!databases.checkDatabaseExists(Parser.currentDatabaseName)) {
-            System.out.println("Database doesn't exists this database!");
             ErrorClient.send("Database doesn't exists this database!");
             return false;
         }
         if (!databases.getDatabase(Parser.currentDatabaseName).checkTableExists(tableName)) {
-            System.out.println("Table doesn't exists!");
             ErrorClient.send("Table doesn't exists!");
             return false;
         }
         if (!databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).checkInsertColumn(column)) {
-            System.out.println("Syntax error!");
             ErrorClient.send("Syntax error!");
             return false;
         }
         for (int i = 0; i < values.length; i++) {
             if (!checkType(values[i], databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getAttribute(column[i]).getType())) {
-                System.out.println("The " + values[i] + " type isn't correct!");
                 ErrorClient.send("The " + values[i] + " type isn't correct!");
                 return false;
             }
             if (!checkUniqueConstraint(values[i], column[i], tableName, databases)) {
-                System.out.println("The " + column[i] + ": " + values[i] + " already exists!");
                 ErrorClient.send("The " + column[i] + ": " + values[i] + " already exists!");
                 return false;
             }
             if (!checkForeignKeyConstraint(values[i], column[i], tableName, databases)) {
-                System.out.println("The " + column[i] + ": " + values[i] + " doesn't exists in reference table!");
                 ErrorClient.send("The " + column[i] + ": " + values[i] + " doesn't exists in reference table!");
                 return false;
             }
@@ -100,8 +93,6 @@ public class ValidateInsertDeleteData {
         }
         String indexFileName = databases.getDatabase(Parser.currentDatabaseName).getTable(foreignKey.getRefTable()).getIndexFileName(new String[]{foreignKey.getRefAttribute()});
         if (indexFileName == null) {
-            //doesn't exist indexFile
-            //System.out.println(value);
             return checkExistsValueInTableIfDoesNotHaveIndexFile(foreignKey.getRefTable(), foreignKey.getRefAttribute(), value, databases);
         } else {
             return checkExistsValueInTableIfDoesHaveIndexFile(indexFileName, value);
@@ -114,7 +105,7 @@ public class ValidateInsertDeleteData {
         }
         String indexFileName = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getIndexFileName(new String[]{attributeName});
         if (indexFileName == null) {
-            //doesn't exist indexFile
+            //doesn't exists indexFile
             return !checkExistsValueInTableIfDoesNotHaveIndexFile(tableName, attributeName, value, databases);
         } else {
             return !checkExistsValueInTableIfDoesHaveIndexFile(indexFileName, value);

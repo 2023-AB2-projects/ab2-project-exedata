@@ -21,12 +21,10 @@ public class Select implements Command {
 
     @Override
     public void performAction() throws ParserConfigurationException, TransformerException {
-        //SELECT * FROM disciplines WHERE CreditNr > 4 AND DName=Databases1;
         SelectManager selectManager = new SelectManager(command, databases);
         String massage = selectManager.processing();
         if (massage != null) {
             ErrorClient.send(massage);
-            System.out.println(massage);
             sendData(new ArrayList<>());
             return;
         }
@@ -39,20 +37,17 @@ public class Select implements Command {
         if (groupBy.size() != 0) {
             GroupBy group = new GroupBy(selectManager, currentResults);
             ErrorClient.send("Select done!");
-            System.out.println("Select done!");
             sendData(group.getFinalResults());
             return;
         }
         if (selectManager.getFunction().size() != 0) {
             AggregationWithoutGroupBy aggregationWithoutGroupBy = new AggregationWithoutGroupBy(selectManager, currentResults);
             ErrorClient.send("Select done!");
-            System.out.println("Select done!");
             sendData(aggregationWithoutGroupBy.getFinalResults());
             return;
         }
         Projection projection = new Projection(selectManager);
         ErrorClient.send("Select done!");
-        System.out.println("Select done!");
         sendData(projection.getResult(currentResults));
     }
 
@@ -62,6 +57,5 @@ public class Select implements Command {
             writer.println(i);
         }
         writer.println("null");
-        System.out.println("Finished!");
     }
 }

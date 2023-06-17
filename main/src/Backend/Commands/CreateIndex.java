@@ -29,8 +29,6 @@ public class CreateIndex implements Command {
 
     @Override
     public void performAction() {
-        //CREATE INDEX index_name
-        //ON table_name (column1, column2, ...);
         if (databases == null) {
             ErrorClient.send("Databases doesn't exists!");
             return;
@@ -45,11 +43,11 @@ public class CreateIndex implements Command {
             tableName = matcher.group(2);
             attributeNames = matcher.group(3).replaceAll(" ", "").split(",");
 
-            if (databases.getDatabase(Parser.currentDatabaseName).getTable(tableName)==null) {
+            if (databases.getDatabase(Parser.currentDatabaseName).getTable(tableName) == null) {
                 ErrorClient.send("Table doesn't exists!");
                 return;
             }
-            if (databases.getDatabase(Parser.currentDatabaseName).getTable(indexName)!=null) {
+            if (databases.getDatabase(Parser.currentDatabaseName).getTable(indexName) != null) {
                 ErrorClient.send("Index file already exists!");
                 return;
             }
@@ -57,7 +55,6 @@ public class CreateIndex implements Command {
                 if (databases.getDatabase(Parser.currentDatabaseName) != null) {
                     if (databases.getDatabase(Parser.currentDatabaseName).checkTableExists(tableName)) {
                         if (createIndex(indexName, tableName, attributeNames)) {
-                            //createEmptyIndexFile(indexName + ".ind");
                             SaveJSON.save(databases, "databases.json");
                             createIndexFileInMongoDB(indexName, tableName, attributeNames, databases);
                             ErrorClient.send(indexName + " index is created!");
@@ -97,7 +94,7 @@ public class CreateIndex implements Command {
         return true;
     }
 
-    public static void  createIndexFileInMongoDB(String indexName, String tableName, String[] attributeNames, Databases databases) {
+    public static void createIndexFileInMongoDB(String indexName, String tableName, String[] attributeNames, Databases databases) {
         // Create index file (collection) in MongoDB
         // Connection
         mongoDB.createDatabaseOrUse(Parser.currentDatabaseName);

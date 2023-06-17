@@ -19,7 +19,6 @@ public class DropDatabase implements Command {
         //DROP DATABASE PERSONS;
         String currentDatabaseName = command.split(" ")[2];
         if (databases == null) {
-            System.out.println("JSONFile Doesn't exists!");
             ErrorClient.send("JSONFile Doesn't exists!");
             return;
         } else {

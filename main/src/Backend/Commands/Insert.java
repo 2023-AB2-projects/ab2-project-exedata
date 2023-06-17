@@ -70,7 +70,7 @@ public class Insert implements Command {
         List<String> indexAttributes = indexFile.getIndexAttributes();
         List<String> primaryKeys = databases.getDatabase(Parser.currentDatabaseName).getTable(tableName).getPrimaryKey();
         if (indexFile.getIsUnique().equals("1")) {
-            //if unique
+            // if unique
             for (int i = 0; i < fieldName.length; i++) {
                 if (indexAttributes.contains(fieldName[i])) {
                     keyIndexFile.append(value[i]).append("#");

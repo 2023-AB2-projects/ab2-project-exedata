@@ -7,10 +7,8 @@ public class DatabaseFrame extends JFrame {
     private final PanelTop panelTop;
     private final PanelCenter panelCenter;
     private final PanelDown panelDown;
-    private final ClientConnection clientConnection;
 
     public DatabaseFrame(ClientConnection clientConnection) {
-        this.clientConnection=clientConnection;
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout());
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);

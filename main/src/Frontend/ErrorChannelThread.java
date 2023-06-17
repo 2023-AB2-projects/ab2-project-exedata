@@ -20,10 +20,8 @@ public class ErrorChannelThread extends Thread {
         try {
             serverSocket = new ServerSocket(12001);
         } catch (IOException e) {
-            System.out.println("Error with ErrorChannelThread!");
             return;
         }
-        System.out.println("Error socket started successfully!");
 
         String errorMassage;
         while (true) {
@@ -32,7 +30,6 @@ public class ErrorChannelThread extends Thread {
                 reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
                 while ((errorMassage = reader.readLine()) != null) {
-                    System.out.println("I received this error massage: " + errorMassage);
                     if (panelDown.getErrorArea().getText().equals("")) {
                         panelDown.getErrorArea().setText(errorMassage);
                     } else {

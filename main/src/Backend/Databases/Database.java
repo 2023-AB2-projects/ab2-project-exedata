@@ -14,7 +14,7 @@ public class Database {
     public Database() {
     }
 
-    public String whichTableContainsThisAttribute(String column){
+    public String whichTableContainsThisAttribute(String column) {
         for (Table i : tables) {
             if (i.checkAttributeExists(column)) {
                 return i.getName();

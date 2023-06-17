@@ -40,7 +40,6 @@ public class SelectManager {
         separate();
         if (errorMassage != null)
             return errorMassage;
-        ////////////////check!
         //SELECT
         //FROM
         //WHERE

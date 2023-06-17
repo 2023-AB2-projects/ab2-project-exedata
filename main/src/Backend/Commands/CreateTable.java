@@ -54,14 +54,12 @@ public class CreateTable implements Command {
         List<IndexFile> indexFilesList = new ArrayList<>();
 
         command = command + ',';
-        System.out.println(command);
 
         String[] beforeAndAfterTheFirstOpenBracket = command.split("\\(", 2);
         String currentTableName = beforeAndAfterTheFirstOpenBracket[0].split(" ")[2];
         table = new Table(currentTableName, attributeList, primaryKeyList, foreignKeysList, uniqueKeysList, indexFilesList);
 
         if (databases == null) {
-            System.out.println("Doesn't exists JSONFile!");
             ErrorClient.send("Doesn't exists JSONFile!");
             return;
         }
@@ -69,15 +67,12 @@ public class CreateTable implements Command {
         syntaxError = false;
         getItemFromStructure(beforeAndAfterTheFirstOpenBracket[1]);
         fillJSONArrayByConstraint(beforeAndAfterTheFirstOpenBracket[1]);
-        //createPrimaryKeyDefaultIndex(currentTableName);
 
         if (syntaxError) {
-            System.out.println("Syntax Error!");
             ErrorClient.send("Syntax Error!");
             return;
         }
         if (databases == null) {
-            System.out.println("Doesn't exists JSONFile!");
             ErrorClient.send("Doesn't exists JSONFile!");
         } else {
             if (databases.checkDatabaseExists(databaseName)) {
@@ -88,22 +83,19 @@ public class CreateTable implements Command {
                     mongoDB.createCollection(table.getName());
                     ErrorClient.send("Table " + currentTableName + " created!");
                 } else {
-                    System.out.println("Table is exists!");
                     ErrorClient.send("Table is exists!");
                 }
             } else {
-                System.out.println("Doesn't exists this database!");
                 ErrorClient.send("Doesn't exists this database!");
             }
         }
     }
 
     private void createPrimaryKeyDefaultIndex(String currentTableName) {
-        //indexFiles
-        //primaryKey
+        // indexFiles
+        // primaryKey
         List<String> attributeName = table.getPrimaryKey();
         table.addIndexFile(new IndexFile(currentTableName, attributeName, "1"));
-        //createEmptyIndexFile(currentTableName + ".ind");
     }
 
     private void fillJSONArrayByConstraint(String line) {
@@ -118,7 +110,6 @@ public class CreateTable implements Command {
             startIndex = i;
         }
         for (; i < words.length; i++) {
-            //System.out.println(words[i]);
             if (words[i].indexOf('(') != -1) {
                 numberOfOpenBrackets += 1;
             }
@@ -127,15 +118,11 @@ public class CreateTable implements Command {
             }
             if (isKeyWords(words[i]))
                 numberOfKeyWords += 1;
-            //System.out.println(words[i]+" "+numberOfOpenBrackets+" "+numberOfCloseBrackets);
             if (words[i].indexOf(',') != -1 && numberOfOpenBrackets == numberOfCloseBrackets) {
-                //System.out.println(words[i] + " " + numberOfKeyWords);
                 if (numberOfKeyWords == 1) {
-                    //System.out.println("d");
-                    if (words[i].toUpperCase().equals(keyWords[2] + ',') && table.checkAttributeExists(words[startIndex])) {//Név VARCHAR UNIQUE,
+                    if (words[i].toUpperCase().equals(keyWords[2] + ',') && table.checkAttributeExists(words[startIndex])) {
                         table.addUnique(words[startIndex]);
-                    } else if (words[startIndex].toUpperCase().equals(keyWords[0])) {//PRIMARY KEY(KocsmaID, asd, ItalID),
-                        //PRIMARY KEY(KocsmaID),
+                    } else if (words[startIndex].toUpperCase().equals(keyWords[0])) {
                         words2 = words[startIndex + 1].split("\\(");
                         if (words2[0].toUpperCase().equals(keyWords[1]) && table.checkAttributeExists(formatWords(words2[1]))) {
                             table.addPrimaryKey(formatWords(words2[1]));
@@ -143,14 +130,12 @@ public class CreateTable implements Command {
                                 if (table.checkAttributeExists(formatWords(words[j]))) {
                                     table.addPrimaryKey(formatWords(words[j]));
                                 } else {
-                                    //System.out.println("Syntax error!");
                                     syntaxError = true;
                                     break;
                                 }
                             }
                         }
                     } else if (words[startIndex + 2].toUpperCase().equals(keyWords[3])) {
-                        //SpecID varchar REFERENCES specialization (SpecID)
                         String foreignTableName = commandToRightFormat(i, startIndex, words[i], words[i - 1], 4);
                         String foreignAttributeName = formatWords(foreignTableName.split(" ")[1]);
                         foreignTableName = foreignTableName.split(" ")[0];
@@ -160,7 +145,6 @@ public class CreateTable implements Command {
                         }
                     }
                 } else if (numberOfKeyWords == 2) {
-                    //PRIMARY KEY (StudID,DiscID)
                     if (words[startIndex].toUpperCase().equals(keyWords[0])
                             && words[startIndex + 1].toUpperCase().equals(keyWords[1])) {
                         words2 = formatWords(words[i]).split(",");
@@ -169,15 +153,12 @@ public class CreateTable implements Command {
                                 if (table.checkAttributeExists(formatWords(j))) {
                                     table.addPrimaryKey(formatWords(j));
                                 } else {
-//                                    System.out.println("Syntax error!");
                                     syntaxError = true;
                                     break;
                                 }
                             }
                         }
                     } else {
-                        //SzemSzám VARCHAR PRIMARY KEY,
-                        //first_name VARCHAR NoT NULL,
                         if (words[i - 1].toUpperCase().equals(keyWords[0]) && table.checkAttributeExists(words[startIndex])
                                 && words[i].toUpperCase().equals(keyWords[1] + ',')) {
                             table.addPrimaryKey(formatWords(words[startIndex]));
@@ -187,7 +168,7 @@ public class CreateTable implements Command {
                     if (words[startIndex + 2].toUpperCase().equals(keyWords[5])
                             && words[startIndex + 3].toUpperCase().equals(keyWords[1])
                             && words[startIndex + 4].toUpperCase().equals(keyWords[3])
-                    ) {//RészlegID INT FOREIGN KEY REFERENCES Részlegek(RészlegID),
+                    ) {
                         String foreignTableName = commandToRightFormat(i, startIndex, words[i], words[i - 1], 6);
                         String foreignAttributeName = foreignTableName.split(" ")[1];
                         foreignTableName = foreignTableName.split(" ")[0];
@@ -198,7 +179,7 @@ public class CreateTable implements Command {
                     } else if (words[startIndex].toUpperCase().equals(keyWords[5])
                             && words[startIndex + 1].toUpperCase().equals(keyWords[1])
                             && words[startIndex + 3].toUpperCase().equals(keyWords[3])
-                    ) {//FOREIGN KEY (store_id) REFERENCES sales.stores (store_id),
+                    ) {
                         String foreignTableName = commandToRightFormat(i, startIndex, words[i], words[i - 1], 5);
                         String foreignAttributeName = foreignTableName.split(" ")[1];
                         foreignTableName = foreignTableName.split(" ")[0];
@@ -236,11 +217,9 @@ public class CreateTable implements Command {
             if (databases.getDatabase(databaseName).getTable(tableName) != null) {
                 return databases.getDatabase(databaseName).getTable(tableName).checkAttributeExists(attributeName);
             } else {
-                System.out.println("Table doesn't exists!");
                 ErrorClient.send("Table doesn't exists!");
             }
         } else {
-            System.out.println("Database doesn't exists!!!");
             ErrorClient.send("Database doesn't exists!!!");
         }
         return true;
@@ -257,7 +236,6 @@ public class CreateTable implements Command {
                 i++;
                 startIndex = i;
             }
-            //System.out.println(words[i]);
             if (isKeyWords(words[i]))
                 hasKeyWord = true;
             else if (isType(words[i]))

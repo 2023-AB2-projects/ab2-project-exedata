@@ -27,7 +27,7 @@ public class Join {
             List<String> subResult = tableSelectionResultsSeparately.processing(i);
             // attributeNames of a table (ex. indexArray.get(0) => [DiscID, DName, CreditNr])
             List<String> attributeNamesTableIndex = getAttributeNames(tableNames.get(i));
-            ////check condition
+            // check condition
             joinResult = joining(joinResult, allAttributeNames, subResult, attributeNamesTableIndex, joinConditions);
             allAttributeNames.addAll(attributeNamesTableIndex);
         }

@@ -25,7 +25,6 @@ public class MongoDB {
         try {
             mongoClient = new MongoClient("localhost", 27017);
         } catch (Exception e) {
-            System.out.println("Error with connection to localhost!");
             ErrorClient.send("Error with connection to localhost!");
         }
     }
@@ -44,12 +43,12 @@ public class MongoDB {
 
     public void createCollection(String collectionName) {
         if (mongoClient == null) {
-            System.out.println("Firstly you have to connect to MongoDB!");
+            ErrorClient.send("Firstly you have to connect to MongoDB!");
         } else {
             try {
                 database.createCollection(collectionName);
             } catch (Exception e) {
-                System.out.println("Collection is already created!");
+                ErrorClient.send("Collection is already created!");
             }
         }
     }
@@ -66,8 +65,6 @@ public class MongoDB {
             insertOne(collectionName, document);
         }
         if(results.size()==0){
-            System.out.println(id);
-            System.out.println(appendString);
             document.append("_id", id);
             document.append("Value", appendString.substring(1));
             insertOne(collectionName, document);
@@ -76,7 +73,8 @@ public class MongoDB {
 
     public void dropCollection(String collectionName) {
         if (database == null) {
-            System.out.println("Firstly you have to select your database!");
+            ErrorClient.send("Firstly you have to select your database!");
+
         } else {
             database.getCollection(collectionName).drop();
         }
@@ -85,10 +83,8 @@ public class MongoDB {
     public void insertOne(String collectionName, Document document) {
         if (!existsID(collectionName, document)) {
             database.getCollection(collectionName).insertOne(document);
-            //System.out.println("Document inserted to " + collectionName + "!");
             Backend.goodInsert = true;
         } else {
-            System.out.println("Insert error to " + collectionName + ", " + document.get("_id") + " primary key already exists!");
             ErrorClient.send("Insert error to " + collectionName + ", " + document.get("_id") + " primary key already exists!");
         }
     }
@@ -97,10 +93,8 @@ public class MongoDB {
         for (int i = 0; i < documents.size(); i++) {
             if (!existsID(collectionName, documents.get(i))) {
                 database.getCollection(collectionName).insertOne(documents.get(i));
-                System.out.println("Document inserted to " + collectionName + "!" + " (data: " + i + ")");
                 Backend.goodInsert = true;
             } else {
-                System.out.println("Insert error to " + collectionName + ", primary key already exists!" + " (data: " + i + ")");
                 ErrorClient.send("Insert error to " + collectionName + ", primary key already exists!" + " (data: " + i + ")");
             }
         }
@@ -108,13 +102,11 @@ public class MongoDB {
 
     public void deleteOne(String collectionName, String fieldName, String value) {
         database.getCollection(collectionName).deleteOne(Filters.eq(fieldName, value));
-        System.out.println("Document deleted from " + collectionName + "!");
         Backend.goodDelete = true;
     }
 
     public void deleteMany(String collectionName, String fieldName, String value) {
         database.getCollection(collectionName).deleteMany(Filters.eq(fieldName, value));
-        System.out.println("All documents delete from " + collectionName + "!");
         Backend.goodDelete = true;
     }
 

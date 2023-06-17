@@ -21,7 +21,6 @@ public class DropTable implements Command {
         //drop table tableName;
         String currentTableName = command.split(" ")[2];
         if (databases == null) {
-            System.out.println("JSONFile Doesn't exists!");
             ErrorClient.send("JSONFile Doesn't exists!");
         } else {
             databases.getDatabase(Parser.currentDatabaseName).dropTable(currentTableName);
