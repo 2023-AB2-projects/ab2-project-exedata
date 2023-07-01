@@ -69,3 +69,13 @@ The frontend utilizes a range of components, including panels, buttons, text fie
 
 In summary, the frontend serves as the intermediary between users and the backend, offering an interface that enables users to interact with the system. It encompasses functionalities such as user input, result display, navigation, validation, error handling, and event management. With a well-designed user interface, the frontend enhances user engagement and facilitates effective communication with the underlying system.
 
+# Images
+
+## Command line
+![](images/github0.png)
+
+## Insert - Delete Query
+![](images/github1.png)
+
+## Select Query Designer
+![](images/github2.png)
