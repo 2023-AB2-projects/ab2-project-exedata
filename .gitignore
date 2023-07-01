@@ -1,0 +1,50 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+
+##############################
+## Java
+##############################
+.mtj.tmp/
+*.class
+*.jar
+*.war
+*.ear
+.nar
+hs_err_pid
+
+##############################
+## Maven
+##############################
+target/
+.github/
+.idea/
+
+##############################
+## Gradle
+##############################
+bin/
+build/
+.gradle
+.gradletasknamecache
+gradle-app.setting
+!gradle-wrapper.jar
+
+##############################
+## IntelliJ
+##############################
+out/
+.idea/
+.idea_modules/
+*.iml
+*.ipr
+*.iws
+
+##############################
+## Eclipse
+##############################
+.settings/
+tmp/
+.metadata
+.classpath
+.project
