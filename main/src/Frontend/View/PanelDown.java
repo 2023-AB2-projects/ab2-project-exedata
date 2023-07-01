@@ -1,4 +1,4 @@
-package Frontend;
+package Frontend.View;
 
 import javax.swing.*;
 import javax.swing.text.*;

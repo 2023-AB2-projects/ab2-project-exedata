@@ -1,4 +1,4 @@
-package Backend.Commands;
+package Backend.Commands.InsertDelete;
 
 import Backend.Databases.Attribute;
 import Backend.Databases.Databases;
@@ -14,7 +14,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static Backend.Common.getValueByAttributeName;
+import static Backend.CommonClass.Common.getValueByAttributeName;
 import static Backend.SocketServer.Server.databases;
 import static Backend.SocketServer.Server.mongoDB;
 

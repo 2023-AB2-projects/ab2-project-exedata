@@ -1,4 +1,6 @@
-package Frontend;
+package Frontend.Controller;
+
+import Frontend.View.PanelDown;
 
 import java.io.*;
 import java.net.ServerSocket;

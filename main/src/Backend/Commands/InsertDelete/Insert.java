@@ -1,5 +1,6 @@
-package Backend.Commands;
+package Backend.Commands.InsertDelete;
 
+import Backend.Commands.Command;
 import Backend.Databases.Attribute;
 import Backend.Databases.Databases;
 import Backend.Databases.IndexFile;

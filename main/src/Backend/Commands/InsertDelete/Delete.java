@@ -1,6 +1,7 @@
-package Backend.Commands;
+package Backend.Commands.InsertDelete;
 
 import Backend.Backend;
+import Backend.Commands.Command;
 import Backend.Databases.Databases;
 import Backend.Databases.IndexFile;
 import Backend.Parser;
@@ -14,9 +15,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static Backend.Commands.CreateIndex.createIndexFileInMongoDB;
+import static Backend.Commands.Create.CreateIndex.createIndexFileInMongoDB;
 import static Backend.Commands.FormatCommand.getPrimaryKeysValuesSeparateByHash;
-import static Backend.Commands.ValidateInsertDeleteData.checkDeleteData;
+import static Backend.Commands.InsertDelete.ValidateInsertDeleteData.checkDeleteData;
 import static Backend.SocketServer.Server.databases;
 import static Backend.SocketServer.Server.mongoDB;
 

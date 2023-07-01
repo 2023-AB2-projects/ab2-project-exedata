@@ -1,4 +1,4 @@
-package Backend;
+package Backend.CommonClass;
 
 import Backend.Databases.Attribute;
 import org.bson.Document;

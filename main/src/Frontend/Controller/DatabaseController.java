@@ -1,7 +1,9 @@
-package Frontend;
+package Frontend.Controller;
 
 import Backend.Parser;
 import Backend.SocketServer.ErrorClient;
+import Frontend.Connection.ClientConnection;
+import Frontend.View.DatabaseFrame;
 import Frontend.SelectPanel.TableBox;
 
 import javax.swing.*;

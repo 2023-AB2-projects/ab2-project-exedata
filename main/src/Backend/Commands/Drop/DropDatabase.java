@@ -1,5 +1,6 @@
-package Backend.Commands;
+package Backend.Commands.Drop;
 
+import Backend.Commands.Command;
 import Backend.SaveLoadJSON.SaveJSON;
 import Backend.SocketServer.ErrorClient;
 

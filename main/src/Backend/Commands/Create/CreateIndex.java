@@ -1,4 +1,4 @@
-package Backend.Commands;
+package Backend.Commands.Create;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,7 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import Backend.Backend;
-import Backend.Common;
+import Backend.Commands.Command;
+import Backend.CommonClass.Common;
 import Backend.Databases.*;
 import Backend.Parser;
 import Backend.SaveLoadJSON.SaveJSON;

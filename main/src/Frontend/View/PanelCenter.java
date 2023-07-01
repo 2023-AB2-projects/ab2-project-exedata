@@ -1,5 +1,6 @@
-package Frontend;
+package Frontend.View;
 
+import Frontend.Connection.ClientConnection;
 import Frontend.SelectPanel.SelectQuery;
 
 import javax.swing.*;

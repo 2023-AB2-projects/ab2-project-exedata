@@ -1,4 +1,6 @@
-package Frontend;
+package Frontend.View;
+
+import Frontend.Connection.ClientConnection;
 
 import javax.swing.*;
 import java.awt.*;

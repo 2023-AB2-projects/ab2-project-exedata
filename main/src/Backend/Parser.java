@@ -1,6 +1,14 @@
 package Backend;
 
 import Backend.Commands.*;
+import Backend.Commands.Create.CreateDatabase;
+import Backend.Commands.Create.CreateIndex;
+import Backend.Commands.Create.CreateTable;
+import Backend.Commands.InsertDelete.Delete;
+import Backend.Commands.Drop.DropDatabase;
+import Backend.Commands.Drop.DropIndex;
+import Backend.Commands.Drop.DropTable;
+import Backend.Commands.InsertDelete.Insert;
 import Backend.Commands.Select.Select;
 import Backend.SocketServer.ErrorClient;
 

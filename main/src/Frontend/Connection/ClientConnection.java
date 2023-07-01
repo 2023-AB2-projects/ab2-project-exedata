@@ -1,4 +1,4 @@
-package Frontend;
+package Frontend.Connection;
 
 import Backend.Commands.Command;
 import Backend.Parser;

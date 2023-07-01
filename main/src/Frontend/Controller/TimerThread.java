@@ -1,4 +1,6 @@
-package Frontend;
+package Frontend.Controller;
+
+import Frontend.View.PanelTop;
 
 import javax.swing.*;
 import java.awt.*;

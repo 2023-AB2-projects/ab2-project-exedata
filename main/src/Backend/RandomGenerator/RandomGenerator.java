@@ -1,4 +1,4 @@
-package Backend;
+package Backend.RandomGenerator;
 
 import Backend.Databases.Attribute;
 import Backend.Databases.Database;
@@ -6,7 +6,7 @@ import Backend.Databases.Databases;
 import Backend.Databases.Table;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SocketServer.ErrorClient;
-import Frontend.ClientConnection;
+import Frontend.Connection.ClientConnection;
 
 import java.io.IOException;
 import java.time.LocalDate;

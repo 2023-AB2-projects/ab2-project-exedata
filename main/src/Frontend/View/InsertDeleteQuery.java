@@ -1,4 +1,4 @@
-package Frontend;
+package Frontend.View;
 
 import Backend.Databases.Attribute;
 import Backend.Databases.Database;
@@ -7,6 +7,7 @@ import Backend.Databases.Table;
 import Backend.Parser;
 import Backend.SaveLoadJSON.LoadJSON;
 import Backend.SocketServer.ErrorClient;
+import Frontend.Connection.ClientConnection;
 import org.bson.Document;
 
 import javax.swing.*;

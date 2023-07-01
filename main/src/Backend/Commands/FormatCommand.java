@@ -32,7 +32,7 @@ public class FormatCommand {
         return command;
     }
 
-    protected static String formatWords(String word) {
+    public static String formatWords(String word) {
         String result = word;
         if (result.charAt(0) == '(') {
             result = result.substring(1);

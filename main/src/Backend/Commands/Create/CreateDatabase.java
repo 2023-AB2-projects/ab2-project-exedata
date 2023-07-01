@@ -1,5 +1,6 @@
-package Backend.Commands;
+package Backend.Commands.Create;
 
+import Backend.Commands.Command;
 import Backend.Databases.*;
 import Backend.SaveLoadJSON.SaveJSON;
 import Backend.SocketServer.ErrorClient;
