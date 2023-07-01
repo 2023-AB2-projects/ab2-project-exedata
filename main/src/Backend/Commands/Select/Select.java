@@ -52,7 +52,6 @@ public class Select implements Command {
     }
 
     private void sendData(List<String> result) {
-        System.out.println("Sending " + result.size() + " rows");
         for (String i : result) {
             writer.println(i);
         }

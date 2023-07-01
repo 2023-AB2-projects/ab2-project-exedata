@@ -13,12 +13,9 @@ public class ErrorClient {
             out=clientSocket.getOutputStream();
             writer = new PrintWriter(out, true);
 
-            System.out.println("Error client started successfully!");
             writer.println(message);
-            System.out.println("I sent this error message: " + message);
             out.close();
             clientSocket.close();
-            System.out.println("Error client stop successfully!");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

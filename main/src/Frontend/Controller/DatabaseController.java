@@ -91,7 +91,6 @@ public class DatabaseController {
                             if(pattern.matcher(s).find()){
                                 // if select
                                 List<String> result = clientConnection.getSelectResult();
-                                System.out.println(result);
 
                                 Object[] columnNames = result.get(0).split("#");
                                 JTable table = databaseFrame.getPanelCenter().getResultsTable();
